@@ -27,15 +27,15 @@ export default function Register() {
 
             const result = await response.json();
             setMessage(result.message);
-            //router.push("/Success");
+            router.push("/Success");
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     };
 
     return (
-        <div className="flex justify-center h-full items-center min-h-screen bg-yellow-100">
-            <div className="bg-lime-300 p-3 rounded-lg shadow-md w-full max-w-md">
+        <div className="flex justify-center h-full items-center min-h-screen bg-blue-100">
+            <div className="bg-slate-50 p-3 rounded-lg shadow-md w-full max-w-md border-2 border-blue-900">
                 <div className="text-center">
                     <h1 className="font-bold">
                         สมัครสมาชิก
@@ -47,28 +47,28 @@ export default function Register() {
                         <label className="block mb-2 text-sm text-gray-700">
                             ชื่อ
                         </label>
-                        <input type="text" name="firstname" className="w-full px-3 bg-gray-100 rounded" onChange={(e) => setFirstname(e.target.value)} />
+                        <input type="text" name="firstname" className="w-full px-3 bg-gray-200 rounded" onChange={(e) => setFirstname(e.target.value)} />
                     </div>
                     <div>
                         <label className="block mb-2 text-sm text-gray-700">
                             สกุล
                         </label>
-                        <input type="text" name="lastname" className="w-full px-3 bg-gray-100 rounded" onChange={(e) => setLastname(e.target.value)} />
+                        <input type="text" name="lastname" className="w-full px-3 bg-gray-200 rounded" onChange={(e) => setLastname(e.target.value)} />
                     </div>
                     <div>
                         <label className="block mb-2 text-sm text-gray-700">
                             อีเมล
                         </label>
-                        <input type="email" name="email" className="w-full px-3 bg-gray-100 rounded" onChange={(e) => setEmail(e.target.value)} />
+                        <input type="email" name="email" className="w-full px-3 bg-gray-200 rounded" onChange={(e) => setEmail(e.target.value)} />
                     </div>
                     <div>
                         <label className="block mb-2 text-sm text-gray-700">
                             รหัสผ่าน
                         </label>
-                        <input type="password" name="password" className="w-full px-3 bg-gray-100 rounded" onChange={(e) => setPassword(e.target.value)} />
+                        <input type="password" name="password" className="w-full px-3 bg-gray-200 rounded" onChange={(e) => setPassword(e.target.value)} />
                     </div>
                     <div className="mt-4">
-                        <button type="submit" className="w-full py-2 px-3 bg-yellow-300 rounded hover:bg-amber-700 hover:text-white">
+                        <button type="submit" className="w-full py-2 px-3 bg-blue-950 rounded hover:bg-blue-500 hover:text-white">
                             ลงทะเบียน
                         </button>
                     </div>

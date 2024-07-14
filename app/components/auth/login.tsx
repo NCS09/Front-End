@@ -21,11 +21,12 @@ export default function Login() {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify(formData),
+                credentials: "include",
             });
 
             const result = await response.json();
             setMessage(result.message);
-            router.push("/Dashboard");
+            //router.push("/Dashboard");
         } catch (error) {
             console.error('Error fetching data:', error);
         }

@@ -23,6 +23,7 @@ export default function Register() {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify(formData),
+                credentials: "include",
             });
 
             const result = await response.json();

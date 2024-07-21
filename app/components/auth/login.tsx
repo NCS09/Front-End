@@ -13,7 +13,7 @@ export default function Login() {
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         const formData = { email, password };
-        
+
         try {
             const response = await fetch("http://localhost:8000/login", {
                 method: 'POST',
@@ -26,9 +26,20 @@ export default function Login() {
 
             const result = await response.json();
             setMessage(result.message);
-            //router.push("/Dashboard");
+
+            if (result.type === 'ok') {
+                if (result.isAdmin == true) {
+                    router.push("/admin/Dashboard");
+                } else {
+                    router.push("/user/Productss");
+                }
+            } else {
+                setMessage('Invalid email or password');
+            }
+
         } catch (error) {
             console.error('Error fetching data:', error);
+            setMessage('Error logging in');
         }
     };
 
@@ -46,13 +57,13 @@ export default function Login() {
                         <label className="block mb-2 text-sm text-gray-700">
                             อีเมล
                         </label>
-                        <input type="email" name="email" className="w-full px-3 bg-gray-200 rounded" onChange={(e) => setEmail(e.target.value)}/>
+                        <input type="email" name="email" className="w-full px-3 bg-gray-200 rounded" onChange={(e) => setEmail(e.target.value)} />
                     </div>
                     <div>
                         <label className="block mb-2 mt-2 text-sm text-gray-700">
                             รหัสผ่าน
                         </label>
-                        <input type="password" name="password" className="w-full px-3 bg-gray-200 rounded" onChange={(e) => setPassword(e.target.value)}/>
+                        <input type="password" name="password" className="w-full px-3 bg-gray-200 rounded" onChange={(e) => setPassword(e.target.value)} />
                     </div>
                     <div className="mt-4">
                         <button type="submit" className="w-full py-2 px-3 bg-blue-950 rounded hover:bg-blue-500 hover:text-white">
@@ -60,6 +71,7 @@ export default function Login() {
                         </button>
                     </div>
                 </form>
+                {message && <p className="text-red-500 text-center mt-4">{message}</p>}
             </div>
         </div>
     );

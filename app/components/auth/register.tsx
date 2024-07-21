@@ -9,12 +9,13 @@ export default function Register() {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [message, setMessage] = useState<string>('');
+    const [error, setError] = useState<string>('');
 
     const router = useRouter();
 
     const handleSubmit = async (e:FormEvent) => {
         e.preventDefault();
-        const formData = { firstname, lastname, email, password };
+        const formData = { email, password , firstname, lastname};
 
         try {
             const response = await fetch("http://localhost:8000/register", {
@@ -25,12 +26,17 @@ export default function Register() {
                 body: JSON.stringify(formData),
                 credentials: "include",
             });
-
             const result = await response.json();
-            setMessage(result.message);
-            router.push("/Success");
+            if (response.ok){
+                setMessage(result.message);
+                router.push("/Success");
+            } else {
+                setMessage(result.message);
+            }
+            
         } catch (error) {
             console.error('Error fetching data:', error);
+            setError('An error occurred. Please try again later.');
         }
     };
 

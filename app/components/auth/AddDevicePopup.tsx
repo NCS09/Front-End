@@ -20,7 +20,7 @@ const AddDevicePopup: React.FC<AddDevicePopupProps> = ({ onClose }) => {
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
-        const formData = { id, name, description, availability, approve: approve === 'true', limit };
+        const formData = { id, name, description, availability: availability === 'true', approve: approve === 'true', limit };
 
         try {
 

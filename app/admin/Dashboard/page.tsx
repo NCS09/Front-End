@@ -19,7 +19,7 @@ export default function Dashboardpage() {
             try {
                 const response = await fetch("http://localhost:8000/dashboard", {
                     method: 'GET',
-                    // credentials: "include",
+                    credentials: "include",
                 });
                 const result = await response.json();
                 setData(result);
@@ -43,7 +43,7 @@ export default function Dashboardpage() {
                             จำนวนสมาชิก<br />{data[0]?.total_users} คน
                         </div>
                         <div className="bg-red-400 p-4 mx-3 rounded-lg w-1/3 text-center">
-                            รายการยืม<br /> {data[0]?.total_loans} รายการ
+                            รายการยืม<br /> {data[0]?.borrow_count} รายการ
                         </div>
                     </div>
 

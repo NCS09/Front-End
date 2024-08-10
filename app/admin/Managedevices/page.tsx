@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import AddDevicePopup from '@/app/components/auth/AddDevicePopup';
+import EditDevices from '@/app/components/auth/editdevices';
 
 interface Device {
     device_id: string;
@@ -13,7 +14,9 @@ interface Device {
 }
 
 const ManagePage: React.FC = () => {
-    const [showPopup, setShowPopup] = useState(false);
+    const [showAddPopup, setShowAddPopup] = useState(false);
+    const [showEditPopup, setShowEditPopup] = useState(false);
+    const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
     const [data, setDevices] = useState<Device[]>([]);
 
     useEffect(() => {
@@ -42,12 +45,22 @@ const ManagePage: React.FC = () => {
         }
     };
 
-    const handleOpenPopup = () => {
-        setShowPopup(true);
+    const handleOpenAddPopup = () => {
+        setShowAddPopup(true);
     };
 
-    const handleClosePopup = () => {
-        setShowPopup(false);
+    const handleCloseAddPopup = () => {
+        setShowAddPopup(false);
+    };
+
+    const handleOpenEditPopup = (device: Device) => {
+        setSelectedDevice(device);
+        setShowEditPopup(true);
+    };
+
+    const handleCloseEditPopup = () => {
+        setSelectedDevice(null);
+        setShowEditPopup(false);
     };
 
     return (
@@ -55,10 +68,19 @@ const ManagePage: React.FC = () => {
             <h1 className="text-2xl font-bold mb-4">Manage</h1>
             <button 
                 className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
-                onClick={handleOpenPopup}>
+                onClick={handleOpenAddPopup}>
                 เพิ่มอุปกรณ์
             </button>
-            {showPopup && <AddDevicePopup onClose={handleClosePopup} />}
+            {showAddPopup && <AddDevicePopup onClose={handleCloseAddPopup} />}
+
+            {showEditPopup && selectedDevice && (
+                <EditDevices 
+                    onClose={handleCloseEditPopup} 
+                    deviceId={selectedDevice.device_id}
+                    initialAvailability={selectedDevice.device_availability}
+                    initialApprove={selectedDevice.device_approve}
+                />
+            )}
 
             <div className='mt-4'>
                 <ul>
@@ -70,9 +92,14 @@ const ManagePage: React.FC = () => {
                                 <div className="">{device.device_name}</div>
                                 <div>ID: {device.device_id}</div>
                                 <div>Description: {device.device_description}</div>
-                                <div>Availability: {device.device_availability ? 'Available' : 'Not Available'}</div>
+                                <div>Availability: {device.device_availability ? 'พร้อมให้ยืม' : 'ไม่พร้อมให้ยืม'}</div>
                                 <div>Approve: {device.device_approve ? 'Approved' : 'Not Approved'}</div>
                                 <div>Limit: {device.device_limit}</div>
+                                <button 
+                                    className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-700"
+                                    onClick={() => handleOpenEditPopup(device)}>
+                                    แก้ไข
+                                </button>
                             </li>
                         ))
                     )}

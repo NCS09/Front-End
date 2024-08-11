@@ -1,7 +1,8 @@
-'use client'
+'use client';
 
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
+import SuccessModal from './Success';// Adjust the import path as necessary
 
 export default function Register() {
     const [firstname, setFirstname] = useState<string>('');
@@ -10,12 +11,13 @@ export default function Register() {
     const [password, setPassword] = useState<string>('');
     const [message, setMessage] = useState<string>('');
     const [error, setError] = useState<string>('');
+    const [isSuccessModalOpen, setSuccessModalOpen] = useState<boolean>(false);
 
     const router = useRouter();
 
-    const handleSubmit = async (e:FormEvent) => {
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        const formData = { email, password , firstname, lastname};
+        const formData = { email, password, firstname, lastname };
 
         try {
             const response = await fetch("http://localhost:8000/register", {
@@ -27,13 +29,12 @@ export default function Register() {
                 credentials: "include",
             });
             const result = await response.json();
-            if (result.type == "ok"){
+            if (result.type == "ok") {
                 setMessage(result.message);
-                router.push("/Success");
+                setSuccessModalOpen(true);
             } else {
                 setMessage(result.message);
             }
-            
         } catch (error) {
             console.error('Error fetching data:', error);
             setError('An error occurred. Please try again later.');
@@ -54,33 +55,62 @@ export default function Register() {
                         <label className="block mb-2 text-sm text-gray-700">
                             ชื่อ
                         </label>
-                        <input type="text" name="firstname" className="w-full px-3 bg-gray-200 rounded" onChange={(e) => setFirstname(e.target.value)} />
+                        <input
+                            type="text"
+                            name="firstname"
+                            className="w-full px-3 bg-gray-200 rounded"
+                            onChange={(e) => setFirstname(e.target.value)}
+                        />
                     </div>
                     <div>
                         <label className="block mb-2 text-sm text-gray-700">
                             สกุล
                         </label>
-                        <input type="text" name="lastname" className="w-full px-3 bg-gray-200 rounded" onChange={(e) => setLastname(e.target.value)} />
+                        <input
+                            type="text"
+                            name="lastname"
+                            className="w-full px-3 bg-gray-200 rounded"
+                            onChange={(e) => setLastname(e.target.value)}
+                        />
                     </div>
                     <div>
                         <label className="block mb-2 text-sm text-gray-700">
                             อีเมล
                         </label>
-                        <input type="email" name="email" className="w-full px-3 bg-gray-200 rounded" onChange={(e) => setEmail(e.target.value)} />
+                        <input
+                            type="email"
+                            name="email"
+                            className="w-full px-3 bg-gray-200 rounded"
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
                     </div>
                     <div>
                         <label className="block mb-2 text-sm text-gray-700">
                             รหัสผ่าน
                         </label>
-                        <input type="password" name="password" className="w-full px-3 bg-gray-200 rounded" onChange={(e) => setPassword(e.target.value)} />
+                        <input
+                            type="password"
+                            name="password"
+                            className="w-full px-3 bg-gray-200 rounded"
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
                     </div>
                     <div className="mt-4">
-                        <button type="submit" className="w-full py-2 px-3 bg-blue-950 rounded hover:bg-blue-500 hover:text-white">
+                        <button
+                            type="submit"
+                            className="w-full py-2 px-3 bg-blue-950 rounded hover:bg-blue-500 hover:text-white"
+                        >
                             ลงทะเบียน
                         </button>
                     </div>
                 </form>
             </div>
+
+            
+            <SuccessModal
+                isOpen={isSuccessModalOpen}
+                onClose={() => setSuccessModalOpen(false)}
+            />
         </div>
     );
 }

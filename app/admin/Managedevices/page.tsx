@@ -64,18 +64,21 @@ const ManagePage: React.FC = () => {
     };
 
     return (
-        <div className="p-4">
-            <h1 className="text-2xl font-bold mb-4">Manage</h1>
+        <div className="p-6 bg-gray-100 min-h-screen">
+            <h1 className="text-3xl font-bold mb-6 text-center">จัดการอุปกรณ์</h1>
             <button 
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+                className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
                 onClick={handleOpenAddPopup}>
                 เพิ่มอุปกรณ์
             </button>
-            {showAddPopup && <AddDevicePopup onClose={handleCloseAddPopup} />}
+            {showAddPopup && <AddDevicePopup 
+                onClose={handleCloseAddPopup}
+                onUpdate={fetchDevices} />}
 
             {showEditPopup && selectedDevice && (
                 <EditDevices 
                     onClose={handleCloseEditPopup} 
+                    onUpdate={fetchDevices}
                     deviceId={selectedDevice.device_id}
                     dname={selectedDevice.device_name}
                     dlimit={selectedDevice.device_limit}
@@ -83,28 +86,28 @@ const ManagePage: React.FC = () => {
                 />
             )}
 
-            <div className='mt-4'>
-                <ul>
-                    {data.length === 0 ? (
-                        <p>No data available.</p>
-                    ) : (
-                        data.map((device) => (
-                            <li key={device.device_id} className="flex mb-2 p-4 border border-gray-300 rounded space-x-3">
-                                <div>{device.device_name}</div>
-                                <div>ID: {device.device_id}</div>
-                                <div>Description: {device.device_description}</div>
-                                <div>Availability: {device.device_availability}</div>
-                                <div>Approve: {device.device_approve ? 'พร้อมให้ยืม' : 'ไม่พร้อมให้ยืม'}</div>
-                                <div>Limit: {device.device_limit}</div>
+            <div className='mt-8'>
+                {data.length === 0 ? (
+                    <p className="text-center text-gray-600">ไม่มีข้อมูล</p>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {data.map((device) => (
+                            <div key={device.device_id} className="flex flex-col p-4 border border-gray-300 rounded-lg shadow-sm bg-white">
+                                <h2 className="text-xl font-semibold mb-2">{device.device_name}</h2>
+                                <p className="text-gray-700 mb-2"><strong>คำอธิบาย:</strong> {device.device_description}</p>
+                                <p className="text-gray-700 mb-2"><strong>จำนวนที่ยืมได้:</strong> {device.device_availability}</p>
+                                <p className="text-gray-700 mb-2"><strong>สถานะอุปกรณ์:</strong> {device.device_approve ? 'พร้อมให้ยืม' : 'ไม่พร้อมให้ยืม'}</p>
+                                <p className="text-gray-700 mb-4"><strong>จำนวนอุปกรณ์:</strong> {device.device_limit}</p>
+            
                                 <button 
-                                    className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-700"
+                                    className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition"
                                     onClick={() => handleOpenEditPopup(device)}>
                                     แก้ไข
                                 </button>
-                            </li>
-                        ))
-                    )}
-                </ul>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     );

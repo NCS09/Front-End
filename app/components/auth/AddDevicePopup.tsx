@@ -3,9 +3,10 @@ import { useRouter } from 'next/navigation';
 
 interface AddDevicePopupProps {
     onClose: () => void;
+    onUpdate: () => void;
 }
 
-const AddDevicePopup: React.FC<AddDevicePopupProps> = ({ onClose }) => {
+const AddDevicePopup: React.FC<AddDevicePopupProps> = ({ onClose, onUpdate }) => {
     const [id, setId] = useState('');
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
@@ -32,10 +33,8 @@ const AddDevicePopup: React.FC<AddDevicePopupProps> = ({ onClose }) => {
             setMessage(result.message);
             console.log(result);
             if (response.ok) {
-                console.log(result);
                 onClose();
-                router.replace('/admin/Managedevices'); 
-                window.location.reload();
+                onUpdate();
             }
 
         } catch (error) {
@@ -88,17 +87,20 @@ const AddDevicePopup: React.FC<AddDevicePopupProps> = ({ onClose }) => {
                             className="mt-1 p-2 w-full border border-gray-300 rounded"
                         />
                     </div>
-                    <button 
-                        type="submit" 
-                        className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700">
-                        เพิ่ม
-                    </button>
+                    <div className="flex justify-between mt-4">
+                        <button 
+                            type="submit" 
+                            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700">
+                            เพิ่ม
+                        </button>
+                        <button 
+                            type="button" 
+                            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700"
+                            onClick={onClose}>
+                            ปิด
+                        </button>
+                    </div>
                 </form>
-                <button 
-                    className="mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700"
-                    onClick={onClose}>
-                    ปิด
-                </button>
                 {message && <p className="mt-4 text-red-500">{message}</p>}
             </div>
         </div>

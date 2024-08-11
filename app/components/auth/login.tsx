@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { useRouter } from 'next/navigation';
 import { useState, FormEvent } from 'react';
@@ -7,6 +7,7 @@ export default function Login() {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [message, setMessage] = useState<string>('');
+    const [messageType, setMessageType] = useState<'success' | 'error'>('error');
 
     const router = useRouter();
 
@@ -25,20 +26,22 @@ export default function Login() {
             });
 
             const result = await response.json();
-            setMessage(result.message);
-
             if (result.type === 'ok') {
+                setMessageType('success');
+                setMessage('Login successful!');
                 if (result.role == 2) {
                     router.push("/admin/Dashboard");
                 } else {
                     router.push("/user/Productss");
                 }
             } else {
+                setMessageType('error');
                 setMessage('Invalid email or password');
             }
 
         } catch (error) {
             console.error('Error fetching data:', error);
+            setMessageType('error');
             setMessage('Error logging in');
         }
     };
@@ -57,21 +60,38 @@ export default function Login() {
                         <label className="block mb-2 text-sm text-gray-700">
                             อีเมล
                         </label>
-                        <input type="email" name="email" className="w-full px-3 bg-gray-200 rounded" onChange={(e) => setEmail(e.target.value)} />
+                        <input 
+                            type="email" 
+                            name="email" 
+                            className="w-full px-3 bg-gray-200 rounded" 
+                            onChange={(e) => setEmail(e.target.value)} 
+                        />
                     </div>
                     <div>
                         <label className="block mb-2 mt-2 text-sm text-gray-700">
                             รหัสผ่าน
                         </label>
-                        <input type="password" name="password" className="w-full px-3 bg-gray-200 rounded" onChange={(e) => setPassword(e.target.value)} />
+                        <input 
+                            type="password" 
+                            name="password" 
+                            className="w-full px-3 bg-gray-200 rounded" 
+                            onChange={(e) => setPassword(e.target.value)} 
+                        />
                     </div>
                     <div className="mt-4">
-                        <button type="submit" className="w-full py-2 px-3 bg-blue-950 rounded hover:bg-blue-500 hover:text-white">
+                        <button 
+                            type="submit" 
+                            className="w-full py-2 px-3 bg-blue-950 rounded hover:bg-blue-500 hover:text-white"
+                        >
                             เข้าสู่ระบบ
                         </button>
                     </div>
                 </form>
-                {message && <p className="text-red-500 text-center mt-4">{message}</p>}
+                {message && (
+                    <p className={`text-center mt-4 ${messageType === 'success' ? 'text-green-500' : 'text-red-500'}`}>
+                        {message}
+                    </p>
+                )}
             </div>
         </div>
     );

@@ -1,22 +1,35 @@
-'use client'
+'use client';
 
-import Link from "next/link";
-import { FaCheck } from "react-icons/fa";
+import { FaCheck } from 'react-icons/fa';
+import Link from 'next/link';
 
-export default function Success() {
+interface SuccessModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+}
+
+const SuccessModal: React.FC<SuccessModalProps> = ({ isOpen, onClose }) => {
+    if (!isOpen) return null;
+
     return (
-        <div className="bg-amber-50 justify-center flex flex-col h-screen items-center">
-            <div className="bg-white w-1/3 h-1/3 text-center p-4 rounded-lg flex flex-col justify-center items-center border-2 border-green-600">
-                <h1 className="font-bold text-lg">ลงทะเบียนสำเร็จ</h1>
-                <div className="mt-6 w-16 h-16 rounded-full border-2 border-green-600 flex justify-center items-center p-3">
-                    <FaCheck className="text-5xl text-center text-green-600" />
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
+            <div className="bg-white w-80 p-6 rounded-lg shadow-lg text-center">
+                <h1 className="font-bold text-lg mb-4">ลงทะเบียนสำเร็จ</h1>
+                <div className="flex justify-center mb-4">
+                    <div className="w-16 h-16 flex justify-center items-center bg-green-100 rounded-full border-2 border-green-600">
+                        <FaCheck className="text-5xl text-green-600" />
+                    </div>
                 </div>
-                <div className="mt-6">
-                    <Link href="/Login" className="w-full py-2 px-3 bg-blue-950 rounded hover:bg-blue-500 hover:text-white">
-                            กลับสู่หน้าหลัก
-                    </Link>
-                </div>
+                <Link
+                    href="/Login"
+                    className="bg-blue-950 text-white px-4 py-2 rounded hover:bg-blue-500 transition-colors"
+                    onClick={onClose}
+                >
+                    กลับสู่หน้าหลัก
+                </Link>
             </div>
         </div>
     );
-}
+};
+
+export default SuccessModal;

@@ -3,14 +3,14 @@ import { useRouter } from 'next/navigation';
 
 interface EditDeviceProps {
     onClose: () => void;
+    onUpdate: () => void;
     deviceId: string;
     dname: string;
     dlimit: string;
     Approve: boolean;
 }
 
-const EditDevices: React.FC<EditDeviceProps> = ({ onClose, deviceId, Approve, dname, dlimit }) => {
-    // ตั้งค่า useState โดยใช้ข้อมูลที่ส่งมาจาก props
+const EditDevices: React.FC<EditDeviceProps> = ({ onClose, onUpdate, deviceId, Approve, dname, dlimit }) => {
     const [approve, setApprove] = useState<string>(Approve ? 'true' : 'false');
     const [name, setName] = useState<string>(dname);
     const [limit, setLimit] = useState<string>(dlimit);
@@ -21,12 +21,11 @@ const EditDevices: React.FC<EditDeviceProps> = ({ onClose, deviceId, Approve, dn
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
-        // ตรวจสอบและกำหนดค่าก่อนส่งไปยัง backend
         const formData = {
             id: deviceId,
             approve: approve === 'true',
-            name: name || dname,  // ถ้า name ว่างให้ใช้ dname
-            limit: limit !== '' ? parseInt(limit, 10) : dlimit,  // ถ้า limit ว่างให้ใช้ dlimit
+            name: name || dname,
+            limit: limit || dlimit, // แปลง dlimit เป็นตัวเลข
         };
 
         try {
@@ -44,8 +43,7 @@ const EditDevices: React.FC<EditDeviceProps> = ({ onClose, deviceId, Approve, dn
 
             if (response.ok) {
                 onClose();
-                router.replace('/admin/Managedevices');
-                window.location.reload(); // รีโหลดหน้าใหม่
+                onUpdate();
             }
 
         } catch (error) {
@@ -88,17 +86,20 @@ const EditDevices: React.FC<EditDeviceProps> = ({ onClose, deviceId, Approve, dn
                             <option value="false">ไม่พร้อมใช้งาน</option>
                         </select>
                     </div>
-                    <button
-                        type="submit"
-                        className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700">
-                        อัปเดต
-                    </button>
+                    <div className="flex justify-between mt-4">
+                        <button
+                            type="submit"
+                            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700">
+                            อัปเดต
+                        </button>
+                        <button
+                            type="button"
+                            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700"
+                            onClick={onClose}>
+                            ปิด
+                        </button>
+                    </div>
                 </form>
-                <button
-                    className="mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700"
-                    onClick={onClose}>
-                    ปิด
-                </button>
                 {message && <p className="mt-4 text-red-500">{message}</p>}
             </div>
         </div>

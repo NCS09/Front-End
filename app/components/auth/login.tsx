@@ -28,7 +28,7 @@ export default function Login() {
             setMessage(result.message);
 
             if (result.type === 'ok') {
-                if (result.isAdmin == true) {
+                if (result.role == 2) {
                     router.push("/admin/Dashboard");
                 } else {
                     router.push("/user/Productss");

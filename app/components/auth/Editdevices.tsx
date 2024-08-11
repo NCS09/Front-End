@@ -4,23 +4,29 @@ import { useRouter } from 'next/navigation';
 interface EditDeviceProps {
     onClose: () => void;
     deviceId: string;
-    initialAvailability: boolean;
-    initialApprove: boolean;
+    dname: string;
+    dlimit: string;
+    Approve: boolean;
 }
 
-const EditDevices: React.FC<EditDeviceProps> = ({ onClose, deviceId, initialAvailability, initialApprove }) => {
-    const [availability, setAvailability] = useState(initialAvailability ? 'true' : 'false');
-    const [approve, setApprove] = useState(initialApprove ? 'true' : 'false');
-    const [message, setMessage] = useState('');
+const EditDevices: React.FC<EditDeviceProps> = ({ onClose, deviceId, Approve, dname, dlimit }) => {
+    // ตั้งค่า useState โดยใช้ข้อมูลที่ส่งมาจาก props
+    const [approve, setApprove] = useState<string>(Approve ? 'true' : 'false');
+    const [name, setName] = useState<string>(dname);
+    const [limit, setLimit] = useState<string>(dlimit);
+    const [message, setMessage] = useState<string>('');
+
     const router = useRouter();
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
+        // ตรวจสอบและกำหนดค่าก่อนส่งไปยัง backend
         const formData = {
             id: deviceId,
-            availability: availability === 'true',
             approve: approve === 'true',
+            name: name || dname,  // ถ้า name ว่างให้ใช้ dname
+            limit: limit !== '' ? parseInt(limit, 10) : dlimit,  // ถ้า limit ว่างให้ใช้ dlimit
         };
 
         try {
@@ -37,9 +43,9 @@ const EditDevices: React.FC<EditDeviceProps> = ({ onClose, deviceId, initialAvai
             setMessage(result.message);
 
             if (response.ok) {
-                console.log("Replacing and reloading...");
                 onClose();
                 router.replace('/admin/Managedevices');
+                window.location.reload(); // รีโหลดหน้าใหม่
             }
 
         } catch (error) {
@@ -53,26 +59,33 @@ const EditDevices: React.FC<EditDeviceProps> = ({ onClose, deviceId, initialAvai
             <div className="bg-white p-8 rounded shadow-lg w-96">
                 <h2 className="text-xl font-bold mb-4">แก้ไขอุปกรณ์</h2>
                 <form onSubmit={handleSubmit}>
+                    <div className='mb-4'>
+                        <label className="block text-gray-700">ชื่อ:</label>
+                        <input 
+                            type="text"
+                            name="device_name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            className="mt-1 p-2 w-full border border-gray-300 rounded" />
+                    </div>
                     <div className="mb-4">
-                        <label className="block text-gray-700">สถานะการใช้งาน:</label>
+                        <label className="block text-gray-700">จำนวน:</label>
+                        <input 
+                            type="number"
+                            name="device_limit"
+                            value={limit}
+                            onChange={(e) => setLimit(e.target.value)}
+                            className="mt-1 p-2 w-full border border-gray-300 rounded" />
+                    </div>
+                    <div className="mb-4">
+                        <label className="block text-gray-700">สถานะอุปกรณ์:</label>
                         <select
-                            // value={availability}
-                            onChange={(e) => setAvailability(e.target.value)}
+                            value={approve}
+                            onChange={(e) => setApprove(e.target.value)}
                             className="mt-1 p-2 w-full border border-gray-300 rounded"
                         >
                             <option value="true">พร้อมใช้งาน</option>
                             <option value="false">ไม่พร้อมใช้งาน</option>
-                        </select>
-                    </div>
-                    <div className="mb-4">
-                        <label className="block text-gray-700">อนุมัติ:</label>
-                        <select
-                            // value={approve}
-                            onChange={(e) => setApprove(e.target.value)}
-                            className="mt-1 p-2 w-full border border-gray-300 rounded"
-                        >
-                            <option value="true">อนุมัติ</option>
-                            <option value="false">ไม่อนุมัติ</option>
                         </select>
                     </div>
                     <button

@@ -27,7 +27,7 @@ export default function Register() {
                 credentials: "include",
             });
             const result = await response.json();
-            if (result.type== "ok"){
+            if (result.type == "ok"){
                 setMessage(result.message);
                 router.push("/Success");
             } else {

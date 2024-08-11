@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import AddDevicePopup from '@/app/components/auth/AddDevicePopup';
-import EditDevices from '@/app/components/auth/editdevices';
+import EditDevices from '@/app/components/auth/Editdevices';
 
 interface Device {
     device_id: string;
     device_name: string;
     device_description: string;
-    device_availability: boolean;
+    device_availability: string;
     device_approve: boolean;
     device_limit: string;
 }
@@ -38,8 +38,8 @@ const ManagePage: React.FC = () => {
             }
 
             const data = await response.json();
-            console.log('Fetched devices:', data); // เพิ่มการ log ข้อมูลที่ได้รับ
-            setDevices(data); // ตรวจสอบให้แน่ใจว่า 'data.devices' มีข้อมูลที่ถูกต้อง
+            console.log('Fetched devices:', data);
+            setDevices(data); 
         } catch (error) {
             console.error('Error fetching devices:', error);
         }
@@ -77,8 +77,9 @@ const ManagePage: React.FC = () => {
                 <EditDevices 
                     onClose={handleCloseEditPopup} 
                     deviceId={selectedDevice.device_id}
-                    initialAvailability={selectedDevice.device_availability}
-                    initialApprove={selectedDevice.device_approve}
+                    dname={selectedDevice.device_name}
+                    dlimit={selectedDevice.device_limit}
+                    Approve={selectedDevice.device_approve}
                 />
             )}
 
@@ -89,11 +90,11 @@ const ManagePage: React.FC = () => {
                     ) : (
                         data.map((device) => (
                             <li key={device.device_id} className="flex mb-2 p-4 border border-gray-300 rounded space-x-3">
-                                <div className="">{device.device_name}</div>
+                                <div>{device.device_name}</div>
                                 <div>ID: {device.device_id}</div>
                                 <div>Description: {device.device_description}</div>
-                                <div>Availability: {device.device_availability ? 'พร้อมให้ยืม' : 'ไม่พร้อมให้ยืม'}</div>
-                                <div>Approve: {device.device_approve ? 'Approved' : 'Not Approved'}</div>
+                                <div>Availability: {device.device_availability}</div>
+                                <div>Approve: {device.device_approve ? 'พร้อมให้ยืม' : 'ไม่พร้อมให้ยืม'}</div>
                                 <div>Limit: {device.device_limit}</div>
                                 <button 
                                     className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-700"

@@ -54,7 +54,7 @@ const AddDevicePopup: React.FC<AddDevicePopupProps> = ({ onClose }) => {
                         <input 
                             type="text" 
                             name="deviceId" 
-                            // value={id}
+                            value={id}
                             onChange={(e) => setId(e.target.value)}
                             className="mt-1 p-2 w-full border border-gray-300 rounded"
                         />
@@ -64,7 +64,7 @@ const AddDevicePopup: React.FC<AddDevicePopupProps> = ({ onClose }) => {
                         <input 
                             type="text" 
                             name="device_name" 
-                            // value={name}
+                            value={name}
                             onChange={(e) => setName(e.target.value)}
                             className="mt-1 p-2 w-full border border-gray-300 rounded"
                         />
@@ -73,7 +73,7 @@ const AddDevicePopup: React.FC<AddDevicePopupProps> = ({ onClose }) => {
                         <label className="block text-gray-700">คำอธิบาย:</label>
                         <textarea 
                             name="description" 
-                            // value={description}
+                            value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             className="mt-1 p-2 w-full border border-gray-300 rounded"
                         />
@@ -83,7 +83,7 @@ const AddDevicePopup: React.FC<AddDevicePopupProps> = ({ onClose }) => {
                         <input 
                             type="number" 
                             name="limit" 
-                            // value={limit}
+                            value={limit}
                             onChange={(e) => setLimit(e.target.value)}
                             className="mt-1 p-2 w-full border border-gray-300 rounded"
                         />

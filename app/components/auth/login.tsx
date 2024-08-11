@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
 
 export default function Login() {
     const [email, setEmail] = useState<string>('');
@@ -22,13 +22,17 @@ export default function Login() {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify(formData),
-                credentials: "include",
+                credentials: "include", // ส่งคุกกี้
             });
 
             const result = await response.json();
             if (result.type === 'ok') {
                 setMessageType('success');
-                setMessage('Login successful!');
+                setMessage('เข้าสู่ระบบสำเร็จ!');
+
+                // เก็บโทเค็นใน localStorage
+                localStorage.setItem('authToken', 'isLogin');
+
                 if (result.role == 2) {
                     router.push("/admin/Dashboard");
                 } else {
@@ -36,15 +40,23 @@ export default function Login() {
                 }
             } else {
                 setMessageType('error');
-                setMessage('Invalid email or password');
+                setMessage('อีเมลหรือรหัสผ่านไม่ถูกต้อง');
             }
 
         } catch (error) {
-            console.error('Error fetching data:', error);
+            console.error('เกิดข้อผิดพลาด:', error);
             setMessageType('error');
-            setMessage('Error logging in');
+            setMessage('เกิดข้อผิดพลาดในการเข้าสู่ระบบ');
         }
     };
+
+    useEffect(() => {
+        const token = localStorage.getItem('authToken');
+        if (token=="isLogin") {
+            // ถ้ามีโทเค็นอยู่แล้ว ให้นำทางไปยังหน้าหลัก
+            router.push("/admin/Dashboard");
+        }
+    }, [router]);
 
     return (
         <div className="flex justify-center h-full items-center min-h-screen bg-blue-100">

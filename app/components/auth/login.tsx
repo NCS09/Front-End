@@ -31,12 +31,14 @@ export default function Login() {
                 setMessage('เข้าสู่ระบบสำเร็จ!');
 
                 
-                localStorage.setItem('authToken', 'isLogin');
+                
 
-                if (result.role == 2) {
+                if (result.role === 2) {
+                    localStorage.setItem('authToken', 'Admin');
                     router.push("/admin");
                 } else {
-                    router.push("/user/Productss");
+                    localStorage.setItem('authToken', 'User');
+                    router.push("/user"); 
                 }
             } else {
                 setMessageType('error');
@@ -48,15 +50,21 @@ export default function Login() {
             setMessageType('error');
             setMessage('เกิดข้อผิดพลาดในการเข้าสู่ระบบ');
         }
-    };
 
-    useEffect(() => {
-        const token = localStorage.getItem('authToken');
-        if (token=="isLogin") {
-            
-            router.push("/admin");
-        }
-    }, [router]);
+
+    };
+        useEffect(() => {
+            const token = localStorage.getItem('authToken');
+            if (token=="Admin") {
+                
+                router.push("/admin");
+            } else if (token=="User"){
+                router.push("/user")
+            } else {
+                
+            }
+        }, [router]);
+
 
     return (
         <div className="flex justify-center h-full items-center min-h-screen bg-blue-100">

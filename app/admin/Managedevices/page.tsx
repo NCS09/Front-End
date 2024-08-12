@@ -84,7 +84,8 @@ const ManagePage: React.FC = () => {
                     deviceId={selectedDevice.device_id}
                     dname={selectedDevice.device_name}
                     dlimit={selectedDevice.device_limit}
-                    Approve={selectedDevice.device_approve} descriptions={''}                />
+                    Approve={selectedDevice.device_approve}
+                    descriptions={''}/>
             )}
 
             <div className='mt-8'>

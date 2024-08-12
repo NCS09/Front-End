@@ -3,12 +3,12 @@ import Sidebar from '../components/auth/sidebar';
 import { ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-const AdminLayout = ({ children }: { children: ReactNode }) => {
+const userLayout = ({ children }: { children: ReactNode }) => {
     const router = useRouter();
 
         useEffect(()=>{
         const isLogin = localStorage.getItem("authToken")
-        if(isLogin!=="Admin"){
+        if(isLogin!=="User"){
             router.push('/')
         }
     })
@@ -23,4 +23,4 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
     );
 };
 
-export default AdminLayout;
+export default userLayout;

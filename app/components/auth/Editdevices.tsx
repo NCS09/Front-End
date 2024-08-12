@@ -6,14 +6,16 @@ interface EditDeviceProps {
     onUpdate: () => void;
     deviceId: string;
     dname: string;
-    dlimit: string;
+    dlimit: number;
+    descriptions: string;
     Approve: boolean;
 }
 
-const EditDevices: React.FC<EditDeviceProps> = ({ onClose, onUpdate, deviceId, Approve, dname, dlimit }) => {
-    const [approve, setApprove] = useState<string>(Approve ? 'true' : 'false');
+const EditDevices: React.FC<EditDeviceProps> = ({ onClose, onUpdate, deviceId, Approve, dname, dlimit, descriptions }) => {
+    const [approve, setApprove] = useState<boolean>(Approve);
     const [name, setName] = useState<string>(dname);
-    const [limit, setLimit] = useState<string>(dlimit);
+    const [limit, setLimit] = useState<number>(dlimit);
+    const [description, setDescription] = useState<string>(descriptions);
     const [message, setMessage] = useState<string>('');
 
     const router = useRouter();
@@ -23,9 +25,10 @@ const EditDevices: React.FC<EditDeviceProps> = ({ onClose, onUpdate, deviceId, A
 
         const formData = {
             id: deviceId,
-            approve: approve === 'true',
-            name: name || dname,
-            limit: limit || dlimit, // แปลง dlimit เป็นตัวเลข
+            approve,
+            name,
+            limit,
+            description,
         };
 
         try {
@@ -47,7 +50,7 @@ const EditDevices: React.FC<EditDeviceProps> = ({ onClose, onUpdate, deviceId, A
             }
 
         } catch (error) {
-            console.error('Error fetching data:', error);
+            console.error('Error updating device:', error);
             setMessage('Error updating device');
         }
     };
@@ -72,14 +75,14 @@ const EditDevices: React.FC<EditDeviceProps> = ({ onClose, onUpdate, deviceId, A
                             type="number"
                             name="device_limit"
                             value={limit}
-                            onChange={(e) => setLimit(e.target.value)}
+                            onChange={(e) => setLimit(Number(e.target.value))}
                             className="mt-1 p-2 w-full border border-gray-300 rounded" />
                     </div>
                     <div className="mb-4">
                         <label className="block text-gray-700">สถานะอุปกรณ์:</label>
                         <select
-                            value={approve}
-                            onChange={(e) => setApprove(e.target.value)}
+                            value={approve ? 'true' : 'false'}
+                            onChange={(e) => setApprove(e.target.value === 'true')}
                             className="mt-1 p-2 w-full border border-gray-300 rounded"
                         >
                             <option value="true">พร้อมใช้งาน</option>

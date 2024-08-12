@@ -7,17 +7,22 @@ interface AddDevicePopupProps {
 }
 
 const AddDevicePopup: React.FC<AddDevicePopupProps> = ({ onClose, onUpdate }) => {
-    const [id, setId] = useState('');
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [limit, setLimit] = useState('');
     const [message, setMessage] = useState('');
-    const router = useRouter();
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
-        const formData = { id, name, description, limit };
+        // Validate the limit
+        const limitValue = Number(limit);
+        if (isNaN(limitValue) || limitValue < 1) {
+            setMessage('จำนวนอุปกรณ์ต้องเป็นตัวเลขที่มากกว่าศูนย์');
+            return;
+        }
+
+        const formData = { name, description, limit: limitValue };
 
         try {
             const response = await fetch("http://localhost:8000/devices/add", {
@@ -31,7 +36,6 @@ const AddDevicePopup: React.FC<AddDevicePopupProps> = ({ onClose, onUpdate }) =>
 
             const result = await response.json();
             setMessage(result.message);
-            console.log(result);
             if (response.ok) {
                 onClose();
                 onUpdate();
@@ -48,16 +52,6 @@ const AddDevicePopup: React.FC<AddDevicePopupProps> = ({ onClose, onUpdate }) =>
             <div className="bg-white p-8 rounded shadow-lg w-96">
                 <h2 className="text-xl font-bold mb-4">เพิ่มอุปกรณ์</h2>
                 <form onSubmit={handleSubmit}>
-                    <div className="mb-4">
-                        <label className="block text-gray-700">ID อุปกรณ์:</label>
-                        <input 
-                            type="text" 
-                            name="deviceId" 
-                            value={id}
-                            onChange={(e) => setId(e.target.value)}
-                            className="mt-1 p-2 w-full border border-gray-300 rounded"
-                        />
-                    </div>
                     <div className="mb-4">
                         <label className="block text-gray-700">ชื่ออุปกรณ์:</label>
                         <input 
@@ -83,7 +77,12 @@ const AddDevicePopup: React.FC<AddDevicePopupProps> = ({ onClose, onUpdate }) =>
                             type="number" 
                             name="limit" 
                             value={limit}
-                            onChange={(e) => setLimit(e.target.value)}
+                            onChange={(e) => {
+                                const value = parseInt(e.target.value, 10);
+                                if (value >= 1) {
+                                    setLimit(e.target.value);
+                                }
+                            }}
                             className="mt-1 p-2 w-full border border-gray-300 rounded"
                         />
                     </div>

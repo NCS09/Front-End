@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import AddDevicePopup from '@/app/components/auth/AddDevicePopup';
 import EditDevices from '@/app/components/auth/Editdevices';
+import { useRouter } from 'next/navigation';
 
 interface Device {
     device_id: string;
@@ -10,7 +11,7 @@ interface Device {
     device_description: string;
     device_availability: string;
     device_approve: boolean;
-    device_limit: string;
+    device_limit: number;
 }
 
 const ManagePage: React.FC = () => {
@@ -18,6 +19,7 @@ const ManagePage: React.FC = () => {
     const [showEditPopup, setShowEditPopup] = useState(false);
     const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
     const [data, setDevices] = useState<Device[]>([]);
+    const router = useRouter();
 
     useEffect(() => {
         fetchDevices();
@@ -38,20 +40,14 @@ const ManagePage: React.FC = () => {
             }
 
             const data = await response.json();
-            console.log('Fetched devices:', data);
-            setDevices(data); 
+            setDevices(data);
         } catch (error) {
             console.error('Error fetching devices:', error);
         }
     };
 
-    const handleOpenAddPopup = () => {
-        setShowAddPopup(true);
-    };
-
-    const handleCloseAddPopup = () => {
-        setShowAddPopup(false);
-    };
+    const handleOpenAddPopup = () => setShowAddPopup(true);
+    const handleCloseAddPopup = () => setShowAddPopup(false);
 
     const handleOpenEditPopup = (device: Device) => {
         setSelectedDevice(device);
@@ -63,6 +59,10 @@ const ManagePage: React.FC = () => {
         setShowEditPopup(false);
     };
 
+    const handleDeviceAction = (deviceId: string) => {
+        router.push(`/admin/DeviceDetail/${deviceId}`);
+    };
+
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
             <h1 className="text-3xl font-bold mb-6 text-center">จัดการอุปกรณ์</h1>
@@ -71,19 +71,20 @@ const ManagePage: React.FC = () => {
                 onClick={handleOpenAddPopup}>
                 เพิ่มอุปกรณ์
             </button>
-            {showAddPopup && <AddDevicePopup 
-                onClose={handleCloseAddPopup}
-                onUpdate={fetchDevices} />}
+            {showAddPopup && (
+                <AddDevicePopup 
+                    onClose={handleCloseAddPopup}
+                    onUpdate={fetchDevices} />
+            )}
 
             {showEditPopup && selectedDevice && (
                 <EditDevices 
-                    onClose={handleCloseEditPopup} 
+                    onClose={handleCloseEditPopup}
                     onUpdate={fetchDevices}
                     deviceId={selectedDevice.device_id}
                     dname={selectedDevice.device_name}
                     dlimit={selectedDevice.device_limit}
-                    Approve={selectedDevice.device_approve}
-                />
+                    Approve={selectedDevice.device_approve} descriptions={''}                />
             )}
 
             <div className='mt-8'>
@@ -96,14 +97,21 @@ const ManagePage: React.FC = () => {
                                 <h2 className="text-xl font-semibold mb-2">{device.device_name}</h2>
                                 <p className="text-gray-700 mb-2"><strong>คำอธิบาย:</strong> {device.device_description}</p>
                                 <p className="text-gray-700 mb-2"><strong>จำนวนที่ยืมได้:</strong> {device.device_availability}</p>
-                                <p className="text-gray-700 mb-2"><strong>สถานะอุปกรณ์:</strong> {device.device_approve ? 'พร้อมให้ยืม' : 'ไม่พร้อมให้ยืม'}</p>
+                                <p className="text-gray-700 mb-2"><strong>สถานะอุปกรณ์:</strong> <span className={device.device_approve ? 'text-green-600' : 'text-red-600'}>{device.device_approve ? 'พร้อมให้ยืม' : 'ไม่พร้อมให้ยืม'}</span></p>
                                 <p className="text-gray-700 mb-4"><strong>จำนวนอุปกรณ์:</strong> {device.device_limit}</p>
             
-                                <button 
-                                    className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition"
-                                    onClick={() => handleOpenEditPopup(device)}>
-                                    แก้ไข
-                                </button>
+                                <div className="flex justify-between">
+                                    <button 
+                                        className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition"
+                                        onClick={() => handleOpenEditPopup(device)}>
+                                        แก้ไข
+                                    </button>
+                                    <button
+                                        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+                                        onClick={() => handleDeviceAction(device.device_id)}>
+                                        ดูอุปกรณ์
+                                    </button>
+                                </div>
                             </div>
                         ))}
                     </div>

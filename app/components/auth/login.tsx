@@ -22,7 +22,7 @@ export default function Login() {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify(formData),
-                credentials: "include", // ส่งคุกกี้
+                credentials: "include", 
             });
 
             const result = await response.json();
@@ -30,11 +30,11 @@ export default function Login() {
                 setMessageType('success');
                 setMessage('เข้าสู่ระบบสำเร็จ!');
 
-                // เก็บโทเค็นใน localStorage
+                
                 localStorage.setItem('authToken', 'isLogin');
 
                 if (result.role == 2) {
-                    router.push("/admin/Dashboard");
+                    router.push("/admin");
                 } else {
                     router.push("/user/Productss");
                 }
@@ -53,8 +53,8 @@ export default function Login() {
     useEffect(() => {
         const token = localStorage.getItem('authToken');
         if (token=="isLogin") {
-            // ถ้ามีโทเค็นอยู่แล้ว ให้นำทางไปยังหน้าหลัก
-            router.push("/admin/Dashboard");
+            
+            router.push("/admin");
         }
     }, [router]);
 

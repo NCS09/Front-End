@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState, FormEvent, useEffect } from 'react';
+import Navbar from './navbars';
 
 export default function Login() {
     const [email, setEmail] = useState<string>('');
@@ -29,9 +30,6 @@ export default function Login() {
             if (result.type === 'ok') {
                 setMessageType('success');
                 setMessage('เข้าสู่ระบบสำเร็จ!');
-
-                
-                
 
                 if (result.role === 2) {
                     localStorage.setItem('authToken', 'Admin');
@@ -67,6 +65,8 @@ export default function Login() {
 
 
     return (
+        <>
+        <Navbar/>
         <div className="flex justify-center h-full items-center min-h-screen bg-blue-100">
             <div className="bg-slate-50 p-3 rounded-lg shadow-md w-full max-w-md border-2 border-blue-900">
                 <div className="text-center">
@@ -114,5 +114,6 @@ export default function Login() {
                 )}
             </div>
         </div>
+        </>
     );
 }

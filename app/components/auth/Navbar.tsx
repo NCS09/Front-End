@@ -25,8 +25,8 @@ export default function Navbar() {
             if (result.type === 'ok') {
                 localStorage.removeItem('authToken');
                 setIsLoggedIn(false);
-                router.refresh(); // รีเฟรชหน้า
-                router.push('/Login'); // ไปยังหน้าเข้าสู่ระบบ
+                router.refresh(); 
+                router.push('/Login');
             } else {
                 console.error('Logout failed:', result.message);
             }
@@ -48,8 +48,7 @@ export default function Navbar() {
                     ) : (
                         <button 
                             onClick={handleLogout} 
-                            className="ml-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-                        >
+                            className="ml-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
                             ออกจากระบบ
                         </button>
                     )}

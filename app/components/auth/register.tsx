@@ -2,7 +2,8 @@
 
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import SuccessModal from './Success';// Adjust the import path as necessary
+import SuccessModal from './Success';
+import Navbar from './Navbar';
 
 export default function Register() {
     const [firstname, setFirstname] = useState<string>('');
@@ -42,6 +43,8 @@ export default function Register() {
     };
 
     return (
+        <>
+        <Navbar/>
         <div className="flex justify-center h-full items-center min-h-screen bg-blue-100">
             <div className="bg-slate-50 p-3 rounded-lg shadow-md w-full max-w-md border-2 border-blue-900">
                 <div className="text-center">
@@ -112,5 +115,7 @@ export default function Register() {
                 onClose={() => setSuccessModalOpen(false)}
             />
         </div>
+        </>
+       
     );
 }

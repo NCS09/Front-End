@@ -1,5 +1,5 @@
 'use client';
-import Sidebar from '../components/auth/sidebar';
+import Sidebar from '../components/auth/sideuser';
 import { ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';

@@ -1,136 +1,185 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
 
 interface Device {
-    device_id: string;
+    device_id: number;
     device_name: string;
-    device_description: string;
-    device_availability: string;
-    device_approve: boolean;
-    device_limit: number;
 }
 
-const CartPage: React.FC = () => {
-    const [devices, setDevices] = useState<Device[]>([]);
-    const [selectedDevices, setSelectedDevices] = useState<{ [key: string]: number }>({});
-    const router = useRouter();
-    const searchParams = useSearchParams();
-    
-    useEffect(() => {
-        const deviceIds = searchParams.getAll('device_id');
-        if (deviceIds.length > 0) {
-            fetchDevices(deviceIds);
-        }
-    }, [searchParams]);
+interface SelectedDevice {
+    device_id: number;
+    quantity: number;
+}
 
-    const fetchDevices = async (deviceIds: string[]) => {
+const BorrowDevicePage: React.FC = () => {
+    const [devices, setDevices] = useState<Device[]>([]);
+    const [selectedDevices, setSelectedDevices] = useState<SelectedDevice[]>([]);
+    const [searchTerm, setSearchTerm] = useState<string>('');
+    const [loanStatus, setLoanStatus] = useState<string>('pending');
+    const [dueDate, setDueDate] = useState<string>('');
+    const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState<string | null>(null);
+
+    useEffect(() => {
+        fetch("http://localhost:8000/devices", {
+            credentials: "include"
+        })
+            .then(response => response.json())
+            .then(data => {
+                setDevices(data);
+            })
+            .catch(err => {
+                console.error('Error fetching devices:', err);
+            });
+    }, []);
+
+    const handleDeviceSelect = (device: Device) => {
+        if (!selectedDevices.find(d => d.device_id === device.device_id)) {
+            setSelectedDevices([...selectedDevices, { device_id: device.device_id, quantity: 1 }]);
+        }
+    };
+
+    const handleDeviceChange = (deviceId: number, quantity: number) => {
+        setSelectedDevices(prev => 
+            prev.map(d => d.device_id === deviceId ? { ...d, quantity } : d)
+        );
+    };
+
+    const handleRemoveDevice = (deviceId: number) => {
+        setSelectedDevices(prev => prev.filter(d => d.device_id !== deviceId));
+    };
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        if (selectedDevices.length === 0) {
+            setError('Please select at least one device.');
+            return;
+        }
+        if (selectedDevices.some(d => d.quantity <= 0)) {
+            setError('Quantity must be greater than zero.');
+            return;
+        }
+
         try {
-            const response = await fetch("http://localhost:8000/devices", {
+            const response = await fetch("http://localhost:8000/loan", {
                 method: 'POST',
                 headers: {
-                    "Content-Type": "application/json"
+                    'Content-Type': 'application/json',
                 },
+                body: JSON.stringify({
+                    devices: selectedDevices,
+                    due_date: dueDate
+                }),
                 credentials: "include",
-                body: JSON.stringify({ device_ids: deviceIds }),
             });
 
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
+            const result = await response.json();
 
-            const data = await response.json();
-            setDevices(data);
-        } catch (error) {
-            console.error('Error fetching devices:', error);
+            if (response.ok) {
+                setSuccess(result.message);
+                setError(null);
+                setSelectedDevices([]);
+            } else {
+                setError(result.message || 'Error processing loan request.');
+                setSuccess(null);
+            }
+        } catch (err) {
+            setError('Error processing loan request.');
+            setSuccess(null);
         }
     };
 
-    const handleQuantityChange = (deviceId: string, quantity: number) => {
-        setSelectedDevices(prevSelected => ({
-            ...prevSelected,
-            [deviceId]: quantity,
-        }));
-    };
-
-    const handleSubmitRequest = async () => {
-        const selectedItems = Object.keys(selectedDevices).filter(deviceId => selectedDevices[deviceId] > 0);
-        
-        if (selectedItems.length > 0) {
-            try {
-                const response = await fetch('http://localhost:8000/loan', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        user_id: 'your_user_id', // Replace with actual user ID
-                        item_ids: selectedItems,
-                        loan_status: 'pending', // or 'approved' based on your application logic
-                        due_date: new Date().toISOString(), // or a specific due date
-                    }),
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to submit request');
-                }
-
-                const result = await response.json();
-                alert(result.message || 'Request submitted successfully');
-                router.push('/user/homepage'); // Redirect or handle successful submission
-            } catch (error) {
-                console.error('Error submitting request:', error);
-                alert('Failed to submit request');
-            }
-        } else {
-            alert("กรุณาเลือกจำนวนอุปกรณ์ที่ต้องการยืมก่อนส่งคำร้อง");
-        }
-    };
+    const filteredDevices = devices.filter(device =>
+        device.device_name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     return (
-        <div className="p-6 bg-gray-100 min-h-screen">
-            <h1 className="text-3xl font-bold mb-6 text-center text-purple-800">รถเข็นของคุณ</h1>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {devices.length === 0 ? (
-                    <p className="text-center text-gray-600">รถเข็นของคุณว่างเปล่า</p>
-                ) : (
-                    devices.map(device => (
-                        <div key={device.device_id} className="flex flex-col p-4 border border-gray-300 rounded-lg shadow-lg bg-white">
-                            <h2 className="text-xl font-semibold mb-2 text-purple-600">{device.device_name}</h2>
-                            <p className="text-gray-700 mb-2"><strong>คำอธิบาย:</strong> {device.device_description}</p>
-                            <p className="text-gray-700 mb-2"><strong>สถานะ:</strong> {device.device_approve ? 'พร้อมให้ยืม' : 'ไม่พร้อมให้ยืม'}</p>
-                            <p className="text-gray-700 mb-4"><strong>จำนวนที่ยืมได้:</strong> {device.device_availability}</p>
-                            
-                            {device.device_approve && parseInt(device.device_availability, 10) > 0 && (
-                                <label className="block mb-2">
-                                    <span className="text-gray-700">เลือกจำนวน:</span>
-                                    <select
-                                        value={selectedDevices[device.device_id] || 0}
-                                        onChange={(e) => handleQuantityChange(device.device_id, parseInt(e.target.value))}
-                                        className="mt-2 p-2 border border-gray-300 rounded-lg w-full"
-                                    >
-                                        {Array.from({ length: parseInt(device.device_availability, 10) }, (_, i) => i + 1).map(num => (
-                                            <option key={num} value={num}>{num}</option>
-                                        ))}
-                                    </select>
-                                </label>
-                            )}
-                        </div>
-                    ))
-                )}
+        <div className="p-6 bg-gray-50 min-h-screen">
+            <h1 className="text-3xl font-bold mb-6 text-purple-700">Borrow Device</h1>
+            
+            {/* Search Section */}
+            <div className="mb-6">
+                <label htmlFor="search" className="block text-sm font-medium text-gray-600">Search Devices</label>
+                <input
+                    id="search"
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
+                    placeholder="Search for devices..."
+                />
             </div>
 
-            <button
-                className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition mt-6 mx-auto block"
-                onClick={handleSubmitRequest}
-            >
-                ส่งคำร้อง
-            </button>
+            {/* Device Selection Section */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {filteredDevices.map(device => (
+                    <div
+                        key={device.device_id}
+                        onClick={() => handleDeviceSelect(device)}
+                        className="cursor-pointer bg-white border border-gray-200 rounded-lg shadow-sm p-4 hover:bg-gray-100 transition"
+                    >
+                        <h2 className="text-lg font-semibold text-gray-800">{device.device_name}</h2>
+                    </div>
+                ))}
+            </div>
+
+            {/* Selected Devices Form Section */}
+            {selectedDevices.length > 0 && (
+                <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-lg mt-6">
+                    <div className="space-y-4">
+                        {selectedDevices.map(device => {
+                            const deviceInfo = devices.find(d => d.device_id === device.device_id);
+                            return (
+                                <div key={device.device_id} className="border-b border-gray-200 pb-4 flex justify-between items-center">
+                                    <div>
+                                        <h2 className="text-lg font-semibold text-gray-800">{deviceInfo?.device_name}</h2>
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            value={device.quantity}
+                                            onChange={(e) => handleDeviceChange(device.device_id, Number(e.target.value))}
+                                            className="mt-2 block w-full border-gray-300 rounded-md shadow-sm p-2"
+                                        />
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleRemoveDevice(device.device_id)}
+                                        className="text-red-600 hover:text-red-800"
+                                    >
+                                        นำออก
+                                    </button>
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    <div className="mb-4">
+                        <label htmlFor="dueDate" className="block text-sm font-medium text-gray-600">Due Date</label>
+                        <input
+                            id="dueDate"
+                            type="date"
+                            value={dueDate}
+                            onChange={(e) => setDueDate(e.target.value)}
+                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2"
+                        />
+                    </div>
+
+                    {/* Error and Success Messages */}
+                    {error && <div className="text-red-600 text-sm mb-4">{error}</div>}
+                    {success && <div className="text-green-600 text-sm mb-4">{success}</div>}
+
+                    <button
+                        type="submit"
+                        className="bg-purple-500 text-white px-6 py-3 rounded-md font-semibold hover:bg-purple-600"
+                    >
+                        Submit Request
+                    </button>
+                </form>
+            )}
         </div>
     );
 };
 
-export default CartPage;
+export default BorrowDevicePage;

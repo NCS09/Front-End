@@ -9,7 +9,6 @@ interface Device {
     device_description: string;
     device_availability: string;
     device_approve: boolean;
-    device_limit: number;
 }
 
 const CartPage: React.FC = () => {
@@ -17,12 +16,18 @@ const CartPage: React.FC = () => {
     const [selectedDevices, setSelectedDevices] = useState<{ [key: string]: number }>({});
     const router = useRouter();
     const searchParams = useSearchParams();
-    
+
     useEffect(() => {
         const deviceIds = searchParams.getAll('device_id');
-        if (deviceIds.length > 0) {
-            fetchDevices(deviceIds);
-        }
+        const quantities = searchParams.getAll('quantity');
+        const deviceSelections: { [key: string]: number } = {};
+        
+        deviceIds.forEach((deviceId, index) => {
+            deviceSelections[deviceId] = parseInt(quantities[index], 10);
+        });
+
+        setSelectedDevices(deviceSelections);
+        fetchDevices(deviceIds);
     }, [searchParams]);
 
     const fetchDevices = async (deviceIds: string[]) => {
@@ -47,13 +52,6 @@ const CartPage: React.FC = () => {
         }
     };
 
-    const handleQuantityChange = (deviceId: string, quantity: number) => {
-        setSelectedDevices(prevSelected => ({
-            ...prevSelected,
-            [deviceId]: quantity,
-        }));
-    };
-
     const handleSubmitRequest = async () => {
         const selectedItems = Object.keys(selectedDevices).filter(deviceId => selectedDevices[deviceId] > 0);
         
@@ -66,10 +64,9 @@ const CartPage: React.FC = () => {
                     },
                     credentials: 'include',
                     body: JSON.stringify({
-                        user_id: 'your_user_id', // Replace with actual user ID
                         item_ids: selectedItems,
-                        loan_status: 'pending', // or 'approved' based on your application logic
-                        due_date: new Date().toISOString(), // or a specific due date
+                        loan_status: 'pending', // เปลี่ยนได้ตามการใช้งานจริง
+                        due_date: new Date().toISOString(), // กำหนดวันครบกำหนด
                     }),
                 });
 
@@ -79,7 +76,7 @@ const CartPage: React.FC = () => {
 
                 const result = await response.json();
                 alert(result.message || 'Request submitted successfully');
-                router.push('/user/homepage'); // Redirect or handle successful submission
+                router.push('/user/homepage'); // Redirect หลังการส่งคำร้องสำเร็จ
             } catch (error) {
                 console.error('Error submitting request:', error);
                 alert('Failed to submit request');
@@ -103,21 +100,16 @@ const CartPage: React.FC = () => {
                             <p className="text-gray-700 mb-2"><strong>คำอธิบาย:</strong> {device.device_description}</p>
                             <p className="text-gray-700 mb-2"><strong>สถานะ:</strong> {device.device_approve ? 'พร้อมให้ยืม' : 'ไม่พร้อมให้ยืม'}</p>
                             <p className="text-gray-700 mb-4"><strong>จำนวนที่ยืมได้:</strong> {device.device_availability}</p>
-                            
-                            {device.device_approve && parseInt(device.device_availability, 10) > 0 && (
-                                <label className="block mb-2">
-                                    <span className="text-gray-700">เลือกจำนวน:</span>
-                                    <select
-                                        value={selectedDevices[device.device_id] || 0}
-                                        onChange={(e) => handleQuantityChange(device.device_id, parseInt(e.target.value))}
-                                        className="mt-2 p-2 border border-gray-300 rounded-lg w-full"
-                                    >
-                                        {Array.from({ length: parseInt(device.device_availability, 10) }, (_, i) => i + 1).map(num => (
-                                            <option key={num} value={num}>{num}</option>
-                                        ))}
-                                    </select>
-                                </label>
-                            )}
+
+                            <label className="block mb-2">
+                                <span className="text-gray-700">จำนวนที่เลือก:</span>
+                                <input
+                                    type="number"
+                                    value={selectedDevices[device.device_id] || 0}
+                                    readOnly
+                                    className="mt-2 p-2 border border-gray-300 rounded-lg w-full"
+                                />
+                            </label>
                         </div>
                     ))
                 )}

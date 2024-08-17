@@ -42,9 +42,9 @@ const DeleteDevice: React.FC<DeleteDeviceProps> = ({ isOpen, onClose, onConfirm,
             isOpen={isOpen}
             onClose={onClose}
             onConfirm={handleConfirm}
-            title="ลบจริงๆใช่ไหมครูหนึ่ง!"
-            confirmText="หายเลยนะข้อมูลอะ"
-            cancelText="กดนี่ยังอยู่น้าา"
+            title="ยืนยันการนำออก"
+            confirmText="นำออก"
+            cancelText="ยกเลิก"
         />
     );
 };

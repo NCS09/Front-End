@@ -9,9 +9,10 @@ const userLayout = ({ children }: { children: ReactNode }) => {
 
         useEffect(()=>{
         const isLogin = localStorage.getItem("authToken")
-        if(isLogin!=="User"){
+        if(isLogin !=="User"){
             router.push('/')
-        }
+        }    
+        
     })
 
     return (

@@ -39,6 +39,15 @@ export default function Sidebarpage() {
                     </li>
                     <li>
                         <Link 
+                            href="/admin/AddBorrow" 
+                            className={`block text-left px-4 py-2 rounded-md ${active === 'Borroow' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
+                            onClick={() => handleClick('Borroow')}
+                        >
+                            ยืมอุปกรณ์
+                        </Link>
+                    </li>
+                    <li>
+                        <Link 
                             href="/admin/Requests" 
                             className={`block text-left px-4 py-2 rounded-md ${active === 'Requests' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
                             onClick={() => handleClick('Requests')}

@@ -67,7 +67,7 @@ const AddDevicePopup: React.FC<AddDevicePopupProps> = ({ onClose, onUpdate }) =>
                         <label className="block text-gray-700">รหัสอุปกรณ์:</label>
                         <input 
                             type="text"
-                            name="item_serial" 
+                            name="_serial" 
                             value={serial}
                             onChange={(e) => setSerial(e.target.value)}
                             className="mt-1 p-2 w-full border border-gray-300 rounded"

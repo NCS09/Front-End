@@ -22,7 +22,7 @@ const ManagePage: React.FC = () => {
     const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
     const [data, setDevices] = useState<Device[]>([]);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [deviceToDelete, setDeviceToDelete] = useState<string | null>(null); // Device ID to delete
+    const [deviceToDelete, setDeviceToDelete] = useState<string | null>(null);
     const router = useRouter();
 
     useEffect(() => {
@@ -64,7 +64,7 @@ const ManagePage: React.FC = () => {
     };
 
     const handleDeviceAction = (deviceId: string) => {
-        router.push("/admin/DeviceDetail");
+        router.push(`/admin/DeviceDetail/${deviceId}`);
     };
 
     const handleOpenDeleteModal = (deviceId: string) => {
@@ -79,6 +79,7 @@ const ManagePage: React.FC = () => {
 
     const handleConfirmDelete = () => {
         fetchDevices(); // Refresh the list after deletion
+        handleCloseDeleteModal(); // Close the delete modal after confirming
     };
 
     return (
@@ -90,21 +91,25 @@ const ManagePage: React.FC = () => {
                 เพิ่มอุปกรณ์
             </button>
             {showAddPopup && (
-                <AddDevicePopup 
-                    onClose={handleCloseAddPopup}
-                    onUpdate={fetchDevices} />
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    <AddDevicePopup 
+                        onClose={handleCloseAddPopup}
+                        onUpdate={fetchDevices} />
+                </div>
             )}
 
             {showEditPopup && selectedDevice && (
-                <EditDevices 
-                    onClose={handleCloseEditPopup}
-                    onUpdate={fetchDevices}
-                    deviceId={selectedDevice.device_id}
-                    dname={selectedDevice.device_name}
-                    dlimit={selectedDevice.device_limit}
-                    Approve={selectedDevice.device_approve}
-                    descriptions={selectedDevice.device_description}
-                    sserial={selectedDevice.device_serial}/>
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    <EditDevices 
+                        onClose={handleCloseEditPopup}
+                        onUpdate={fetchDevices}
+                        deviceId={selectedDevice.device_id}
+                        dname={selectedDevice.device_name}
+                        dlimit={selectedDevice.device_limit}
+                        Approve={selectedDevice.device_approve}
+                        descriptions={selectedDevice.device_description}
+                        sserial={selectedDevice.device_serial}/>
+                </div>
             )}
 
             <div className='mt-8'>
@@ -145,12 +150,16 @@ const ManagePage: React.FC = () => {
                 )}
             </div>
 
-            <DeleteDevice
-                isOpen={showDeleteModal}
-                onClose={handleCloseDeleteModal}
-                onConfirm={handleConfirmDelete}
-                deviceId={deviceToDelete}
-            />
+            {showDeleteModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    <DeleteDevice
+                        isOpen={showDeleteModal}
+                        onClose={handleCloseDeleteModal}
+                        onConfirm={handleConfirmDelete}
+                        deviceId={deviceToDelete}
+                    />
+                </div>
+            )}
         </div>
     );
 };

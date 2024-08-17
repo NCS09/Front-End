@@ -118,7 +118,7 @@ const BorrowDevicePage: React.FC = () => {
                     <div
                         key={device.device_id}
                         onClick={() => handleDeviceSelect(device)}
-                        className="relative cursor-pointer bg-white border border-gray-200 rounded-lg shadow-sm p-4 hover:bg-gray-100 transition z-10"
+                        className="cursor-pointer bg-white border border-gray-200 rounded-lg shadow-sm p-4 hover:bg-gray-100 transition"
                     >
                         <h2 className="text-lg font-semibold text-gray-800">{device.device_name}</h2>
                     </div>
@@ -127,7 +127,7 @@ const BorrowDevicePage: React.FC = () => {
 
             {/* Selected Devices Form Section */}
             {selectedDevices.length > 0 && (
-                <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-lg mt-6 relative z-20">
+                <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-lg mt-6">
                     <div className="space-y-4">
                         {selectedDevices.map(device => {
                             const deviceInfo = devices.find(d => d.device_id === device.device_id);

@@ -82,7 +82,7 @@ const EditDevices: React.FC<EditDeviceProps> = ({ onClose, onUpdate, deviceId, A
                         <label className="block text-gray-700">สถานะอุปกรณ์:</label>
                         <select
                             value={approve ? 'true' : 'false'}
-                            onChange={(e) => setApprove(e.target.value === 'true')}
+                            onChange={(e) => setApprove(e.target.value == 'true')}
                             className="mt-1 p-2 w-full border border-gray-300 rounded"
                         >
                             <option value="true">พร้อมใช้งาน</option>

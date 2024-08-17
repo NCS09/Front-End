@@ -10,6 +10,7 @@ const AddDevicePopup: React.FC<AddDevicePopupProps> = ({ onClose, onUpdate }) =>
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [limit, setLimit] = useState('');
+    const [serial, setSerial] = useState('');
     const [message, setMessage] = useState('');
 
     const handleSubmit = async (e: FormEvent) => {
@@ -22,7 +23,7 @@ const AddDevicePopup: React.FC<AddDevicePopupProps> = ({ onClose, onUpdate }) =>
             return;
         }
 
-        const formData = { name, description, limit: limitValue };
+        const formData = { name, description, limit: limitValue, serial };
 
         try {
             const response = await fetch("http://localhost:8000/devices/add", {
@@ -59,6 +60,16 @@ const AddDevicePopup: React.FC<AddDevicePopupProps> = ({ onClose, onUpdate }) =>
                             name="device_name" 
                             value={name}
                             onChange={(e) => setName(e.target.value)}
+                            className="mt-1 p-2 w-full border border-gray-300 rounded"
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <label className="block text-gray-700">รหัสอุปกรณ์:</label>
+                        <input 
+                            type="text"
+                            name="item_serial" 
+                            value={serial}
+                            onChange={(e) => setSerial(e.target.value)}
                             className="mt-1 p-2 w-full border border-gray-300 rounded"
                         />
                     </div>

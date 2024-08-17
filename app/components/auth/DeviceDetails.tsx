@@ -12,7 +12,7 @@ interface Device {
 
 interface DeviceItem {
     item_id: string;
-    item_name: string; // เปลี่ยนเป็น item_name
+    item_serial: string; // เปลี่ยนเป็น item_name
     item_availability: string;
 }
 
@@ -104,7 +104,7 @@ const DeviceDetails: React.FC = () => {
                                 {deviceItems.map((item,index) => (
                                     <tr key={item.item_id}>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{index+1}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.item_id}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.item_serial}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.item_availability}</td>
                                     </tr>
                                 ))}

@@ -5,6 +5,8 @@ import { useState, useEffect } from 'react';
 interface Device {
     device_id: number;
     device_name: string;
+    device_availability: number; // เพิ่มฟิลด์นี้
+    device_description: string; // เพิ่มฟิลด์นี้
 }
 
 interface SelectedDevice {
@@ -16,7 +18,6 @@ const BorrowDevicePage: React.FC = () => {
     const [devices, setDevices] = useState<Device[]>([]);
     const [selectedDevices, setSelectedDevices] = useState<SelectedDevice[]>([]);
     const [searchTerm, setSearchTerm] = useState<string>('');
-    const [loanStatus, setLoanStatus] = useState<string>('pending');
     const [dueDate, setDueDate] = useState<string>('');
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
@@ -118,16 +119,21 @@ const BorrowDevicePage: React.FC = () => {
                     <div
                         key={device.device_id}
                         onClick={() => handleDeviceSelect(device)}
-                        className="cursor-pointer bg-white border border-gray-200 rounded-lg shadow-sm p-4 hover:bg-gray-100 transition"
+                        className={`relative cursor-pointer bg-white border border-gray-200 rounded-lg shadow-sm p-4 hover:bg-gray-100 transition z-10 ${device.device_availability > 0 ? '' : 'opacity-50 cursor-not-allowed'}`}
+                        style={{ pointerEvents: device.device_availability > 0 ? 'auto' : 'none' }}
                     >
                         <h2 className="text-lg font-semibold text-gray-800">{device.device_name}</h2>
+                        <p className="text-sm text-gray-600">{device.device_description}</p>
+                        <p className={`mt-2 text-sm ${device.device_availability > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            {device.device_availability > 0 ? `จำนวนที่ยืมได้: ${device.device_availability}` : 'ไม่สามารถยืมได้'}
+                        </p>
                     </div>
                 ))}
             </div>
 
             {/* Selected Devices Form Section */}
             {selectedDevices.length > 0 && (
-                <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-lg mt-6">
+                <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-lg mt-6 relative z-20">
                     <div className="space-y-4">
                         {selectedDevices.map(device => {
                             const deviceInfo = devices.find(d => d.device_id === device.device_id);

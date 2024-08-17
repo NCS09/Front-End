@@ -9,13 +9,15 @@ interface EditDeviceProps {
     dlimit: number;
     descriptions: string;
     Approve: boolean;
+    sserial:string;
 }
 
-const EditDevices: React.FC<EditDeviceProps> = ({ onClose, onUpdate, deviceId, Approve, dname, dlimit, descriptions }) => {
+const EditDevices: React.FC<EditDeviceProps> = ({ onClose, onUpdate, deviceId, Approve, dname, dlimit, descriptions, sserial }) => {
     const [approve, setApprove] = useState<boolean>(Approve);
     const [name, setName] = useState<string>(dname);
     const [limit, setLimit] = useState<number>(dlimit);
     const [description, setDescription] = useState<string>(descriptions);
+    const [serial, setSerial] = useState<string>(sserial);
     const [message, setMessage] = useState<string>('');
 
     const router = useRouter();
@@ -29,6 +31,7 @@ const EditDevices: React.FC<EditDeviceProps> = ({ onClose, onUpdate, deviceId, A
             name,
             limit,
             description,
+            serial,
         };
 
         try {

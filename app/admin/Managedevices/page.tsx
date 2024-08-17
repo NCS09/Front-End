@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import AddDevicePopup from '@/app/components/auth/AddDevicePopup';
 import EditDevices from '@/app/components/auth/Editdevices';
+import DeleteDevice from '@/app/components/auth/DeleteDevice';
 import { useRouter } from 'next/navigation';
 
 interface Device {
@@ -12,6 +13,7 @@ interface Device {
     device_availability: string;
     device_approve: boolean;
     device_limit: number;
+    device_serial: string;
 }
 
 const ManagePage: React.FC = () => {
@@ -19,6 +21,8 @@ const ManagePage: React.FC = () => {
     const [showEditPopup, setShowEditPopup] = useState(false);
     const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
     const [data, setDevices] = useState<Device[]>([]);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deviceToDelete, setDeviceToDelete] = useState<string | null>(null); // Device ID to delete
     const router = useRouter();
 
     useEffect(() => {
@@ -60,7 +64,21 @@ const ManagePage: React.FC = () => {
     };
 
     const handleDeviceAction = (deviceId: string) => {
-        router.push(`/admin/DeviceDetail/${deviceId}`);
+        router.push("/admin/DeviceDetail");
+    };
+
+    const handleOpenDeleteModal = (deviceId: string) => {
+        setDeviceToDelete(deviceId);
+        setShowDeleteModal(true);
+    };
+
+    const handleCloseDeleteModal = () => {
+        setDeviceToDelete(null);
+        setShowDeleteModal(false);
+    };
+
+    const handleConfirmDelete = () => {
+        fetchDevices(); // Refresh the list after deletion
     };
 
     return (
@@ -85,7 +103,8 @@ const ManagePage: React.FC = () => {
                     dname={selectedDevice.device_name}
                     dlimit={selectedDevice.device_limit}
                     Approve={selectedDevice.device_approve}
-                    descriptions={selectedDevice.device_description}/>
+                    descriptions={selectedDevice.device_description}
+                    sserial={selectedDevice.device_serial}/>
             )}
 
             <div className='mt-8'>
@@ -94,7 +113,14 @@ const ManagePage: React.FC = () => {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {data.map((device) => (
-                            <div key={device.device_id} className="flex flex-col p-4 border border-gray-300 rounded-lg shadow-sm bg-white">
+                            <div key={device.device_id} className="relative flex flex-col p-4 border border-gray-300 rounded-lg shadow-sm bg-white">
+                                <div className="absolute top-2 right-2">
+                                    <button
+                                        className="bg-red-600 text-white text-xs px-2 py-1 rounded hover:bg-red-700 transition"
+                                        onClick={() => handleOpenDeleteModal(device.device_id)}>
+                                        นำออก
+                                    </button>
+                                </div>
                                 <h2 className="text-xl font-semibold mb-2">{device.device_name}</h2>
                                 <p className="text-gray-700 mb-2"><strong>คำอธิบาย:</strong> {device.device_description}</p>
                                 <p className="text-gray-700 mb-2"><strong>จำนวนที่ยืมได้:</strong> {device.device_availability}</p>
@@ -118,6 +144,13 @@ const ManagePage: React.FC = () => {
                     </div>
                 )}
             </div>
+
+            <DeleteDevice
+                isOpen={showDeleteModal}
+                onClose={handleCloseDeleteModal}
+                onConfirm={handleConfirmDelete}
+                deviceId={deviceToDelete}
+            />
         </div>
     );
 };

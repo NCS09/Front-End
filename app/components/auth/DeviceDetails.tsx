@@ -5,6 +5,7 @@ interface Device {
     device_id: string;
     device_name: string;
     device_description: string;
+    device_serial:string;
     device_availability: string;
     device_approve: boolean;
     device_limit: string;

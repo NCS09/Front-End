@@ -1,6 +1,6 @@
 import React from 'react';
 
-interface ModalProps {
+interface confirm {
     isOpen: boolean;
     onClose: () => void;
     onConfirm: () => void;
@@ -9,7 +9,7 @@ interface ModalProps {
     cancelText: string;
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onConfirm, title, confirmText, cancelText }) => {
+const Modal: React.FC<confirm> = ({ isOpen, onClose, onConfirm, title, confirmText, cancelText }) => {
     if (!isOpen) return null;
 
     return (

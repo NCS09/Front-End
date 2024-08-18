@@ -5,25 +5,24 @@ import { useEffect, useState } from "react";
 
 interface LoanDetail {
     loan_id: string;
+    item_name: string;
     item_serial: string;
     user_email: string;
     loan_date: string;
     due_date: string | null;
     loan_status: string;
-    item_name: string;
-    user_id : number;
 }
 
 export default function LoanDetailPage() {
-    const params  = useParams<{id: string}>(); 
-    const router = useRouter(); // เพิ่ม useRouter สำหรับการนำทาง
+    const params  = useParams<{id: string , idt: string}>();
+    const router = useRouter(); 
     const [loanDetails, setLoanDetails] = useState<LoanDetail[]>([]);
     const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`http://localhost:8000/admin/loan_detail/${params.id}`, {
+                const response = await fetch(`http://localhost:8000/admin/loan_detail/${params.id}/${params.idt}`, {
                     method: 'GET',
                     credentials: "include",
                 });
@@ -40,7 +39,7 @@ export default function LoanDetailPage() {
             }
         };
         fetchData();
-    }, [params.id]);
+    }, [params.id, params.idt]);
 
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
@@ -69,7 +68,7 @@ export default function LoanDetailPage() {
                 <tbody>
                     {loanDetails.length === 0 ? (
                         <tr>
-                            <td colSpan={7} className="py-4 px-4 text-center text-gray-500">ไม่พบข้อมูลการยืม</td>
+                            <td colSpan={6} className="py-4 px-4 text-center text-gray-500">ไม่พบข้อมูลการยืม</td>
                         </tr>
                     ) : (
                         loanDetails.map((detail) => (
@@ -78,7 +77,7 @@ export default function LoanDetailPage() {
                                 <td className="py-2 px-4 border-b">{detail.item_serial}</td>
                                 <td className="py-2 px-4 border-b">{detail.user_email}</td>
                                 <td className="py-2 px-4 border-b">{detail.loan_date}</td>
-                                <td className="py-2 px-4 border-b">{detail.due_date }</td>
+                                <td className="py-2 px-4 border-b">{detail.due_date}</td>
                                 <td className="py-2 px-4 border-b">{detail.loan_status}</td>
                             </tr>
                         ))

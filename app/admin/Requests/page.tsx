@@ -11,10 +11,11 @@ interface LoanDetail {
     due_date: string;
     item_quantity: string;
     user_id: string;
+    transaction_id: string;
 }
 
 export default function LoanDetailPage() {
-    const { id } = useParams();
+    
     const router = useRouter();
     const [loanDetails, setLoanDetails] = useState<LoanDetail[]>([]);
     const [errorMessage, setErrorMessage] = useState('');
@@ -41,9 +42,9 @@ export default function LoanDetailPage() {
         fetchData();
     }, []);
 
-    const handleViewDetails = (user_id: string) => {
+    const handleViewDetails = (user_id: string, transaction_id: string) => {
         // Implement view details functionality
-        router.push(`/admin/Requests/${user_id}`);
+        router.push(`/admin/Requests/${user_id}/${transaction_id}`);
     };
 
     const handleConfirm = (loan_id: string) => {
@@ -83,7 +84,7 @@ export default function LoanDetailPage() {
                                 <td className="py-2 px-4 border-b">{detail.item_quantity}</td>
                                 <td className="py-2 px-4 border-b">
                                     <button 
-                                        onClick={() => handleViewDetails(detail.user_id)} 
+                                        onClick={() => handleViewDetails(detail.user_id, detail.transaction_id)} 
                                         className="bg-blue-500 text-white py-1 px-3 rounded mr-2"
                                     >
                                         ดูรายละเอียด

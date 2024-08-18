@@ -54,7 +54,6 @@ export default function Login() {
         useEffect(() => {
             const token = localStorage.getItem('authToken');
             if (token=="Admin") {
-                
                 router.push("/admin");
             } else if (token=="User"){
                 router.push("/user")

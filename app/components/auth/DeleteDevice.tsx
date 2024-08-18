@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Modal from '@/app/components/auth/Model'; // Import Modal
+import Modal from './Modal'; 
 
 interface DeleteDeviceProps {
     isOpen: boolean;

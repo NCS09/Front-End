@@ -5,6 +5,7 @@ import AddDevicePopup from '@/app/components/auth/AddDevicePopup';
 import EditDevices from '@/app/components/auth/Editdevices';
 import DeleteDevice from '@/app/components/auth/DeleteDevice';
 import { useRouter } from 'next/navigation';
+import { Search, Edit3, Eye, Trash2 } from 'lucide-react';
 
 interface Device {
     device_id: string;
@@ -23,6 +24,7 @@ const ManagePage: React.FC = () => {
     const [data, setDevices] = useState<Device[]>([]);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deviceToDelete, setDeviceToDelete] = useState<string | null>(null);
+    const [searchQuery, setSearchQuery] = useState('');
     const router = useRouter();
 
     useEffect(() => {
@@ -82,14 +84,32 @@ const ManagePage: React.FC = () => {
         handleCloseDeleteModal(); // Close the delete modal after confirming
     };
 
+    const filteredDevices = data.filter((device) =>
+        device.device_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        device.device_description.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
-            <h1 className="text-3xl font-bold mb-6 text-center">จัดการอุปกรณ์</h1>
-            <button 
-                className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
-                onClick={handleOpenAddPopup}>
-                เพิ่มอุปกรณ์
-            </button>
+            <h1 className="text-3xl font-bold mb-6 text-center text-purple-600">จัดการอุปกรณ์</h1>
+            <div className="flex justify-between mb-4">
+                <button 
+                    className="bg-purple-600 text-white px-6 py-2 rounded hover:bg-purple-700 transition"
+                    onClick={handleOpenAddPopup}>
+                    เพิ่มอุปกรณ์
+                </button>
+                <div className="relative">
+                    <input 
+                        type="text" 
+                        placeholder="ค้นหาอุปกรณ์..." 
+                        value={searchQuery} 
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-purple-600"
+                    />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                </div>
+            </div>
+
             {showAddPopup && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center">
                     <AddDevicePopup 
@@ -113,39 +133,54 @@ const ManagePage: React.FC = () => {
             )}
 
             <div className='mt-8'>
-                {data.length === 0 ? (
+                {filteredDevices.length === 0 ? (
                     <p className="text-center text-gray-600">ไม่มีข้อมูล</p>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {data.map((device) => (
-                            <div key={device.device_id} className="relative flex flex-col p-4 border border-gray-300 rounded-lg shadow-sm bg-white">
-                                <div className="absolute top-2 right-2">
-                                    <button
-                                        className="bg-red-600 text-white text-xs px-2 py-1 rounded hover:bg-red-700 transition"
-                                        onClick={() => handleOpenDeleteModal(device.device_id)}>
-                                        นำออก
-                                    </button>
-                                </div>
-                                <h2 className="text-xl font-semibold mb-2">{device.device_name}</h2>
-                                <p className="text-gray-700 mb-2"><strong>คำอธิบาย:</strong> {device.device_description}</p>
-                                <p className="text-gray-700 mb-2"><strong>จำนวนที่ยืมได้:</strong> {device.device_availability}</p>
-                                <p className="text-gray-700 mb-2"><strong>สถานะอุปกรณ์:</strong> <span className={device.device_approve ? 'text-green-600' : 'text-red-600'}>{device.device_approve ? 'พร้อมให้ยืม' : 'ไม่พร้อมให้ยืม'}</span></p>
-                                <p className="text-gray-700 mb-4"><strong>จำนวนอุปกรณ์:</strong> {device.device_limit}</p>
-            
-                                <div className="flex justify-between">
-                                    <button 
-                                        className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition"
-                                        onClick={() => handleOpenEditPopup(device)}>
-                                        แก้ไข
-                                    </button>
-                                    <button
-                                        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
-                                        onClick={() => handleDeviceAction(device.device_id)}>
-                                        ดูอุปกรณ์
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full bg-white border border-gray-300">
+                            <thead>
+                                <tr className="bg-gray-200">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">ชื่ออุปกรณ์</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">คำอธิบาย</th>
+                                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">จำนวนที่ยืมได้</th>
+                                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">จำนวนอุปกรณ์</th>
+                                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">สถานะอุปกรณ์</th>
+                                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">การจัดการ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredDevices.map((device) => (
+                                    <tr key={device.device_id} className="border-t hover:bg-gray-100 transition">
+                                        <td className="px-6 py-4 text-sm font-medium text-gray-900">{device.device_name}</td>
+                                        <td className="px-6 py-4 text-sm text-gray-700">{device.device_description}</td>
+                                        <td className="px-6 py-4 text-sm text-gray-700 text-center">{device.device_availability}</td>
+                                        <td className="px-6 py-4 text-sm text-gray-700 text-center">{device.device_limit}</td>
+                                        <td className="px-6 py-4 text-sm text-gray-700 text-center">
+                                            <span className={device.device_approve ? 'text-green-600' : 'text-red-600'}>
+                                                {device.device_approve ? 'พร้อมให้ยืม' : 'ไม่พร้อมให้ยืม'}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-gray-700 flex space-x-2 justify-center">
+                                            <button 
+                                                className="bg-yellow-500 text-white p-2 rounded hover:bg-yellow-600 transition"
+                                                onClick={() => handleOpenEditPopup(device)}>
+                                                <Edit3 size={16} />
+                                            </button>
+                                            <button
+                                                className="bg-green-600 text-white p-2 rounded hover:bg-green-700 transition"
+                                                onClick={() => handleDeviceAction(device.device_id)}>
+                                                <Eye size={16} />
+                                            </button>
+                                            <button
+                                                className="bg-red-600 text-white p-2 rounded hover:bg-red-700 transition"
+                                                onClick={() => handleOpenDeleteModal(device.device_id)}>
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 )}
             </div>

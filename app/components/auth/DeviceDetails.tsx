@@ -32,14 +32,14 @@ const DeviceDetails: React.FC = () => {
                 });
 
                 if (!response.ok) {
-                    throw new Error('เครือข่ายมีปัญหา');
+                    throw new Error('Network response was not ok');
                 }
 
                 const data = await response.json();
                 setDeviceItems(data.items || []);
             } catch (error) {
-                setError('เกิดข้อผิดพลาดในการดึงรายการอุปกรณ์');
-                console.error('ข้อผิดพลาดในการดึงรายการอุปกรณ์:', error);
+                setError('Error fetching device items');
+                console.error('Error fetching device items:', error);
             } finally {
                 setLoading(false);
             }
@@ -50,28 +50,28 @@ const DeviceDetails: React.FC = () => {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="loader">กำลังโหลด...</div>
+            <div className="flex items-center justify-center min-h-screen bg-gray-100">
+                <div className="loader text-purple-600">กำลังโหลด...</div>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
+            <div className="flex items-center justify-center min-h-screen bg-gray-100">
                 <div className="text-red-600">{error}</div>
             </div>
         );
     }
 
     return (
-        <div className="p-8 bg-gray-50 min-h-screen flex flex-col">
+        <div className="p-8 bg-gray-100 min-h-screen flex flex-col">
             <div className="max-w-6xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
                 <div className="p-6">
                     {/* ปุ่มกลับไปยังหน้าจัดการอุปกรณ์ */}
                     <div className="flex justify-center mb-6">
                         <button
-                            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+                            className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition"
                             onClick={() => router.push('/admin/Managedevices')}>
                             กลับไปยังหน้าจัดการอุปกรณ์
                         </button>
@@ -82,14 +82,14 @@ const DeviceDetails: React.FC = () => {
                         <table className="w-full min-w-[800px] divide-y divide-gray-200">
                             <thead className="bg-gray-100">
                                 <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NO.</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Serial</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">สถานะ</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">NO.</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Serial</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">สถานะ</th>
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
                                 {deviceItems.map((item, index) => (
-                                    <tr key={item.item_id}>
+                                    <tr key={item.item_id} className="hover:bg-gray-50 transition">
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{index + 1}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.item_serial}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.item_availability}</td>

@@ -10,7 +10,8 @@ interface LoanDetail {
     user_email: string;
     loan_date: string;
     due_date: string | null;
-    loan_status: string;
+    item_availability_status: string;
+
 }
 
 export default function LoanDetailPage() {
@@ -78,7 +79,7 @@ export default function LoanDetailPage() {
                                 <td className="py-2 px-4 border-b">{detail.user_email}</td>
                                 <td className="py-2 px-4 border-b">{detail.loan_date}</td>
                                 <td className="py-2 px-4 border-b">{detail.due_date}</td>
-                                <td className="py-2 px-4 border-b">{detail.loan_status}</td>
+                                <td className="py-2 px-4 border-b">{detail.item_availability_status}</td>
                             </tr>
                         ))
                     )}

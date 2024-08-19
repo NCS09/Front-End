@@ -27,7 +27,7 @@ export default function LoanDetailPage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch("http://localhost:8000/admin/loan_detail", {
+                const response = await fetch("http://localhost:8000/admin/loan_detail/pending", {
                     method: 'GET',
                     credentials: "include",
                 });
@@ -88,6 +88,11 @@ export default function LoanDetailPage() {
                     <ul className="flex space-x-4 border-b-2 border-gray-300">
                         <li>
                             <Link href={{ pathname: "/admin/Requests" }} className="inline-block py-2 px-4 text-blue-600 hover:text-blue-800 border-b-2 border-transparent hover:border-blue-600 transition">
+                                ทั้งหมด
+                            </Link>
+                        </li>
+                        <li>
+                            <Link href={{ pathname: "/admin/Requests/pending" }} className="inline-block py-2 px-4 text-blue-600 hover:text-blue-800 border-b-2 border-transparent hover:border-blue-600 transition">
                                 รอยืนยัน
                             </Link>
                         </li>
@@ -119,7 +124,7 @@ export default function LoanDetailPage() {
                                     <th className="py-3 px-4 border-b text-left text-gray-600">กำหนดคืน</th>
                                     <th className="py-3 px-4 border-b text-left text-gray-600">จำนวน</th>
                                     <th className="py-3 px-4 border-b text-left text-gray-600">สถานะ</th>
-                                    <th className="py-3 px-4 border-b text-left text-gray-600">การจัดการ</th>
+                                    <th className="py-3 px-4 border-b text-left text-gray-600"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -137,7 +142,7 @@ export default function LoanDetailPage() {
                                             <td className="py-3 px-4 border-b text-center">{detail.item_quantity}</td>
                                             <td className="py-3 px-4 border-b text-center">
                                                 <span className={`px-2 py-1 rounded-full text-xs ${
-                                                    detail.loan_status === 'confirmed' ? 'bg-green-100 text-green-800' :
+                                                    detail.loan_status === 'approve' ? 'bg-green-100 text-green-800' :
                                                     detail.loan_status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
                                                     'bg-red-100 text-red-800'
                                                 }`}>
@@ -152,7 +157,7 @@ export default function LoanDetailPage() {
                                                     <Eye className="w-5 h-5" />
                                                 </button>
                                                 <button 
-                                                    onClick={() => handleConfirm(detail.transaction_id, 'confirmed')}
+                                                    onClick={() => handleConfirm(detail.transaction_id, 'approve')}
                                                     className={`text-green-500 hover:text-green-700 ${confirmingTransactionId === detail.transaction_id ? 'opacity-50 cursor-not-allowed' : ''}`}
                                                     disabled={confirmingTransactionId === detail.transaction_id}
                                                 >

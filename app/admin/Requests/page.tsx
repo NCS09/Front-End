@@ -82,12 +82,17 @@ export default function LoanDetailPage() {
 
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
-            <h1 className="text-3xl font-bold mb-6 text-center">คำร้องขอยืม</h1>
+            <h1 className="text-3xl font-bold mb-6 text-center">คำขอทั้งหมด</h1>
             <div className="mb-6">
                 <nav>
                     <ul className="flex space-x-4 border-b-2 border-gray-300">
                         <li>
                             <Link href={{ pathname: "/admin/Requests" }} className="inline-block py-2 px-4 text-blue-600 hover:text-blue-800 border-b-2 border-transparent hover:border-blue-600 transition">
+                                ทั้งหมด
+                            </Link>
+                        </li>
+                        <li>
+                            <Link href={{ pathname: "/admin/Requests/pending" }} className="inline-block py-2 px-4 text-blue-600 hover:text-blue-800 border-b-2 border-transparent hover:border-blue-600 transition">
                                 รอยืนยัน
                             </Link>
                         </li>
@@ -119,7 +124,7 @@ export default function LoanDetailPage() {
                                     <th className="py-3 px-4 border-b text-left text-gray-600">กำหนดคืน</th>
                                     <th className="py-3 px-4 border-b text-left text-gray-600">จำนวน</th>
                                     <th className="py-3 px-4 border-b text-left text-gray-600">สถานะ</th>
-                                    <th className="py-3 px-4 border-b text-left text-gray-600">การจัดการ</th>
+                                    <th className="py-3 px-4 border-b text-left text-gray-600"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -137,8 +142,8 @@ export default function LoanDetailPage() {
                                             <td className="py-3 px-4 border-b text-center">{detail.item_quantity}</td>
                                             <td className="py-3 px-4 border-b text-center">
                                                 <span className={`px-2 py-1 rounded-full text-xs ${
-                                                    detail.loan_status === 'confirmed' ? 'bg-green-100 text-green-800' :
-                                                    detail.loan_status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                                                    detail.loan_status == 'approve' ? 'bg-green-100 text-green-800' :
+                                                    detail.loan_status == 'pending' ? 'bg-yellow-100 text-yellow-800' :
                                                     'bg-red-100 text-red-800'
                                                 }`}>
                                                     {detail.loan_status}
@@ -150,20 +155,6 @@ export default function LoanDetailPage() {
                                                     className="text-blue-500 hover:text-blue-700"
                                                 >
                                                     <Eye className="w-5 h-5" />
-                                                </button>
-                                                <button 
-                                                    onClick={() => handleConfirm(detail.transaction_id, 'confirmed')}
-                                                    className={`text-green-500 hover:text-green-700 ${confirmingTransactionId === detail.transaction_id ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                                    disabled={confirmingTransactionId === detail.transaction_id}
-                                                >
-                                                    <Check className="w-5 h-5" />
-                                                </button>
-                                                <button 
-                                                    onClick={() => handleConfirm(detail.transaction_id, 'deny')}
-                                                    className={`text-red-500 hover:text-red-700 ${confirmingTransactionId === detail.transaction_id ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                                    disabled={confirmingTransactionId === detail.transaction_id}
-                                                >
-                                                    <X className="w-5 h-5" />
                                                 </button>
                                             </td>
                                         </tr>

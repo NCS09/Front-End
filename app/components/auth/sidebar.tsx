@@ -37,24 +37,7 @@ export default function Sidebarpage() {
                             หน้าหลัก
                         </Link>
                     </li>
-                    <li>
-                        <Link 
-                            href="/admin/AddBorrow" 
-                            className={`block text-left px-4 py-2 rounded-md ${active === 'Borroow' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
-                            onClick={() => handleClick('Borroow')}
-                        >
-                            ยืมอุปกรณ์
-                        </Link>
-                    </li>
-                    <li>
-                        <Link 
-                            href="/admin/Requests" 
-                            className={`block text-left px-4 py-2 rounded-md ${active === 'Requests' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
-                            onClick={() => handleClick('Requests')}
-                        >
-                            คำร้องขอ
-                        </Link>
-                    </li>
+
                     <li>
                         <Link 
                             href="/admin/Managedevices" 
@@ -64,6 +47,37 @@ export default function Sidebarpage() {
                             จัดการอุปกรณ์
                         </Link>
                     </li>
+
+                    <li>
+                        <Link 
+                            href="/admin/Requests" 
+                            className={`block text-left px-4 py-2 rounded-md ${active === 'Requests' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
+                            onClick={() => handleClick('Requests')}
+                        >
+                            คำร้องขอ
+                        </Link>
+                    </li>
+
+                    <li>
+                        <Link 
+                            href="/admin/Return" 
+                            className={`block text-left px-4 py-2 rounded-md ${active === 'Return' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
+                            onClick={() => handleClick('Return')}
+                        >
+                            ยืนยันการคืน
+                        </Link>
+                    </li>
+
+                    <li>
+                        <Link 
+                            href="/admin/AddBorrow" 
+                            className={`block text-left px-4 py-2 rounded-md ${active === 'Borroow' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
+                            onClick={() => handleClick('Borroow')}
+                        >
+                            ยืมอุปกรณ์
+                        </Link>
+                    </li>
+
                     <li>
                         <Link 
                             href="/admin/Reports" 

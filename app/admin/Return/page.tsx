@@ -1,8 +1,7 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
-import Link from 'next/link';
+import { useRouter } from "next/navigation"
 import { Eye, Check, X } from 'lucide-react'; 
 
 interface LoanDetail {
@@ -17,17 +16,22 @@ interface LoanDetail {
     loan_status: string;
 }
 
-export default function LoanDetailPage() {
+interface items {
+    item_id: string;
+    return_status: string;
+}
+
+export default function Returnpage() {
     const router = useRouter();
     const [loanDetails, setLoanDetails] = useState<LoanDetail[]>([]);
+    const [items, setItems] = useState<items[]>([]);
     const [errorMessage, setErrorMessage] = useState('');
     const [isLoading, setIsLoading] = useState(true);
-    const [confirmingTransactionId, setConfirmingTransactionId] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch("http://localhost:8000/admin/loan_detail", {
+                const response = await fetch("http://localhost:8000/admin/loan_detail/approve", {
                     method: 'GET',
                     credentials: "include",
                 });
@@ -52,63 +56,37 @@ export default function LoanDetailPage() {
         router.push(`/admin/Requests/${user_id}/${transaction_id}`);
     };
 
-    const handleConfirm = async (transaction_id: string, status: string) => {
-        setConfirmingTransactionId(transaction_id);
+   const handleConfirmReturn = async (items: { item_id: string, return_status: string }[], devicePhoto: File | null) => {
+    const formData = new FormData();
+    formData.append('items', JSON.stringify(items));
+    if (devicePhoto) {
+        formData.append('device_photo', devicePhoto);
+    }
 
-        try {
-            const response = await fetch("http://localhost:8000/admin/loan_detail/update", {
-                method: 'PUT',
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ transaction_id, loan_status: status }),
-                credentials: "include",
-            });
+    try {
+        const response = await fetch("http://localhost:8000/return", {
+            method: 'POST',
+            credentials: "include",
+            body: formData,
+        });
 
-            if (!response.ok) {
-                throw new Error('ไม่สามารถยืนยันการยืมได้');
-            }
-
-            console.log('ยืนยันการยืมสำเร็จ');
-            const updatedDetails = loanDetails.filter(detail => detail.transaction_id !== transaction_id);
-            setLoanDetails(updatedDetails);
-        } catch (error) {
-            console.error("เกิดข้อผิดพลาดในการยืนยัน:", error);
-            setErrorMessage('ไม่สามารถยืนยันการยืมได้');
-        } finally {
-            setConfirmingTransactionId(null);
+        if (!response.ok) {
+            throw new Error('ไม่สามารถยืนยันการคืนได้');
         }
-    };
+
+        const result = await response.json();
+        alert(result.message);
+        router.push('/success');  // นำผู้ใช้ไปที่หน้าที่แสดงผลสำเร็จ
+    } catch (error) {
+        console.error('เกิดข้อผิดพลาด:', error);
+        setErrorMessage('เกิดข้อผิดพลาดในการคืนอุปกรณ์');
+    }
+};
+
+
 
     return (
-        <div className="p-6 bg-gray-100 min-h-screen">
-            <h1 className="text-3xl font-bold mb-6 text-center">คำขอทั้งหมด</h1>
-            <div className="mb-6">
-                <nav>
-                    <ul className="flex space-x-4 border-b-2 border-gray-300">
-                        <li>
-                            <Link href={{ pathname: "/admin/Requests" }} className="inline-block py-2 px-4 text-blue-600 hover:text-blue-800 border-b-2 border-transparent hover:border-blue-600 transition">
-                                ทั้งหมด
-                            </Link>
-                        </li>
-                        <li>
-                            <Link href={{ pathname: "/admin/Requests/pending" }} className="inline-block py-2 px-4 text-blue-600 hover:text-blue-800 border-b-2 border-transparent hover:border-blue-600 transition">
-                                รอยืนยัน
-                            </Link>
-                        </li>
-                        <li>
-                            <Link href={{ pathname: "/admin/Requests/Confirm" }} className="inline-block py-2 px-4 text-blue-600 hover:text-blue-800 border-b-2 border-transparent hover:border-blue-600 transition">
-                                ยืนยันแล้ว
-                            </Link>
-                        </li>
-                        <li>
-                            <Link href={{ pathname: "/admin/Requests/deny" }} className="inline-block py-2 px-4 text-blue-600 hover:text-blue-800 border-b-2 border-transparent hover:border-blue-600 transition">
-                                ปฎิเสธ
-                            </Link>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
+        <>
             {isLoading ? (
                 <p className="text-center">กำลังโหลดข้อมูล...</p>
             ) : (
@@ -142,8 +120,8 @@ export default function LoanDetailPage() {
                                             <td className="py-3 px-4 border-b text-center">{detail.item_quantity}</td>
                                             <td className="py-3 px-4 border-b text-center">
                                                 <span className={`px-2 py-1 rounded-full text-xs ${
-                                                    detail.loan_status == 'approve' ? 'bg-green-100 text-green-800' :
-                                                    detail.loan_status == 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                                                    detail.loan_status === 'approve' ? 'bg-green-100 text-green-800' :
+                                                    detail.loan_status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
                                                     'bg-red-100 text-red-800'
                                                 }`}>
                                                     {detail.loan_status}
@@ -165,6 +143,6 @@ export default function LoanDetailPage() {
                     </div>
                 </>
             )}
-        </div>
+        </>
     );
 }

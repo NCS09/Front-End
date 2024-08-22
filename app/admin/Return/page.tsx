@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, Check } from 'lucide-react';
 
+
+
 interface LoanDetail {
     loan_id: string;
     user_firstname: string;
@@ -44,7 +46,7 @@ export default function Returnpage() {
     const [showModal, setShowModal] = useState(false);
     const [selectedLoan, setSelectedLoan] = useState<LoanDetail | null>(null);
 
-    useEffect(() => {
+    
         const fetchData = async () => {
             try {
                 const response = await fetch("http://localhost:8000/admin/loan_detail/approve", {
@@ -60,11 +62,13 @@ export default function Returnpage() {
                 setLoanDetails(result);
             } catch (error) {
                 console.error("เกิดข้อผิดพลาดในการดึงข้อมูล:", error);
-                setErrorMessage('ไม่สามารถดึงข้อมูลการยืมได้');
+                // setErrorMessage('ไม่สามารถดึงข้อมูลการยืมได้');
             } finally {
                 setIsLoading(false);
             }
         };
+
+    useEffect(() => {
         fetchData();
     }, []);
 
@@ -115,16 +119,20 @@ export default function Returnpage() {
 
             if (!response.ok) {
                 throw new Error('ไม่สามารถยืนยันการคืนได้');
+                
             }
 
             const result = await response.json();
             console.log(result.message);
             setShowModal(false);
+            fetchData();
         } catch (error) {
             console.error('เกิดข้อผิดพลาดในการยืนยันการคืน:', error);
             setErrorMessage('ไม่สามารถยืนยันการคืนได้');
         }
     };
+
+
 
     const handleChangeStatus = (index: number, status: string) => {
         const updatedRequests = [...requests];

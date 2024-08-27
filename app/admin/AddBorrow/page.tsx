@@ -22,18 +22,22 @@ const BorrowDevicePage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
 
-    useEffect(() => {
-        fetch("http://localhost:8000/devices", {
-            credentials: "include"
-        })
-            .then(response => response.json())
-            .then(data => {
-                setDevices(data);
+    const fetchData = async() => {
+        try {
+            const res = await fetch("http://localhost:8000/devices", {
+                credentials: "include"
             })
-            .catch(err => {
-                console.error('Error fetching devices:', err);
-            });
+            const data = await res.json()
+            setDevices(data);
+        } catch (error) {
+            console.error('Error fetching devices:', error);
+        }
+    };
+    
+    useEffect(() => {
+        fetchData();
     }, []);
+    
 
     const handleDeviceSelect = (device: Device) => {
         if (!selectedDevices.find(d => d.device_id === device.device_id)) {
@@ -53,7 +57,7 @@ const BorrowDevicePage: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
+    
         if (selectedDevices.length === 0) {
             setError('Please select at least one device.');
             return;
@@ -62,7 +66,7 @@ const BorrowDevicePage: React.FC = () => {
             setError('Quantity must be greater than zero.');
             return;
         }
-
+    
         try {
             const response = await fetch("http://localhost:8000/loan", {
                 method: 'POST',
@@ -75,22 +79,26 @@ const BorrowDevicePage: React.FC = () => {
                 }),
                 credentials: "include",
             });
-
             const result = await response.json();
-
             if (response.ok) {
                 setSuccess(result.message);
                 setError(null);
                 setSelectedDevices([]);
+    
+                // เรียก fetchData เพื่อรีเฟรชข้อมูลอุปกรณ์
+                window.location.reload()
+    
             } else {
                 setError(result.message || 'Error processing loan request.');
                 setSuccess(null);
             }
+            
         } catch (err) {
             setError('Error processing loan request.');
             setSuccess(null);
         }
     };
+    
 
     const filteredDevices = devices.filter(device =>
         device.device_name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -180,7 +188,7 @@ const BorrowDevicePage: React.FC = () => {
                         type="submit"
                         className="bg-purple-500 text-white px-6 py-3 rounded-md font-semibold hover:bg-purple-600"
                     >
-                        Submit Request
+                        ส่งคำร้อง
                     </button>
                 </form>
             )}

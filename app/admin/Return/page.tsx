@@ -154,6 +154,10 @@ export default function ReturnPage() {
             setFileName(null);
         }
     };
+    const handleCloseModal = () => {
+        setShowModal(false);
+        fetchData(); // ทำการ fetch ข้อมูลใหม่หลังจากปิด Modal
+    };
 
     // สร้าง URL สำหรับ QR Code
     const generateQRCodeURL = () => {
@@ -164,11 +168,9 @@ export default function ReturnPage() {
         }));
         const itemsString = encodeURIComponent(JSON.stringify(items));
         return `https://b701-2403-6200-8853-18fa-784b-458a-2f20-7664.ngrok-free.app/return-data?data=${itemsString}`;
+        
     };
-    
-    useEffect(() => {
-        fetchData();
-    }, []);
+
 
     return (
         <>
@@ -304,7 +306,7 @@ export default function ReturnPage() {
                                         ยืนยันการคืน
                                     </button>
                                     <button 
-                                        onClick={() => setShowModal(false)} 
+                                        onClick={handleCloseModal}  
                                         className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition-colors"
                                     >
                                         ปิด

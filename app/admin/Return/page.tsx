@@ -1,8 +1,9 @@
-'use client'
+'use client';
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, Check } from 'lucide-react';
+import QRCode from 'qrcode.react'; // หรือ import { QRCode } from 'react-qr-code';
 
 interface LoanDetail {
     loan_id: string;
@@ -43,8 +44,9 @@ export default function ReturnPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [selectedLoan, setSelectedLoan] = useState<LoanDetail | null>(null);
-    const [selectedFile, setSelectedFile] = useState<File | null>(null); // เก็บไฟล์ที่อัปโหลด
-    const [fileName, setFileName] = useState<string | null>(null); // เก็บชื่อไฟล์
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [fileName, setFileName] = useState<string | null>(null);
+    const [showQRCode, setShowQRCode] = useState(false);
 
     const fetchData = async () => {
         try {
@@ -119,7 +121,7 @@ export default function ReturnPage() {
             const response = await fetch('http://localhost:8000/return', {
                 method: 'POST',
                 credentials: 'include',
-                body: formData, // ส่ง formData แทน JSON ธรรมดา
+                body: formData,
             });
 
             if (!response.ok) {
@@ -152,6 +154,21 @@ export default function ReturnPage() {
             setFileName(null);
         }
     };
+
+    // สร้าง URL สำหรับ QR Code
+    const generateQRCodeURL = () => {
+        const items = requests.map(request => ({
+            item_id: request.item_id,
+            return_status: request.item_availability_status,
+            user_id: request.user_id,
+        }));
+        const itemsString = encodeURIComponent(JSON.stringify(items));
+        return `https://b701-2403-6200-8853-18fa-784b-458a-2f20-7664.ngrok-free.app/return-data?data=${itemsString}`;
+    };
+    
+    useEffect(() => {
+        fetchData();
+    }, []);
 
     return (
         <>
@@ -204,7 +221,7 @@ export default function ReturnPage() {
                                                 </button>
                                                 <button 
                                                     onClick={() => handleOpenModal(detail, detail.user_id, detail.transaction_id)} 
-                                                    className="flex items-center justify-center p-2 rounded-full bg-green-500 text-white hover:bg-green-600 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-400"
+                                                    className="flex items-center justify-center p-2 rounded-full bg-green-500 text-white hover:bg-green-600 transition-colors"
                                                 >
                                                     <Check className="w-5 h-5" />
                                                 </button>
@@ -216,61 +233,89 @@ export default function ReturnPage() {
                         </table>
                     </div>
                     
-                    {showModal && (
-                        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center">
-                            <div className="bg-white p-6 rounded-md shadow-lg">
-                                <h2 className="text-lg font-bold mb-4">รายละเอียดการคืนอุปกรณ์</h2>
-                                {requests.length === 0 ? (
-                                    <p className="text-gray-500">ไม่มีอุปกรณ์ในรายการ</p>
-                                ) : (
-                                    requests.map((request, index) => (
-                                        <div key={index} className="flex justify-between items-center mb-4 p-4 border border-gray-200 rounded-md">
-                                            <div>
-                                                <p className="text-gray-800">{request.item_name}</p>
-                                                <p className="text-gray-600">หมายเลขอุปกรณ์: {request.item_serial}</p>
-                                            </div>
-                                            <div>
-                                                <select
-                                                    value={request.item_availability_status}
-                                                    onChange={(e) => handleChangeStatus(index, e.target.value)}
-                                                    className="border border-gray-300 rounded-md px-3 py-2"
-                                                >
-                                                    <option value="returned">คืนแล้ว</option>
-                                                    <option value="lost">สูญหาย</option>
-                                                    <option value="damaged">เสียหาย</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    ))
+                    {showModal && selectedLoan && (
+                        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+                            <div className="bg-white p-6 rounded-lg w-full max-w-lg">
+                                <h2 className="text-xl font-semibold mb-4">รายละเอียดการคืนอุปกรณ์</h2>
+                                {errorMessage && <p className="text-red-600 mb-4">{errorMessage}</p>}
+                                <table className="min-w-full bg-white border border-gray-300 mb-4">
+                                    <thead className="bg-gray-200">
+                                        <tr>
+                                            <th className="py-3 px-4 border-b text-left text-gray-600">ชื่ออุปกรณ์</th>
+                                            <th className="py-3 px-4 border-b text-left text-gray-600">หมายเลขซีเรียล</th>
+                                            <th className="py-3 px-4 border-b text-left text-gray-600">สถานะ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {isLoading ? (
+                                            <tr>
+                                                <td colSpan={3} className="py-4 px-4 text-center text-gray-500">กำลังโหลดข้อมูล...</td>
+                                            </tr>
+                                        ) : requests.length === 0 ? (
+                                            <tr>
+                                                <td colSpan={3} className="py-4 px-4 text-center text-gray-500">ไม่พบข้อมูลอุปกรณ์</td>
+                                            </tr>
+                                        ) : (
+                                            requests.map((request, index) => (
+                                                <tr key={request.item_id}>
+                                                    <td className="py-3 px-4 border-b">{request.item_name}</td>
+                                                    <td className="py-3 px-4 border-b">{request.item_serial}</td>
+                                                    <td className="py-3 px-4 border-b">
+                                                        <select
+                                                            value={request.item_availability_status}
+                                                            onChange={(e) => handleChangeStatus(index, e.target.value)}
+                                                            className="form-select"
+                                                        >
+                                                            <option value="returned">Returned</option>
+                                                            <option value="lost">Lost</option>
+                                                            <option value="damaged">Damaged</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
+
+                                <div className="mb-4">
+                                    <label className="block text-sm font-medium text-gray-700">เลือกรูปภาพ</label>
+                                    <input 
+                                        type="file" 
+                                        accept="image/*" 
+                                        onChange={handleFileChange} 
+                                        className="mt-1 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    />
+                                    {fileName && <p className="mt-2 text-sm text-gray-500">เลือกไฟล์: {fileName}</p>}
+                                </div>
+
+                                {/* Show QR Code */}
+                                {showQRCode && (
+                                    <div className="mb-4 text-center">
+                                        <QRCode value={generateQRCodeURL()} />
+                                        <p className="mt-2 text-sm text-gray-500">สแกน QR Code เพื่อยืนยันการคืน</p>
+                                    </div>
                                 )}
 
-                                <div className="mt-4">
-                                    <input
-                                        type="file"
-                                        onChange={handleFileChange}
-                                        className="mb-4"
-                                        accept="image/*"
-                                    />
-                                    {fileName && (
-                                        <div className="mb-4">
-                                            <p className="text-gray-800">ไฟล์ที่เลือก: {fileName}</p>
-                                        </div>
-                                    )}
-                                    <div className="flex justify-end">
-                                        <button 
-                                            onClick={handleConfirmReturn} 
-                                            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors duration-300"
-                                        >
-                                            ยืนยันการคืน
-                                        </button>
-                                        <button 
-                                            onClick={() => setShowModal(false)} 
-                                            className="ml-2 bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors duration-300"
-                                        >
-                                            ปิด
-                                        </button>
-                                    </div>
+                                <div className="flex justify-between">
+                                    <button 
+                                        onClick={handleConfirmReturn} 
+                                        className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
+                                    >
+                                        ยืนยันการคืน
+                                    </button>
+                                    <button 
+                                        onClick={() => setShowModal(false)} 
+                                        className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition-colors"
+                                    >
+                                        ปิด
+                                    </button>
                                 </div>
+                                <button 
+                                    onClick={() => setShowQRCode(!showQRCode)} 
+                                    className="mt-4 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors"
+                                >
+                                    {showQRCode ? 'ซ่อน QR Code' : 'แสดง QR Code'}
+                                </button>
                             </div>
                         </div>
                     )}

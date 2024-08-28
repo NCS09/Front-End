@@ -16,7 +16,7 @@ interface Device {
     device_limit: number;
     device_serial: string;
 }
-
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 const ManagePage: React.FC = () => {
     const [showAddPopup, setShowAddPopup] = useState(false);
     const [showEditPopup, setShowEditPopup] = useState(false);
@@ -33,7 +33,7 @@ const ManagePage: React.FC = () => {
 
     const fetchDevices = async () => {
         try {
-            const response = await fetch("http://localhost:8000/devices", {
+            const response = await fetch(`${apiUrl}/devices`, {
                 method: 'GET',
                 headers: {
                     "Content-Type": "application/json"

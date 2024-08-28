@@ -5,6 +5,7 @@ import { useState, FormEvent, useEffect } from 'react';
 import Navbar from './navbars';
 
 export default function Login() {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [message, setMessage] = useState<string>('');
@@ -17,7 +18,7 @@ export default function Login() {
         const formData = { email, password };
 
         try {
-            const response = await fetch("http://localhost:8000/login", {
+            const response = await fetch(`${apiUrl}/login`, {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json"

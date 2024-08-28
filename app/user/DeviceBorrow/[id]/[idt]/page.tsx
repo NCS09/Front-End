@@ -21,6 +21,7 @@ interface ApiResponse {
 }
 
 export default function DeviceRequests() {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const params = useParams<{id: string, idt: string}>();
     const router = useRouter();
     const [loanRequests, setLoanRequests] = useState<LoanRequest[]>([]);
@@ -28,7 +29,7 @@ export default function DeviceRequests() {
 
     const fetchData = async () => {
         try {
-            const response = await fetch(`http://localhost:8000/user/loan_detail/${params.id}/${params.idt}`, {
+            const response = await fetch(`${apiUrl}/user/loan_detail/${params.id}/${params.idt}`, {
                 method: 'GET',
                 credentials: "include",
             });

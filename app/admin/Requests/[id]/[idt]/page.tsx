@@ -13,7 +13,7 @@ interface LoanDetail {
     item_availability_status: string;
 
 }
-
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 export default function LoanDetailPage() {
     const params  = useParams<{id: string , idt: string}>();
     const router = useRouter(); 
@@ -23,7 +23,7 @@ export default function LoanDetailPage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`http://localhost:8000/admin/loan_detail/${params.id}/${params.idt}`, {
+                const response = await fetch(`${apiUrl}/admin/loan_detail/${params.id}/${params.idt}`, {
                     method: 'GET',
                     credentials: "include",
                 });

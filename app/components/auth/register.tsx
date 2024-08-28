@@ -6,6 +6,7 @@ import SuccessModal from './Success';
 import Navbar from './Navbar';
 
 export default function Register() {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const [firstname, setFirstname] = useState<string>('');
     const [lastname, setLastname] = useState<string>('');
     const [email, setEmail] = useState<string>('');
@@ -21,7 +22,7 @@ export default function Register() {
         const formData = { email, password, firstname, lastname };
 
         try {
-            const response = await fetch("http://localhost:8000/register", {
+            const response = await fetch(`${apiUrl}/register`, {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json"

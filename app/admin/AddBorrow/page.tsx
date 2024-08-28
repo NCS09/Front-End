@@ -13,6 +13,7 @@ interface SelectedDevice {
     device_id: number;
     quantity: number;
 }
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 const BorrowDevicePage: React.FC = () => {
     const [devices, setDevices] = useState<Device[]>([]);
@@ -24,7 +25,7 @@ const BorrowDevicePage: React.FC = () => {
 
     const fetchData = async() => {
         try {
-            const res = await fetch("http://localhost:8000/devices", {
+            const res = await fetch(`${apiUrl}/devices`, {
                 credentials: "include"
             })
             const data = await res.json()
@@ -68,7 +69,7 @@ const BorrowDevicePage: React.FC = () => {
         }
     
         try {
-            const response = await fetch("http://localhost:8000/loan", {
+            const response = await fetch(`${apiUrl}/loan`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

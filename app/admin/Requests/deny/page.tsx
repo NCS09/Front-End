@@ -17,6 +17,7 @@ interface LoanDetail {
     loan_status: string;
 }
 
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 export default function LoanDetailPage() {
     const router = useRouter();
     const [loanDetails, setLoanDetails] = useState<LoanDetail[]>([]);
@@ -27,7 +28,7 @@ export default function LoanDetailPage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch("http://localhost:8000/admin/loan_detail/deny", {
+                const response = await fetch(`${apiUrl}/admin/loan_detail/deny`, {
                     method: 'GET',
                     credentials: "include",
                 });
@@ -56,7 +57,7 @@ export default function LoanDetailPage() {
         setConfirmingTransactionId(transaction_id);
 
         try {
-            const response = await fetch("http://localhost:8000/admin/loan_detail/update", {
+            const response = await fetch(`${apiUrl}/admin/loan_detail/update`, {
                 method: 'PUT',
                 headers: {
                     "Content-Type": "application/json"

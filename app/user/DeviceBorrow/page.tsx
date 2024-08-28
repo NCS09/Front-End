@@ -5,13 +5,14 @@ import { useRouter } from 'next/navigation';
 import { Eye, X } from 'lucide-react';
 
 export default function DeviceRequests() {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const [loanRequests, setLoanRequests] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
     const router = useRouter();
 
     const fetchData = async () => {
         try {
-            const response = await fetch("http://localhost:8000/user/loan_detail", {
+            const response = await fetch(`${apiUrl}/user/loan_detail`, {
                 method: 'GET',
                 credentials: "include",
                 headers: {

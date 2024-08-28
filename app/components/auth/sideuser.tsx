@@ -39,11 +39,11 @@ export default function Sidebarpage() {
                     </li>
                     <li>
                         <Link 
-                            href="/user/Devices" 
+                            href="/user/DeviceBorrow" 
                             className={`block text-left px-4 py-2 rounded-md ${active === 'Devices' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
                             onClick={() => handleClick('Devices')}
                         >
-                            อุปกรณ์ของฉัน
+                            คำร้องขอของฉัน
                         </Link>
                     </li>
                     <li>

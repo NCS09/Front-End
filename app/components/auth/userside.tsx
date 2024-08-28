@@ -57,7 +57,7 @@ export default function UserSidebar() {
                     </li>
                     <li>
                         <Link 
-                            href="/user/BrowseDevices" 
+                            href="/user/DeviceBorrow" 
                             className={`block text-left px-4 py-2 rounded-md ${active === 'BrowseDevices' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
                             onClick={() => handleClick('BrowseDevices')}
                         >

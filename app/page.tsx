@@ -37,8 +37,8 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <Image
-              src="/hero-image.png"
+            <img
+              src="https://th.bing.com/th/id/OIP.5C60wjfNOXJgezQK1JB0CgHaEK?rs=1&pid=ImgDetMain"
               alt="อุปกรณ์อิเล็กทรอนิกส์"
               width={600}
               height={400}

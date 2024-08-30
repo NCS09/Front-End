@@ -3,6 +3,8 @@
 import { useRouter } from 'next/navigation';
 import { useState, FormEvent, useEffect } from 'react';
 import Navbar from './navbars';
+import { motion } from 'framer-motion';
+import { Mail, Lock, LogIn } from 'lucide-react';
 
 export default function Login() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -49,71 +51,88 @@ export default function Login() {
             setMessageType('error');
             setMessage('เกิดข้อผิดพลาดในการเข้าสู่ระบบ');
         }
-
-
     };
-        useEffect(() => {
-            const token = localStorage.getItem('authToken');
-            if (token=="Admin") {
-                router.push("/admin");
-            } else if (token=="User"){
-                router.push("/user")
-            } else {
-                
-            }
-        }, [router]);
 
+    useEffect(() => {
+        const token = localStorage.getItem('authToken');
+        if (token === "Admin") {
+            router.push("/admin");
+        } else if (token === "User"){
+            router.push("/user")
+        }
+    }, [router]);
 
     return (
-        <>
-        <Navbar/>
-        <div className="flex justify-center h-full items-center min-h-screen bg-blue-100">
-            <div className="bg-slate-50 p-3 rounded-lg shadow-md w-full max-w-md border-2 border-blue-900">
-                <div className="text-center">
-                    <h1 className="font-bold">
-                        เข้าสู่ระบบ
-                    </h1>
-                </div>
-
-                <form onSubmit={handleSubmit}>
-                    <div>
-                        <label className="block mb-2 text-sm text-gray-700">
-                            อีเมล
-                        </label>
-                        <input 
-                            type="email" 
-                            name="email" 
-                            className="w-full px-3 bg-gray-200 rounded" 
-                            onChange={(e) => setEmail(e.target.value)} 
-                        />
-                    </div>
-                    <div>
-                        <label className="block mb-2 mt-2 text-sm text-gray-700">
-                            รหัสผ่าน
-                        </label>
-                        <input 
-                            type="password" 
-                            name="password" 
-                            className="w-full px-3 bg-gray-200 rounded" 
-                            onChange={(e) => setPassword(e.target.value)} 
-                        />
-                    </div>
-                    <div className="mt-4">
-                        <button 
+        <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col">
+            <Navbar />
+            <div className="flex-grow flex justify-center items-center px-4">
+                <motion.div 
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-blue-100"
+                >
+                    <h1 className="text-3xl font-bold text-center text-blue-600 mb-6">เข้าสู่ระบบ</h1>
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="email">
+                                อีเมล
+                            </label>
+                            <div className="relative">
+                                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                                <input 
+                                    type="email" 
+                                    id="email"
+                                    name="email" 
+                                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                                    placeholder="your@email.com"
+                                    onChange={(e) => setEmail(e.target.value)} 
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="password">
+                                รหัสผ่าน
+                            </label>
+                            <div className="relative">
+                                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                                <input 
+                                    type="password" 
+                                    id="password"
+                                    name="password" 
+                                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                                    placeholder="••••••••"
+                                    onChange={(e) => setPassword(e.target.value)} 
+                                />
+                            </div>
+                        </div>
+                        <motion.button 
                             type="submit" 
-                            className="w-full py-2 px-3 bg-blue-950 rounded hover:bg-blue-500 hover:text-white"
+                            className="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                         >
+                            <LogIn className="mr-2" size={20} />
                             เข้าสู่ระบบ
-                        </button>
-                    </div>
-                </form>
-                {message && (
-                    <p className={`text-center mt-4 ${messageType === 'success' ? 'text-green-500' : 'text-red-500'}`}>
-                        {message}
+                        </motion.button>
+                    </form>
+                    {message && (
+                        <motion.p 
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className={`text-center mt-4 ${messageType === 'success' ? 'text-green-500' : 'text-red-500'}`}
+                        >
+                            {message}
+                        </motion.p>
+                    )}
+                    <p className="mt-4 text-center text-sm text-gray-600">
+                        ยังไม่มีบัญชี? {' '}
+                        <a href="/register" className="font-medium text-blue-600 hover:text-blue-500">
+                            ลงทะเบียนที่นี่
+                        </a>
                     </p>
-                )}
+                </motion.div>
             </div>
         </div>
-        </>
     );
 }

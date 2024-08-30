@@ -15,8 +15,9 @@ interface LoanRequest {
     item_quantity: number;
     return_status: string;
 }
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
 export default function Historypage() {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const [loanRequests, setLoanRequests] = useState<LoanRequest[]>([]);
     const [errorMessage, setErrorMessage] = useState<string>('');
     const router = useRouter();

@@ -13,9 +13,10 @@ interface SelectedDevice {
     device_id: number;
     quantity: number;
 }
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
 
 const BorrowDevicePage: React.FC = () => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const [devices, setDevices] = useState<Device[]>([]);
     const [selectedDevices, setSelectedDevices] = useState<SelectedDevice[]>([]);
     const [searchTerm, setSearchTerm] = useState<string>('');
@@ -58,7 +59,7 @@ const BorrowDevicePage: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-    
+        
         if (selectedDevices.length === 0) {
             setError('Please select at least one device.');
             return;
@@ -69,7 +70,7 @@ const BorrowDevicePage: React.FC = () => {
         }
     
         try {
-            const response = await fetch(`${apiUrl}/loan`, {
+            const response = await fetch(`NEXT_PUBLIC_API_URL/loan`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

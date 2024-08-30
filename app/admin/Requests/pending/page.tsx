@@ -18,6 +18,7 @@ interface LoanDetail {
 }
 
 export default function LoanDetailPage() {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const router = useRouter();
     const [loanDetails, setLoanDetails] = useState<LoanDetail[]>([]);
     const [errorMessage, setErrorMessage] = useState('');
@@ -27,7 +28,7 @@ export default function LoanDetailPage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch("http://localhost:8000/admin/loan_detail/pending", {
+                const response = await fetch(`${apiUrl}/admin/loan_detail/pending`, {
                     method: 'GET',
                     credentials: "include",
                 });

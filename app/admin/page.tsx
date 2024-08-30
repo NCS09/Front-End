@@ -13,8 +13,9 @@ interface DashboardData {
     loan_details: LoanDetail[];
 }
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
 export default function Dashboardpage() {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const [data, setData] = useState<DashboardData | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -22,7 +23,7 @@ export default function Dashboardpage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`${apiUrl}/dashboar`, {
+                const response = await fetch(`${apiUrl}/dashboard`, {
                     method: 'GET',
                     credentials: "include",
                 });

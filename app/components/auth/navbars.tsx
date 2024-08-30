@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { LogIn, UserPlus } from 'lucide-react';
+import Image from 'next/image';
 
 export default function Navbar() {
     return (
@@ -11,7 +12,7 @@ export default function Navbar() {
                 <div className="flex items-center justify-between h-16">
                     <div className="flex-shrink-0">
                         <Link href="/" className="text-white text-xl font-bold">
-                            Elec@UP
+                        <Image src="/logo.svg" alt="Elec@UP Logo" width={100} height={30} />
                         </Link>
                     </div>
                     <div className="flex items-center space-x-4">

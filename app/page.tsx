@@ -15,6 +15,7 @@ export default function Home() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
           >
+            <Image src="/logo.svg" alt="Elec@UP Logo" width={300} height={100} className="pb-10"/>
             <h1 className="text-4xl md:text-5xl font-extrabold mb-4 leading-tight">
               ยืม-คืนอุปกรณ์อิเล็กทรอนิกส์<br />ง่ายๆ ในคลิกเดียว
             </h1>

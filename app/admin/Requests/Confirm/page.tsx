@@ -15,6 +15,7 @@ interface LoanDetail {
     user_id: string;
     transaction_id: string;
     loan_status: string;
+    user_phone: string;
 }
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 export default function LoanDetailPage() {
@@ -120,6 +121,7 @@ export default function LoanDetailPage() {
                                 <tr>
                                     <th className="py-3 px-4 border-b text-left text-gray-600">ชื่อผู้ใช้</th>
                                     <th className="py-3 px-4 border-b text-left text-gray-600">อีเมล</th>
+                                    <th className="py-3 px-4 border-b text-left text-gray-600">เบอร์ติดต่อ</th>
                                     <th className="py-3 px-4 border-b text-left text-gray-600">วันที่ยืม</th>
                                     <th className="py-3 px-4 border-b text-left text-gray-600">กำหนดคืน</th>
                                     <th className="py-3 px-4 border-b text-left text-gray-600">จำนวน</th>
@@ -137,6 +139,7 @@ export default function LoanDetailPage() {
                                         <tr key={detail.loan_id} className="hover:bg-gray-100">
                                             <td className="py-3 px-4 border-b">{detail.user_firstname}</td>
                                             <td className="py-3 px-4 border-b">{detail.user_email}</td>
+                                            <td className="py-3 px-4 border-b">{detail.user_phone}</td>
                                             <td className="py-3 px-4 border-b">{detail.loan_date}</td>
                                             <td className="py-3 px-4 border-b">{detail.due_date}</td>
                                             <td className="py-3 px-4 border-b text-center">{detail.item_quantity}</td>

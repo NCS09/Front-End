@@ -70,7 +70,7 @@ const BorrowDevicePage: React.FC = () => {
         }
     
         try {
-            const response = await fetch(`NEXT_PUBLIC_API_URL/loan`, {
+            const response = await fetch(`${apiUrl}/loan`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -172,7 +172,7 @@ const BorrowDevicePage: React.FC = () => {
                     </div>
 
                     <div className="mb-4">
-                        <label htmlFor="dueDate" className="block text-sm font-medium text-gray-600">Due Date</label>
+                        <label htmlFor="dueDate" className="block text-sm font-medium text-gray-600">กำหนดวันคืน</label>
                         <input
                             id="dueDate"
                             type="date"

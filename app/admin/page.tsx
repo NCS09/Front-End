@@ -2,17 +2,17 @@
 
 import React, { useEffect, useState } from "react";
 
-interface LoanDetail {
-    device_name: string;
+interface TopDevice {
+    item_name: string;
     borrow_count: number;
 }
 
 interface DashboardData {
     total_users: number;
     total_devices: number;
-    loan_details: LoanDetail[];
+    total_transactions: number;
+    top_devices: TopDevice[];
 }
-
 
 export default function Dashboardpage() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -50,8 +50,7 @@ export default function Dashboardpage() {
         return <div>{error}</div>;
     }
 
-    const loanDetails = data?.loan_details || [];
-    const totalBorrowCount = loanDetails.reduce((acc, item) => acc + item.borrow_count, 0);
+    const topDevices = data?.top_devices || [];
 
     return (
         <div className="flex h-screen w-full">
@@ -66,7 +65,7 @@ export default function Dashboardpage() {
                             จำนวนสมาชิก<br />{data?.total_users || 0} คน
                         </div>
                         <div className="bg-red-400 p-4 mx-3 rounded-lg w-1/3 text-center">
-                            รายการยืม<br /> {totalBorrowCount} รายการ
+                            รายการยืม<br /> {data?.total_transactions || 0} รายการ
                         </div>
                     </div>
 
@@ -80,11 +79,11 @@ export default function Dashboardpage() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {loanDetails.length > 0 ? (
-                                    loanDetails.map((item, index) => (
+                                {topDevices.length > 0 ? (
+                                    topDevices.map((item, index) => (
                                         <tr key={index}>
                                             <td className="border border-gray-300 p-2 text-center">{index + 1}</td>
-                                            <td className="border border-gray-300 p-2">{item.device_name}</td>
+                                            <td className="border border-gray-300 p-2">{item.item_name}</td>
                                             <td className="border border-gray-300 p-2 text-center">{item.borrow_count}</td>
                                         </tr>
                                     ))

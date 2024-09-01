@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import SuccessModal from './Success';
 import Navbar from './navbars';
 import { motion } from 'framer-motion';
-import { User, Mail, Lock, UserPlus } from 'lucide-react';
+import { User, Mail, Lock, UserPlus, Phone } from 'lucide-react';
 
 export default function Register() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -13,6 +13,7 @@ export default function Register() {
     const [lastname, setLastname] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
+    const [phone, setPhone] = useState<string>('');
     const [message, setMessage] = useState<string>('');
     const [error, setError] = useState<string>('');
     const [isSuccessModalOpen, setSuccessModalOpen] = useState<boolean>(false);
@@ -21,7 +22,7 @@ export default function Register() {
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        const formData = { email, password, firstname, lastname };
+        const formData = { email, password, firstname, lastname, phone };
 
         try {
             const response = await fetch(`${apiUrl}/register`, {
@@ -102,7 +103,7 @@ export default function Register() {
                                     id="email"
                                     name="email"
                                     className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    placeholder="your@email.com"
+                                    placeholder="your@gmail.com"
                                     onChange={(e) => setEmail(e.target.value)}
                                 />
                             </div>
@@ -120,6 +121,22 @@ export default function Register() {
                                     className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     placeholder="••••••••"
                                     onChange={(e) => setPassword(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="Phone">
+                                เบอร์ติดต่อ
+                            </label>
+                            <div className="relative">
+                                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                                <input
+                                    type="phone"
+                                    id="phone"
+                                    name="phone"
+                                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder="xxx-xxx-xxxx"
+                                    onChange={(e) => setPhone(e.target.value)}
                                 />
                             </div>
                         </div>
@@ -144,7 +161,7 @@ export default function Register() {
                     )}
                     <p className="mt-4 text-center text-sm text-gray-600">
                         มีบัญชีอยู่แล้ว? {' '}
-                        <a href="/login" className="font-medium text-blue-600 hover:text-blue-500">
+                        <a href="/Login" className="font-medium text-blue-600 hover:text-blue-500">
                             เข้าสู่ระบบที่นี่
                         </a>
                     </p>

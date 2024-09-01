@@ -85,7 +85,7 @@ export default function Login() {
                                     id="email"
                                     name="email" 
                                     className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                                    placeholder="your@email.com"
+                                    placeholder="your@gmail.com"
                                     onChange={(e) => setEmail(e.target.value)} 
                                 />
                             </div>
@@ -127,7 +127,7 @@ export default function Login() {
                     )}
                     <p className="mt-4 text-center text-sm text-gray-600">
                         ยังไม่มีบัญชี? {' '}
-                        <a href="/register" className="font-medium text-blue-600 hover:text-blue-500">
+                        <a href="/Register" className="font-medium text-blue-600 hover:text-blue-500">
                             ลงทะเบียนที่นี่
                         </a>
                     </p>

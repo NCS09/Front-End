@@ -16,8 +16,9 @@ interface Device {
     device_limit: number;
     device_serial: string;
 }
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
 const ManagePage: React.FC = () => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const [showAddPopup, setShowAddPopup] = useState(false);
     const [showEditPopup, setShowEditPopup] = useState(false);
     const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
@@ -40,7 +41,7 @@ const ManagePage: React.FC = () => {
                 },
                 credentials: "include",
             });
-
+            
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }

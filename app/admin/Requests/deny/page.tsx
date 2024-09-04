@@ -17,8 +17,9 @@ interface LoanDetail {
     loan_status: string;
 }
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
 export default function LoanDetailPage() {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const router = useRouter();
     const [loanDetails, setLoanDetails] = useState<LoanDetail[]>([]);
     const [errorMessage, setErrorMessage] = useState('');

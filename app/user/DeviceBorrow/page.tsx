@@ -36,7 +36,7 @@ export default function DeviceRequests() {
 
     const handleCancel = async (transaction_id: string) => {
         try {
-            const response = await fetch(`http://localhost:8000/cancel-loan/${transaction_id}`, {
+            const response = await fetch(`${apiUrl}/cancel-loan/${transaction_id}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -48,34 +48,34 @@ export default function Sidebarpage() {
                     </li>
                     <li>
                         <Link 
-                            href="/user/History" 
-                            className={`block text-left px-4 py-2 rounded-md ${active === 'BorrowedDevices' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
-                            onClick={() => handleClick('BorrowedDevices')}
+                            href="/user/confirm" 
+                            className={`block text-left px-4 py-2 rounded-md ${active === 'confirm' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
+                            onClick={() => handleClick('confirm')}
+                        >
+                            ยืนยันรับของ
+                        </Link>
+                    </li>
+                    <li>
+                        <Link 
+                            href="/user/return" 
+                            className={`block text-left px-4 py-2 rounded-md ${active === 'return' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
+                            onClick={() => handleClick('return')}
+                        >
+                            รายการที่ต้องคืน
+                        </Link>
+                    </li>
+                    <li>
+                        <Link 
+                            href="/user/userhistory" 
+                            className={`block text-left px-4 py-2 rounded-md ${active === 'userhistory' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
+                            onClick={() => handleClick('userhistory')}
                         >
                             ประวัติการยืม
                         </Link>
                     </li>
                     <li>
                         <Link 
-                            href="/user/Notifications" 
-                            className={`block text-left px-4 py-2 rounded-md ${active === 'Notifications' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
-                            onClick={() => handleClick('Notifications')}
-                        >
-                            
-                        </Link>
-                    </li>
-                    <li>
-                        <Link 
-                            href="/user/Profile" 
-                            className={`block text-left px-4 py-2 rounded-md ${active === 'Profile' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
-                            onClick={() => handleClick('Profile')}
-                        >
-                            
-                        </Link>
-                    </li>
-                    <li>
-                        <Link 
-                            href="/user/History" 
+                            href="/user" 
                             className={`block text-left px-4 py-2 rounded-md ${active === 'History' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
                             onClick={() => handleClick('History')}
                         >

@@ -5,7 +5,11 @@ import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { FiMenu, FiX } from 'react-icons/fi';
 
-export default function Sidebarpage() {
+interface SidebarProps {
+    userId: string; 
+}
+
+export default function Sidebarpage({ userId }: SidebarProps) {
     const pathname = usePathname();
     const [active, setActive] = useState<string>(pathname.split('/').pop() || 'Home');
     const [isOpen, setIsOpen] = useState<boolean>(true);
@@ -30,7 +34,7 @@ export default function Sidebarpage() {
                 <ul className="flex flex-col space-y-4">
                     <li>
                         <Link 
-                            href="/user" 
+                            href={`/user/${userId}`} 
                             className={`block text-left px-4 py-2 rounded-md ${active === 'Home' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
                             onClick={() => handleClick('Home')}
                         >
@@ -39,7 +43,7 @@ export default function Sidebarpage() {
                     </li>
                     <li>
                         <Link 
-                            href="/user/DeviceBorrow" 
+                            href={`/user/${userId}/DeviceBorrow`} 
                             className={`block text-left px-4 py-2 rounded-md ${active === 'Devices' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
                             onClick={() => handleClick('Devices')}
                         >
@@ -48,7 +52,7 @@ export default function Sidebarpage() {
                     </li>
                     <li>
                         <Link 
-                            href="/user/confirm" 
+                            href={`/user/${userId}/confirm`} 
                             className={`block text-left px-4 py-2 rounded-md ${active === 'confirm' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
                             onClick={() => handleClick('confirm')}
                         >
@@ -57,7 +61,7 @@ export default function Sidebarpage() {
                     </li>
                     <li>
                         <Link 
-                            href="/user/return" 
+                            href={`/user/${userId}/return`} 
                             className={`block text-left px-4 py-2 rounded-md ${active === 'return' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
                             onClick={() => handleClick('return')}
                         >
@@ -66,20 +70,11 @@ export default function Sidebarpage() {
                     </li>
                     <li>
                         <Link 
-                            href="/user/userhistory" 
+                            href={`/user/${userId}/userhistory`} 
                             className={`block text-left px-4 py-2 rounded-md ${active === 'userhistory' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
                             onClick={() => handleClick('userhistory')}
                         >
                             ประวัติการยืม
-                        </Link>
-                    </li>
-                    <li>
-                        <Link 
-                            href="/user" 
-                            className={`block text-left px-4 py-2 rounded-md ${active === 'History' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
-                            onClick={() => handleClick('History')}
-                        >
-                            
                         </Link>
                     </li>
                 </ul>

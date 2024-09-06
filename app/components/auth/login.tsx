@@ -12,6 +12,7 @@ export default function Login() {
     const [password, setPassword] = useState<string>('');
     const [message, setMessage] = useState<string>('');
     const [messageType, setMessageType] = useState<'success' | 'error'>('error');
+    const [userId, setUserId] = useState<number | null>(null);
 
     const router = useRouter();
 
@@ -33,13 +34,16 @@ export default function Login() {
             if (result.type === 'ok') {
                 setMessageType('success');
                 setMessage('เข้าสู่ระบบสำเร็จ!');
+                setUserId(result.user_id);
+
+                localStorage.setItem('userId', result.user_id.toString());
 
                 if (result.role === 2) {
                     localStorage.setItem('authToken', 'Admin');
-                    router.push("/admin");
+                    router.push(`/admin/${userId}`);
                 } else {
                     localStorage.setItem('authToken', 'User');
-                    router.push("/user"); 
+                    router.push(`/user/${userId}`); 
                 }
             } else {
                 setMessageType('error');
@@ -55,10 +59,12 @@ export default function Login() {
 
     useEffect(() => {
         const token = localStorage.getItem('authToken');
-        if (token === "Admin") {
-            router.push("/admin");
-        } else if (token === "User"){
-            router.push("/user")
+        const userId = localStorage.getItem('userId');
+
+        if (token === "Admin" && userId) {
+            router.push(`/admin/${userId}`); 
+        } else if (token === "User" && userId){
+            router.push(`/user/${userId}`);
         }
     }, [router]);
 

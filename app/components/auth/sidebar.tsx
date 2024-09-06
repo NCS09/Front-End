@@ -5,7 +5,11 @@ import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { FiMenu, FiX } from 'react-icons/fi';
 
-export default function Sidebarpage() {
+interface SidebarpageProps {
+    userId: string;
+}
+
+export default function Sidebarpage({ userId }: SidebarpageProps) {
     const pathname = usePathname();
     const [active, setActive] = useState<string>(pathname.split('/').pop() || 'Dashboard');
     const [isOpen, setIsOpen] = useState<boolean>(true);
@@ -30,66 +34,61 @@ export default function Sidebarpage() {
                 <ul className="flex flex-col space-y-4">
                     <li>
                         <Link 
-                            href="/admin" 
+                            href={`/admin/${userId}`} 
                             className={`block text-left px-4 py-2 rounded-md ${active === 'Dashboard' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
                             onClick={() => handleClick('Dashboard')}
                         >
                             หน้าหลัก
                         </Link>
                     </li>
-
                     <li>
                         <Link 
-                            href="/admin/Managedevices" 
+                            href={`/admin/${userId}/Managedevices`}
                             className={`block text-left px-4 py-2 rounded-md ${active === 'Managedevices' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
                             onClick={() => handleClick('Managedevices')}
                         >
                             จัดการอุปกรณ์
                         </Link>
                     </li>
-
                     <li>
                         <Link 
-                            href="/admin/Requests" 
+                            href={`/admin/${userId}/Requests`}
                             className={`block text-left px-4 py-2 rounded-md ${active === 'Requests' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
                             onClick={() => handleClick('Requests')}
                         >
                             คำร้องขอ
                         </Link>
                     </li>
-
                     <li>
                         <Link 
-                            href="/admin/Return" 
+                            href={`/admin/${userId}/Return`}
                             className={`block text-left px-4 py-2 rounded-md ${active === 'Return' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
                             onClick={() => handleClick('Return')}
                         >
                             ยืนยันการคืน
                         </Link>
                     </li>
-
                     <li>
                         <Link 
-                            href="/admin/AddBorrow" 
-                            className={`block text-left px-4 py-2 rounded-md ${active === 'Borroow' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
-                            onClick={() => handleClick('Borroow')}
+                            href={`/admin/${userId}/AddBorrow`}
+                            className={`block text-left px-4 py-2 rounded-md ${active === 'AddBorrow' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
+                            onClick={() => handleClick('AddBorrow')}
                         >
                             ยืมอุปกรณ์
                         </Link>
                     </li>
-
                     <li>
                         <Link 
-                            href="/admin/adminHistory" 
-                            className={`block text-left px-4 py-2 rounded-md ${active === 'Reports' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
-                            onClick={() => handleClick('Reports')}
+                            href={`/admin/${userId}/adminHistory`}
+                            className={`block text-left px-4 py-2 rounded-md ${active === 'adminHistory' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
+                            onClick={() => handleClick('adminHistory')}
                         >
                             ดูประวัติทั้งหมด
                         </Link>
                     </li>
                     <li>
                         <Link 
-                            href="/admin/ChangePassword" 
+                            href={`/admin/${userId}/ChangePassword`}
                             className={`block text-left px-4 py-2 rounded-md ${active === 'ChangePassword' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
                             onClick={() => handleClick('ChangePassword')}
                         >
@@ -98,7 +97,7 @@ export default function Sidebarpage() {
                     </li>
                     <li>
                         <Link 
-                            href="/admin/History" 
+                            href={`/admin/${userId}/History`} 
                             className={`block text-left px-4 py-2 rounded-md ${active === 'History' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
                             onClick={() => handleClick('History')}
                         >

@@ -18,7 +18,7 @@ interface SelectedDevice {
 
 const BorrowDevicePage: React.FC = () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    const { userId } = useParams<{ userId: string }>(); // ดึงค่า userId จาก URL
+    const { userId } = useParams<{ userId: string }>();
     const [devices, setDevices] = useState<Device[]>([]);
     const [selectedDevices, setSelectedDevices] = useState<SelectedDevice[]>([]);
     const [searchTerm, setSearchTerm] = useState<string>('');

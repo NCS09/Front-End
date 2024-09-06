@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { useEffect, useState } from "react";
 import Link from 'next/link';
 import { Eye, Check, X } from 'lucide-react'; // เพิ่มไอคอน X
@@ -20,6 +20,7 @@ interface LoanDetail {
 
 export default function LoanDetailPage() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const params  = useParams<{userId: string}>();
     const router = useRouter();
     const [loanDetails, setLoanDetails] = useState<LoanDetail[]>([]);
     const [errorMessage, setErrorMessage] = useState('');
@@ -84,27 +85,27 @@ export default function LoanDetailPage() {
 
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
-            <h1 className="text-3xl font-bold mb-6 text-center">คำขอที่อนุมัติ</h1>
+            <h1 className="text-3xl font-bold mb-6 text-center">คำขอทั้งหมด</h1>
             <div className="mb-6">
                 <nav>
                     <ul className="flex space-x-4 border-b-2 border-gray-300">
                         <li>
-                            <Link href={{ pathname: "/admin/Requests" }} className="inline-block py-2 px-4 text-blue-600 hover:text-blue-800 border-b-2 border-transparent hover:border-blue-600 transition">
+                            <Link href={`/admin/${params.userId}/Requests` } className="inline-block py-2 px-4 text-blue-600 hover:text-blue-800 border-b-2 border-transparent hover:border-blue-600 transition">
                                 ทั้งหมด
                             </Link>
                         </li>
                         <li>
-                            <Link href={{ pathname: "/admin/Requests/pending" }} className="inline-block py-2 px-4 text-blue-600 hover:text-blue-800 border-b-2 border-transparent hover:border-blue-600 transition">
+                            <Link href={`/admin/${params.userId}/Requests/pending` } className="inline-block py-2 px-4 text-blue-600 hover:text-blue-800 border-b-2 border-transparent hover:border-blue-600 transition">
                                 รอยืนยัน
                             </Link>
                         </li>
                         <li>
-                            <Link href={{ pathname: "/admin/Requests/Confirm" }} className="inline-block py-2 px-4 text-blue-600 hover:text-blue-800 border-b-2 border-transparent hover:border-blue-600 transition">
+                            <Link href={`/admin/${params.userId}/Requests/Confirm`} className="inline-block py-2 px-4 text-blue-600 hover:text-blue-800 border-b-2 border-transparent hover:border-blue-600 transition">
                                 ยืนยันแล้ว
                             </Link>
                         </li>
                         <li>
-                            <Link href={{ pathname: "/admin/Requests/deny" }} className="inline-block py-2 px-4 text-blue-600 hover:text-blue-800 border-b-2 border-transparent hover:border-blue-600 transition">
+                            <Link href={`/admin/${params.userId}/Requests/deny`} className="inline-block py-2 px-4 text-blue-600 hover:text-blue-800 border-b-2 border-transparent hover:border-blue-600 transition">
                                 ปฎิเสธ
                             </Link>
                         </li>

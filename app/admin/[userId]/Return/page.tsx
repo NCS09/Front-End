@@ -37,6 +37,7 @@ interface RequestsResponse {
 }
 
 export default function ReturnPage() {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const router = useRouter();
     const [loanDetails, setLoanDetails] = useState<LoanDetail[]>([]);
     const [requests, setRequests] = useState<RequestItem[]>([]);
@@ -50,7 +51,7 @@ export default function ReturnPage() {
 
     const fetchData = async () => {
         try {
-            const response = await fetch("http://localhost:8000/admin/loan_detail/approve", {
+            const response = await fetch(`${apiUrl}/admin/loan_detail/approve`, {
                 method: 'GET',
                 credentials: "include",
             });
@@ -81,7 +82,7 @@ export default function ReturnPage() {
         setIsLoading(true);
 
         try {
-            const response = await fetch(`http://localhost:8000/admin/loan_detail/${user_id}/${transaction_id}`, {
+            const response = await fetch(`${apiUrl}/admin/loan_detail/${user_id}/${transaction_id}`, {
                 method: 'GET',
                 credentials: "include",
             });
@@ -118,7 +119,7 @@ export default function ReturnPage() {
         }
 
         try {
-            const response = await fetch('http://localhost:8000/return', {
+            const response = await fetch(`${apiUrl}/return`, {
                 method: 'POST',
                 credentials: 'include',
                 body: formData,

@@ -9,6 +9,7 @@ interface DeviceItem {
 
 const DeviceDetails: React.FC = () => {
     const { id } = useParams();
+    const { userId } = useParams<{ userId: string }>();
     const router = useRouter();
     const [deviceItems, setDeviceItems] = useState<DeviceItem[]>([]);
     const [loading, setLoading] = useState<boolean>(true);

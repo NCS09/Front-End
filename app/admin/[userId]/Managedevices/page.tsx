@@ -1,5 +1,5 @@
 'use client';
-
+import { useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import AddDevicePopup from '@/app/components/auth/AddDevicePopup';
 import EditDevices from '@/app/components/auth/Editdevices';
@@ -19,6 +19,7 @@ interface Device {
 
 const ManagePage: React.FC = () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const { userId } = useParams<{ userId: string }>();
     const [showAddPopup, setShowAddPopup] = useState(false);
     const [showEditPopup, setShowEditPopup] = useState(false);
     const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
@@ -67,7 +68,7 @@ const ManagePage: React.FC = () => {
     };
 
     const handleDeviceAction = (deviceId: string) => {
-        router.push(`/admin/DeviceDetail/${deviceId}`);
+        router.push(`/admin/${userId}/DeviceDetail/${deviceId}`);
     };
 
     const handleOpenDeleteModal = (deviceId: string) => {

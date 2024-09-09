@@ -52,7 +52,7 @@ export default function LoanDetailPage() {
     }, []);
 
     const handleViewDetails = (user_id: string, transaction_id: string) => {
-        router.push(`/admin/Requests/${user_id}/${transaction_id}`);
+        router.push(`/admin/${user_id}/Requests/${user_id}/${transaction_id}`);
     };
 
     const handleConfirm = async (transaction_id: string, status: string) => {

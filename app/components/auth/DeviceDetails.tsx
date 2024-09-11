@@ -73,7 +73,7 @@ const DeviceDetails: React.FC = () => {
                     <div className="flex justify-center mb-6">
                         <button
                             className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition"
-                            onClick={() => router.push('/admin/Managedevices')}>
+                            onClick={() => router.push(`/admin/${userId}/Managedevices`)}>
                             กลับไปยังหน้าจัดการอุปกรณ์
                         </button>
                     </div>

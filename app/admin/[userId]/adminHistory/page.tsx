@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import { useRouter } from 'next/navigation';
+import { useRouter,useParams } from 'next/navigation';
 import { Eye } from 'lucide-react';
 
 interface LoanRequest {
@@ -18,6 +18,7 @@ interface LoanRequest {
 
 export default function Historypage() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const { userId } = useParams<{ userId: string }>();
     const [loanRequests, setLoanRequests] = useState<LoanRequest[]>([]);
     const [errorMessage, setErrorMessage] = useState<string>('');
     const router = useRouter();
@@ -81,10 +82,11 @@ export default function Historypage() {
                             <td className="p-2 border-b">{request.item_quantity}</td>
                             <td className="p-2 border-b">{request.return_status}</td>
                             <td className="p-2 border-b">
-                                <button className="text-blue-500 hover:underline" onClick={() => router.push(`/history/${request.transaction_id}`)}>
-                                    <Eye className="inline" /> 
-                                </button>
+                            <button className="text-blue-500 hover:underline" onClick={() => router.push(`/admin/${userId}/Requests/${request.user_id}/${request.transaction_id}`)}>
+                                <Eye className="inline" />
+                            </button>
                             </td>
+
                         </tr>
                     ))}
                 </tbody>

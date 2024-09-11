@@ -51,7 +51,7 @@ export default function LoanDetailPage() {
     }, []);
 
     const handleViewDetails = (user_id: string, transaction_id: string) => {
-        router.push(`/admin/Requests/${user_id}/${transaction_id}`);
+        router.push(`/admin/${user_id}/Requests/${user_id}/${transaction_id}`);
     };
 
     const handleConfirm = async (transaction_id: string, status: string) => {
@@ -84,7 +84,7 @@ export default function LoanDetailPage() {
 
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
-            <h1 className="text-3xl font-bold mb-6 text-center">คำขอทั้งหมด</h1>
+            <h1 className="text-3xl font-bold mb-6 text-center">รอการยืนยัน</h1>
             <div className="mb-6">
                 <nav>
                     <ul className="flex space-x-4 border-b-2 border-gray-300">

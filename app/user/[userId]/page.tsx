@@ -1,12 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import QRCode from 'react-qr-code';
+import { useParams } from 'next/navigation';
 
 interface Device {
     device_id: number;
     device_name: string;
-    device_availability: number; // เพิ่มฟิลด์นี้
-    device_description: string; // เพิ่มฟิลด์นี้
+    device_availability: number;
+    device_description: string;
 }
 
 interface SelectedDevice {
@@ -16,29 +18,30 @@ interface SelectedDevice {
 
 const BorrowDevicePage: React.FC = () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const { userId } = useParams<{ userId: string }>();
     const [devices, setDevices] = useState<Device[]>([]);
     const [selectedDevices, setSelectedDevices] = useState<SelectedDevice[]>([]);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [dueDate, setDueDate] = useState<string>('');
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
+    const [qrCodeURL, setQrCodeURL] = useState<string | null>(null);
 
-    const fetchData = async() => {
+    const fetchData = async () => {
         try {
             const res = await fetch(`${apiUrl}/devices`, {
                 credentials: "include"
-            })
-            const data = await res.json()
+            });
+            const data = await res.json();
             setDevices(data);
         } catch (error) {
             console.error('Error fetching devices:', error);
         }
     };
-    
+
     useEffect(() => {
         fetchData();
     }, []);
-    
 
     const handleDeviceSelect = (device: Device) => {
         if (!selectedDevices.find(d => d.device_id === device.device_id)) {
@@ -47,7 +50,7 @@ const BorrowDevicePage: React.FC = () => {
     };
 
     const handleDeviceChange = (deviceId: number, quantity: number) => {
-        setSelectedDevices(prev => 
+        setSelectedDevices(prev =>
             prev.map(d => d.device_id === deviceId ? { ...d, quantity } : d)
         );
     };
@@ -56,9 +59,18 @@ const BorrowDevicePage: React.FC = () => {
         setSelectedDevices(prev => prev.filter(d => d.device_id !== deviceId));
     };
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-    
+    const generateQRCodeURL = (userId: string) => {
+        const items = selectedDevices.map(device => ({
+            device_id: device.device_id,
+            quantity: device.quantity,
+            due_date: dueDate,
+            id: userId
+        }));
+        const itemsString = JSON.stringify(items);
+        return `https://4f3c-202-80-249-144.ngrok-free.app/loan-data?data=${encodeURIComponent(itemsString)}`;
+    };
+
+    const handleGenerateQRCode = () => {
         if (selectedDevices.length === 0) {
             setError('Please select at least one device.');
             return;
@@ -67,37 +79,13 @@ const BorrowDevicePage: React.FC = () => {
             setError('Quantity must be greater than zero.');
             return;
         }
-    
-        try {
-            const response = await fetch(`${apiUrl}/loan`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    devices: selectedDevices,
-                    due_date: dueDate
-                }),
-                credentials: "include",
-            });
-            const result = await response.json();
-            if (response.ok) {
-                setSuccess(result.message);
-                setError(null);
-                setSelectedDevices([]);
-    
-                // เรียก fetchData เพื่อรีเฟรชข้อมูลอุปกรณ์
-                window.location.reload()
-    
-            } else {
-                setError(result.message || 'Error processing loan request.');
-                setSuccess(null);
-            }
-            
-        } catch (err) {
-            setError('Error processing loan request.');
-            setSuccess(null);
+        console.log('user_id:', userId);
+        if (!userId) {
+            setError('User ID is required.');
+            return;
         }
+    
+        setQrCodeURL(generateQRCodeURL(userId));
     };
     
 
@@ -108,7 +96,7 @@ const BorrowDevicePage: React.FC = () => {
     return (
         <div className="p-6 bg-gray-50 min-h-screen">
             <h1 className="text-3xl font-bold mb-6 text-purple-700">Borrow Device</h1>
-            
+
             {/* Search Section */}
             <div className="mb-6">
                 <label htmlFor="search" className="block text-sm font-medium text-gray-600">Search Devices</label>
@@ -142,7 +130,7 @@ const BorrowDevicePage: React.FC = () => {
 
             {/* Selected Devices Form Section */}
             {selectedDevices.length > 0 && (
-                <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-lg mt-6 relative z-20">
+                <form className="space-y-6 bg-white p-6 rounded-lg shadow-lg mt-6 relative z-20">
                     <div className="space-y-4">
                         {selectedDevices.map(device => {
                             const deviceInfo = devices.find(d => d.device_id === device.device_id);
@@ -171,7 +159,7 @@ const BorrowDevicePage: React.FC = () => {
                     </div>
 
                     <div className="mb-4">
-                        <label htmlFor="dueDate" className="block text-sm font-medium text-gray-600">Due Date</label>
+                        <label htmlFor="dueDate" className="block text-sm font-medium text-gray-600">กำหนดวันคืน</label>
                         <input
                             id="dueDate"
                             type="date"
@@ -186,12 +174,20 @@ const BorrowDevicePage: React.FC = () => {
                     {success && <div className="text-green-600 text-sm mb-4">{success}</div>}
 
                     <button
-                        type="submit"
+                        type="button"
+                        onClick={handleGenerateQRCode}
                         className="bg-purple-500 text-white px-6 py-3 rounded-md font-semibold hover:bg-purple-600"
                     >
-                        ส่งคำร้อง
+                        สร้าง QR Code
                     </button>
                 </form>
+            )}
+
+            {/* QR Code Display Section */}
+            {qrCodeURL && (
+                <div className="mt-6 text-center">
+                    <QRCode value={qrCodeURL} />
+                </div>
             )}
         </div>
     );

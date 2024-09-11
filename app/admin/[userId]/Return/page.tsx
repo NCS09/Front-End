@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter,useParams } from "next/navigation";
 import { Eye, Check } from 'lucide-react';
 import QRCode from 'qrcode.react'; // หรือ import { QRCode } from 'react-qr-code';
 
@@ -38,6 +38,7 @@ interface RequestsResponse {
 
 export default function ReturnPage() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const params  = useParams<{userId: string}>();
     const router = useRouter();
     const [loanDetails, setLoanDetails] = useState<LoanDetail[]>([]);
     const [requests, setRequests] = useState<RequestItem[]>([]);
@@ -74,7 +75,7 @@ export default function ReturnPage() {
     }, []);
 
     const handleViewDetails = (user_id: string, transaction_id: string) => {
-        router.push(`/admin/Requests/${user_id}/${transaction_id}`);
+        router.push(`/admin/${user_id}/Requests/${user_id}/${transaction_id}`);
     };
 
     const handleOpenModal = async (loan: LoanDetail, user_id: string, transaction_id: string) => {

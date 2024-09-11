@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { Download, BarChart2, Users, Package } from 'lucide-react';
 
 interface TopDevice {
     item_name: string;
@@ -19,7 +21,7 @@ export default function Dashboardpage() {
     const [data, setData] = useState<DashboardData | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const [showModal, setShowModal] = useState<boolean>(false); // state สำหรับควบคุมการแสดง Modal
+    const [showModal, setShowModal] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -54,23 +56,19 @@ export default function Dashboardpage() {
                 throw new Error('Failed to download report');
             }
 
-            // แปลงข้อมูลที่ได้มาเป็น blob เพื่อสร้าง URL สำหรับดาวน์โหลดไฟล์
             const blob = await response.blob();
             const url = window.URL.createObjectURL(blob);
 
-            // สร้างชื่อไฟล์ตามวันที่ปัจจุบัน
             const currentDate = new Date();
             const formattedDate = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1)
                 .toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
 
-            // สร้างลิงก์ชั่วคราวเพื่อดาวน์โหลดไฟล์ พร้อมตั้งชื่อไฟล์ตามวันที่
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', `รายงานวันที่ ${formattedDate}.csv`); // ตั้งชื่อไฟล์ที่ได้ตามวันที่
+            link.setAttribute('download', `รายงานวันที่ ${formattedDate}.csv`);
             document.body.appendChild(link);
             link.click();
 
-            // ลบลิงก์ชั่วคราวหลังดาวน์โหลดเสร็จ
             link.remove();
         } catch (error) {
             console.error('Error downloading report:', error);
@@ -89,43 +87,65 @@ export default function Dashboardpage() {
     };
 
     if (loading) {
-        return <div>กำลังโหลด...</div>;
+        return (
+            <div className="flex justify-center items-center h-screen bg-gradient-to-b from-blue-50 to-white">
+                <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+            </div>
+        );
     }
 
     if (error) {
-        return <div>{error}</div>;
+        return (
+            <div className="flex justify-center items-center h-screen bg-gradient-to-b from-blue-50 to-white">
+                <div className="text-red-600 text-xl">{error}</div>
+            </div>
+        );
     }
 
     const topDevices = data?.top_devices || [];
 
     return (
-        <div className="flex h-screen w-full">
-            <main className="w-full p-8 bg-blue-100 rounded-lg">
-                <h1 className="text-2xl mb-4">Dashboard</h1>
+        <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+            <main className="container mx-auto px-4 py-8 max-w-6xl">
+                <motion.h1 
+                    className="text-4xl font-bold mb-8 text-blue-600"
+                    initial={{ opacity: 0, y: -50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    แดชบอร์ด
+                </motion.h1>
 
-                {/* ปุ่มออกรายงาน */}
-                <div className="mb-4">
-                    <button onClick={handleDownloadClick} className="bg-green-500 text-white p-2 rounded-lg">
+                <motion.div 
+                    className="mb-8"
+                    initial={{ opacity: 0, x: -50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                >
+                    <button 
+                        onClick={handleDownloadClick} 
+                        className="inline-flex items-center bg-yellow-400 text-blue-900 px-6 py-3 rounded-full font-semibold hover:bg-yellow-300 transition-colors text-lg"
+                    >
+                        <Download className="mr-2 h-5 w-5" />
                         ออกรายงาน
                     </button>
-                </div>
+                </motion.div>
 
-                {/* Modal ยืนยันการดาวน์โหลด */}
                 {showModal && (
-                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                         <div className="bg-white p-6 rounded-lg shadow-lg">
-                            <h2 className="text-xl mb-4">ยืนยันการดาวน์โหลด</h2>
+                            <h2 className="text-2xl font-bold mb-4 text-blue-600">ยืนยันการดาวน์โหลด</h2>
                             <p className="mb-6">คุณต้องการดาวน์โหลดรายงานใช่หรือไม่?</p>
                             <div className="flex justify-end">
                                 <button
                                     onClick={cancelDownload}
-                                    className="bg-gray-500 text-white px-4 py-2 rounded-lg mr-4"
+                                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-full mr-4"
                                 >
                                     ยกเลิก
                                 </button>
                                 <button
                                     onClick={confirmDownload}
-                                    className="bg-green-500 text-white px-4 py-2 rounded-lg"
+                                    className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full"
                                 >
                                     ดาวน์โหลด
                                 </button>
@@ -134,40 +154,56 @@ export default function Dashboardpage() {
                     </div>
                 )}
 
-                <div className="bg-slate-50 p-3 rounded-lg h-auto">
-                    <div className="flex justify-between mb-8">
-                        <div className="bg-green-400 p-4 mx-3 rounded-lg w-1/3 text-center">
-                            รายการอุปกรณ์<br /> {data?.total_devices || 0} รายการ
-                        </div>
-                        <div className="bg-blue-400 p-4 mx-3 rounded-lg w-1/3 text-center">
-                            จำนวนสมาชิก<br />{data?.total_users || 0} คน
-                        </div>
-                        <div className="bg-red-400 p-4 mx-3 rounded-lg w-1/3 text-center">
-                            รายการยืม<br /> {data?.total_transactions || 0} รายการ
-                        </div>
-                    </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                    {[
+                        { icon: Package, title: "รายการอุปกรณ์", value: data?.total_devices || 0, color: "from-blue-400 to-blue-600" },
+                        { icon: Users, title: "จำนวนสมาชิก", value: data?.total_users || 0, color: "from-green-400 to-green-600" },
+                        { icon: BarChart2, title: "รายการยืม", value: data?.total_transactions || 0, color: "from-yellow-400 to-yellow-600" }
+                    ].map((item, index) => (
+                        <motion.div
+                            key={index}
+                            className={`bg-gradient-to-r ${item.color} p-6 rounded-xl shadow-lg text-white`}
+                            initial={{ opacity: 0, y: 50 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5, delay: index * 0.1 }}
+                        >
+                            <div className="flex justify-between items-center mb-4">
+                                <h2 className="text-xl font-semibold">{item.title}</h2>
+                                <item.icon className="w-8 h-8" />
+                            </div>
+                            <p className="text-3xl font-bold">{item.value}</p>
+                        </motion.div>
+                    ))}
+                </div>
 
-                    <div className="mt-5">
-                        <table className="w-full border-collapse border border-gray-300">
+                <motion.div
+                    className="bg-white rounded-xl shadow-lg p-6 overflow-hidden"
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.4 }}
+                >
+                    <h2 className="text-2xl font-bold mb-6 text-blue-600">อุปกรณ์ยอดนิยม</h2>
+                    <div className="overflow-x-auto">
+                        <table className="w-full border-collapse">
                             <thead>
-                                <tr>
-                                    <th className="border border-gray-300 p-2">NO.</th>
-                                    <th className="border border-gray-300 p-2">ชื่ออุปกรณ์</th>
-                                    <th className="border border-gray-300 p-2">จำนวนการยืม</th>
+                                <tr className="bg-blue-50">
+                                    <th className="border-b-2 border-blue-200 px-4 py-2 text-left text-blue-600">ลำดับ</th>
+                                    <th className="border-b-2 border-blue-200 px-4 py-2 text-left text-blue-600">ชื่ออุปกรณ์</th>
+                                    <th className="border-b-2 border-blue-200 px-4 py-2 text-left text-blue-600">จำนวนการยืม</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {topDevices.length > 0 ? (
-                                    topDevices.map((item, index) => (
-                                        <tr key={index}>
-                                            <td className="border border-gray-300 p-2 text-center">{index + 1}</td>
-                                            <td className="border border-gray-300 p-2">{item.item_name}</td>
-                                            <td className="border border-gray-300 p-2 text-center">{item.borrow_count}</td>
+                                    topDevices.slice(0, 5).map((item, index) => (
+                                        <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
+                                            <td className="border-b border-gray-200 px-4 py-2">{index + 1}</td>
+                                            <td className="border-b border-gray-200 px-4 py-2">{item.item_name}</td>
+                                            <td className="border-b border-gray-200 px-4 py-2">{item.borrow_count}</td>
                                         </tr>
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan={3} className="border border-gray-300 p-2 text-center">
+                                        <td colSpan={3} className="border-b border-gray-200 px-4 py-2 text-center text-gray-500">
                                             ไม่มีข้อมูลอุปกรณ์
                                         </td>
                                     </tr>
@@ -175,7 +211,7 @@ export default function Dashboardpage() {
                             </tbody>
                         </table>
                     </div>
-                </div>
+                </motion.div>
             </main>
         </div>
     );

@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { FiMenu, FiX } from 'react-icons/fi';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FiMenu, FiX, FiHome, FiBox, FiClipboard, FiRotateCcw, FiPlusCircle, FiList, FiLock, FiFileText } from 'react-icons/fi';
 
 interface SidebarpageProps {
     userId: string;
@@ -14,98 +15,99 @@ export default function Sidebarpage({ userId }: SidebarpageProps) {
     const [active, setActive] = useState<string>(pathname.split('/').pop() || 'Dashboard');
     const [isOpen, setIsOpen] = useState<boolean>(true);
 
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth < 768) {
+                setIsOpen(false);
+            } else {
+                setIsOpen(true);
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        handleResize();
+
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     const handleClick = (path: string) => {
         setActive(path);
+        if (window.innerWidth < 768) {
+            setIsOpen(false);
+        }
     };
 
     const toggleSidebar = () => {
         setIsOpen(!isOpen);
     };
 
+    const menuItems = [
+        { path: '', label: 'หน้าหลัก/ออกรายงาน', icon: FiHome },
+        { path: 'Managedevices', label: 'จัดการอุปกรณ์', icon: FiBox },
+        { path: 'Requests', label: 'คำร้องขอ', icon: FiClipboard },
+        { path: 'Return', label: 'ยืนยันการคืน', icon: FiRotateCcw },
+        { path: 'AddBorrow', label: 'ยืมอุปกรณ์', icon: FiPlusCircle },
+        { path: 'adminHistory', label: 'ดูประวัติทั้งหมด', icon: FiList },
+        { path: 'ChangePassword', label: 'แก้ไขรหัสผ่าน', icon: FiLock },
+        { path: 'History', label: 'ออกรายงาน', icon: FiFileText },
+    ];
+
     return (
-        <aside className={`bg-blue-800 text-white p-6 flex flex-col transition-width duration-300 ${isOpen ? 'w-1/5' : 'w-0'}`}>
+        <motion.aside
+            initial={false}
+            animate={{ width: isOpen ? '240px' : '60px' }}
+            className="bg-gradient-to-b from-blue-600 to-blue-800 text-white p-4 flex flex-col min-h-screen shadow-lg"
+        >
             <div className="flex justify-between items-center mb-8">
-                <div className={`text-3xl font-bold ${isOpen ? 'block' : 'hidden'}`}>Admin</div>
-                <button onClick={toggleSidebar} className="text-2xl focus:outline-none">
+                <AnimatePresence>
+                    {isOpen && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="text-2xl font-bold"
+                        >
+                            Welcome Admin
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+                <button onClick={toggleSidebar} className="text-2xl focus:outline-none hover:text-yellow-300 transition-colors duration-200">
                     {isOpen ? <FiX /> : <FiMenu />}
                 </button>
             </div>
-            {isOpen && (
-                <ul className="flex flex-col space-y-4">
-                    <li>
+            <ul className="flex flex-col space-y-2 flex-grow">
+                {menuItems.map((item) => (
+                    <li key={item.path}>
                         <Link 
-                            href={`/admin/${userId}`} 
-                            className={`block text-left px-4 py-2 rounded-md ${active === 'Dashboard' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
-                            onClick={() => handleClick('Dashboard')}
+                            href={`/admin/${userId}${item.path ? `/${item.path}` : ''}`}
+                            className={`flex items-center rounded-md overflow-hidden ${
+                                active === item.path ? 'bg-blue-500 text-yellow-300' : 'hover:bg-blue-700'
+                            } transition-all duration-200`}
+                            onClick={() => handleClick(item.path)}
                         >
-                            หน้าหลัก/ออกรายงาน
+                            <motion.div
+                                className="flex items-center w-full p-2"
+                                whileHover={{ x: 5 }}
+                                whileTap={{ scale: 0.95 }}
+                            >
+                                <item.icon className="w-5 h-5 mr-3" />
+                                <AnimatePresence>
+                                    {isOpen && (
+                                        <motion.span
+                                            initial={{ opacity: 0, width: 0 }}
+                                            animate={{ opacity: 1, width: 'auto' }}
+                                            exit={{ opacity: 0, width: 0 }}
+                                            className="whitespace-nowrap"
+                                        >
+                                            {item.label}
+                                        </motion.span>
+                                    )}
+                                </AnimatePresence>
+                            </motion.div>
                         </Link>
                     </li>
-                    <li>
-                        <Link 
-                            href={`/admin/${userId}/Managedevices`}
-                            className={`block text-left px-4 py-2 rounded-md ${active === 'Managedevices' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
-                            onClick={() => handleClick('Managedevices')}
-                        >
-                            จัดการอุปกรณ์
-                        </Link>
-                    </li>
-                    <li>
-                        <Link 
-                            href={`/admin/${userId}/Requests`}
-                            className={`block text-left px-4 py-2 rounded-md ${active === 'Requests' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
-                            onClick={() => handleClick('Requests')}
-                        >
-                            คำร้องขอ
-                        </Link>
-                    </li>
-                    <li>
-                        <Link 
-                            href={`/admin/${userId}/Return`}
-                            className={`block text-left px-4 py-2 rounded-md ${active === 'Return' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
-                            onClick={() => handleClick('Return')}
-                        >
-                            ยืนยันการคืน
-                        </Link>
-                    </li>
-                    <li>
-                        <Link 
-                            href={`/admin/${userId}/AddBorrow`}
-                            className={`block text-left px-4 py-2 rounded-md ${active === 'AddBorrow' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
-                            onClick={() => handleClick('AddBorrow')}
-                        >
-                            ยืมอุปกรณ์
-                        </Link>
-                    </li>
-                    <li>
-                        <Link 
-                            href={`/admin/${userId}/adminHistory`}
-                            className={`block text-left px-4 py-2 rounded-md ${active === 'adminHistory' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
-                            onClick={() => handleClick('adminHistory')}
-                        >
-                            ดูประวัติทั้งหมด
-                        </Link>
-                    </li>
-                    <li>
-                        <Link 
-                            href={`/admin/${userId}/ChangePassword`}
-                            className={`block text-left px-4 py-2 rounded-md ${active === 'ChangePassword' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
-                            onClick={() => handleClick('ChangePassword')}
-                        >
-                            แก้ไขรหัสผ่าน
-                        </Link>
-                    </li>
-                    <li>
-                        <Link 
-                            href={`/admin/${userId}/History`} 
-                            className={`block text-left px-4 py-2 rounded-md ${active === 'History' ? 'bg-blue-600 text-yellow-300' : 'hover:bg-blue-700 transition-colors duration-200'}`}
-                            onClick={() => handleClick('History')}
-                        >
-                            ออกรายงาน
-                        </Link>
-                    </li>
-                </ul>
-            )}
-        </aside>
+                ))}
+            </ul>
+        </motion.aside>
     );
 }

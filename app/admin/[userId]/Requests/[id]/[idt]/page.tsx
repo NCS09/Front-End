@@ -2,6 +2,7 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface LoanDetail {
     loan_id: string;
@@ -11,8 +12,9 @@ interface LoanDetail {
     loan_date: string;
     due_date: string | null;
     item_availability_status: string;
-
 }
+
+const ITEMS_PER_PAGE = 20;
 
 export default function LoanDetailPage() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -20,6 +22,8 @@ export default function LoanDetailPage() {
     const router = useRouter(); 
     const [loanDetails, setLoanDetails] = useState<LoanDetail[]>([]);
     const [errorMessage, setErrorMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -34,58 +38,107 @@ export default function LoanDetailPage() {
                 }
 
                 const result = await response.json();
-                setLoanDetails(result.requests); // รับ requests จาก response
+                setLoanDetails(result.requests);
             } catch (error) {
                 console.log("เกิดข้อผิดพลาดในการดึงข้อมูล:", error);
                 setErrorMessage('ไม่สามารถดึงข้อมูลการยืมได้');
+            } finally {
+                setIsLoading(false);
             }
         };
         fetchData();
     }, [params.id, params.idt]);
 
+    const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
+    const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
+    const currentItems = loanDetails.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(loanDetails.length / ITEMS_PER_PAGE);
+
+    const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+
     return (
-        <div className="p-6 bg-gray-100 min-h-screen">
+        <div className="p-6 bg-gradient-to-b from-blue-50 to-white min-h-screen">
             <button 
                 className="mb-4 p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600" 
-                onClick={() => router.back()} // เพิ่มปุ่มย้อนกลับที่มุมบนซ้าย
+                onClick={() => router.back()}
             >
                 ย้อนกลับ
             </button>
 
-            <h1 className="text-3xl font-bold mb-6 text-center">รายละเอียดการยืม</h1>
+            <h1 className="text-3xl font-bold mb-6 text-center text-blue-600">รายละเอียดการยืม</h1>
 
-            {errorMessage && <p className="text-red-600 mb-4">{errorMessage}</p>}
-
-            <table className="min-w-full bg-white border border-gray-300">
-                <thead>
-                    <tr>
-                        <th className="py-2 px-4 border-b">ชื่ออุปกรณ์</th>
-                        <th className="py-2 px-4 border-b">รหัสอุปกรณ์</th>
-                        <th className="py-2 px-4 border-b">อีเมลผู้ใช้</th>
-                        <th className="py-2 px-4 border-b">วันที่ยืม</th>
-                        <th className="py-2 px-4 border-b">วันที่คืน</th>
-                        <th className="py-2 px-4 border-b">สถานะการยืม</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {loanDetails.length === 0 ? (
-                        <tr>
-                            <td colSpan={6} className="py-4 px-4 text-center text-gray-500">ไม่พบข้อมูลการยืม</td>
-                        </tr>
-                    ) : (
-                        loanDetails.map((detail) => (
-                            <tr key={detail.loan_id}>
-                                <td className="py-2 px-4 border-b">{detail.item_name}</td>
-                                <td className="py-2 px-4 border-b">{detail.item_serial}</td>
-                                <td className="py-2 px-4 border-b">{detail.user_email}</td>
-                                <td className="py-2 px-4 border-b">{detail.loan_date}</td>
-                                <td className="py-2 px-4 border-b">{detail.due_date}</td>
-                                <td className="py-2 px-4 border-b">{detail.item_availability_status}</td>
-                            </tr>
-                        ))
-                    )}
-                </tbody>
-            </table>
+            {isLoading ? (
+                <div className="flex justify-center items-center h-64">
+                    <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+                </div>
+            ) : (
+                <>
+                    {errorMessage && <p className="text-red-600 mb-4">{errorMessage}</p>}
+                    <div className="bg-white rounded-xl shadow-lg p-6 overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full">
+                                <thead className="bg-gray-100">
+                                    <tr>
+                                        <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ชื่ออุปกรณ์</th>
+                                        <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">รหัสอุปกรณ์</th>
+                                        <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">อีเมลผู้ใช้</th>
+                                        <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">วันที่ยืม</th>
+                                        <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">วันที่คืน</th>
+                                        <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">สถานะการยืม</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-200">
+                                    {currentItems.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={6} className="py-4 px-4 text-center text-gray-500">ไม่พบข้อมูลการยืม</td>
+                                        </tr>
+                                    ) : (
+                                        currentItems.map((detail) => (
+                                            <tr key={detail.loan_id} className="hover:bg-gray-50">
+                                                <td className="py-4 px-4 whitespace-nowrap">{detail.item_name}</td>
+                                                <td className="py-4 px-4 whitespace-nowrap">{detail.item_serial}</td>
+                                                <td className="py-4 px-4 whitespace-nowrap">{detail.user_email}</td>
+                                                <td className="py-4 px-4 whitespace-nowrap">{detail.loan_date}</td>
+                                                <td className="py-4 px-4 whitespace-nowrap">{detail.due_date}</td>
+                                                <td className="py-4 px-4 whitespace-nowrap">
+                                                    <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                                        detail.item_availability_status === 'available' ? 'bg-green-100 text-green-800' :
+                                                        detail.item_availability_status === 'borrowed' ? 'bg-yellow-100 text-yellow-800' :
+                                                        'bg-red-100 text-red-800'
+                                                    }`}>
+                                                        {detail.item_availability_status}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                        {loanDetails.length > ITEMS_PER_PAGE && (
+                            <div className="mt-4 flex justify-between items-center">
+                                <button
+                                    onClick={() => paginate(currentPage - 1)}
+                                    disabled={currentPage === 1}
+                                    className="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:bg-gray-200 disabled:text-gray-500"
+                                >
+                                    <ChevronLeft className="w-5 h-5" />
+                                </button>
+                                <span className="text-sm text-gray-700">
+                                    หน้า {currentPage} จาก {totalPages}
+                                </span>
+                                <button
+                                    onClick={() => paginate(currentPage + 1)}
+                                    disabled={currentPage === totalPages}
+                                    className="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:bg-gray-200 disabled:text-gray-500"
+                                >
+                                    <ChevronRight className="w-5 h-5" />
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </>
+            )}
         </div>
     );
 }

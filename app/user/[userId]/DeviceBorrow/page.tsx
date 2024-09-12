@@ -1,11 +1,12 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import { useRouter } from 'next/navigation';
+import { useRouter,useParams } from 'next/navigation';
 import { Eye, X } from 'lucide-react';
 
 export default function DeviceRequests() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const params  = useParams<{userId: string}>();
     const [loanRequests, setLoanRequests] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
     const router = useRouter();
@@ -61,7 +62,7 @@ export default function DeviceRequests() {
     };
 
     const handleViewDetails = (user_id: string, transaction_id: string) => {
-        router.push(`/user/DeviceBorrow/${user_id}/${transaction_id}`);
+        router.push(`/user/${user_id}/DeviceBorrow/${user_id}/${transaction_id}`);
     };
 
     return (

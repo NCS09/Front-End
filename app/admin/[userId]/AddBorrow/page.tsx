@@ -25,6 +25,7 @@ const BorrowDevicePage: React.FC = () => {
     const [selectedDevices, setSelectedDevices] = useState<SelectedDevice[]>([]);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [dueDate, setDueDate] = useState<string>('');
+    const [dueTime, setDueTime] = useState<string>('09:00');
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
     const [qrCodeURL, setQrCodeURL] = useState<string | null>(null);
@@ -70,11 +71,11 @@ const BorrowDevicePage: React.FC = () => {
         const items = selectedDevices.map(device => ({
             device_id: device.device_id,
             quantity: device.quantity,
-            due_date: dueDate,
+            due_date: `${dueDate} ${dueTime}`,
             id: userId
         }));
         const itemsString = JSON.stringify(items);
-        return `https://d45a-2403-6200-88af-2c94-2c17-8d40-91ff-eb1a.ngrok-free.app/loan-data?data=${encodeURIComponent(itemsString)}`;
+        return `https://f335-2403-6200-88ae-9204-1491-4b04-bf13-b9e5.ngrok-free.app/loan-data?data=${encodeURIComponent(itemsString)}`;
     };
 
     const handleGenerateQRCode = () => {
@@ -90,8 +91,8 @@ const BorrowDevicePage: React.FC = () => {
             setError('ต้องการ User ID');
             return;
         }
-        if (!dueDate) {
-            setError('กรุณาระบุวันที่คืนอุปกรณ์');
+        if (!dueDate || !dueTime) {
+            setError('กรุณาระบุวันและเวลาที่จะมารับอุปกรณ์');
             return;
         }
     
@@ -103,6 +104,19 @@ const BorrowDevicePage: React.FC = () => {
         setQrCodeURL(null);
         window.location.reload(); 
     };
+
+    const handleTimeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setDueTime(e.target.value);
+    };
+
+    // Generate time options
+    const timeOptions = [];
+    for (let hour = 9; hour <= 16; hour++) {
+        timeOptions.push(`${hour.toString().padStart(2, '0')}:00`);
+        if (hour !== 16) { // Don't add :30 for 16:00
+            timeOptions.push(`${hour.toString().padStart(2, '0')}:30`);
+        }
+    }
 
     const filteredDevices = devices.filter(device =>
         device.device_name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -175,14 +189,30 @@ const BorrowDevicePage: React.FC = () => {
                     </div>
 
                     <div className="mt-4">
-                        <label htmlFor="dueDate" className="block text-sm font-medium text-gray-600 mb-2">กำหนดวันคืน</label>
-                        <input
-                            id="dueDate"
-                            type="date"
-                            value={dueDate}
-                            onChange={(e) => setDueDate(e.target.value)}
-                            className="w-full p-2 border rounded"
-                        />
+                        <label htmlFor="dueDate" className="block text-sm font-medium text-gray-600 mb-2">
+                            กำหนดวันและเวลามารับของ (9:00 - 16:00)
+                        </label>
+                        <div className="flex space-x-4">
+                            <input
+                                id="dueDate"
+                                type="date"
+                                value={dueDate}
+                                onChange={(e) => setDueDate(e.target.value)}
+                                className="w-full p-2 border rounded"
+                            />
+                            <select
+                                id="dueTime"
+                                value={dueTime}
+                                onChange={handleTimeChange}
+                                className="w-full p-2 border rounded"
+                            >
+                                {timeOptions.map((time) => (
+                                    <option key={time} value={time}>
+                                        {time}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
 
                     {error && (
@@ -210,14 +240,11 @@ const BorrowDevicePage: React.FC = () => {
             {qrCodeURL && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                     <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-                        <h3 className="text-2xl font-bold mb-4">QR Code สำหรับการยืม</h3>
-                        <div className="mb-6">
-                            <QRCode value={qrCodeURL} size={256} />
-                        </div>
-                        <p className="mb-4 text-gray-600">สแกน QR Code นี้เพื่อดำเนินการยืมอุปกรณ์</p>
+                        <QRCode value={qrCodeURL} />
+                        <p className="mt-4">สแกน QR Code เพื่อยืนยันการยืมอุปกรณ์</p>
                         <button
                             onClick={handleClose}
-                            className="px-6 py-2 bg-purple-500 text-white rounded hover:bg-purple-600"
+                            className="mt-4 bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600"
                         >
                             ปิด
                         </button>

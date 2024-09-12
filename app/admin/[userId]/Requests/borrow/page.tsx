@@ -1,9 +1,9 @@
 'use client';
 
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { useEffect, useState } from "react";
 import Link from 'next/link';
-import { Eye, ChevronLeft, ChevronRight } from 'lucide-react'; 
+import { Eye, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface LoanDetail {
     loan_id: string;
@@ -15,6 +15,7 @@ interface LoanDetail {
     user_id: string;
     transaction_id: string;
     loan_status: string;
+    user_phone: string;
 }
 
 const ITEMS_PER_PAGE = 20;
@@ -26,12 +27,13 @@ export default function LoanDetailPage() {
     const [loanDetails, setLoanDetails] = useState<LoanDetail[]>([]);
     const [errorMessage, setErrorMessage] = useState('');
     const [isLoading, setIsLoading] = useState(true);
+    const [confirmingTransactionId, setConfirmingTransactionId] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`${apiUrl}/admin/loan_detail`, {
+                const response = await fetch(`${apiUrl}/admin/loan_detail/borrowed`, {
                     method: 'GET',
                     credentials: "include",
                 });
@@ -56,6 +58,7 @@ export default function LoanDetailPage() {
         router.push(`/admin/${user_id}/Requests/${user_id}/${transaction_id}`);
     };
 
+
     const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
     const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
     const currentItems = loanDetails.slice(indexOfFirstItem, indexOfLastItem);
@@ -65,7 +68,7 @@ export default function LoanDetailPage() {
 
     return (
         <div className="p-6 bg-gradient-to-b from-blue-50 to-white min-h-screen">
-            <h1 className="text-3xl font-bold mb-6 text-center text-blue-600">คำขอทั้งหมด</h1>
+            <h1 className="text-3xl font-bold mb-6 text-center text-blue-600">ยืนยันแล้ว</h1>
             <div className="mb-6">
                 <nav>
                     <ul className="flex space-x-4 border-b-2 border-gray-300">
@@ -111,6 +114,7 @@ export default function LoanDetailPage() {
                                     <tr>
                                         <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ชื่อผู้ใช้</th>
                                         <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">อีเมล</th>
+                                        <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">เบอร์ติดต่อ</th>
                                         <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">วันที่ยืม</th>
                                         <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">กำหนดคืน</th>
                                         <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">จำนวน</th>
@@ -121,13 +125,14 @@ export default function LoanDetailPage() {
                                 <tbody className="bg-white divide-y divide-gray-200">
                                     {currentItems.length === 0 ? (
                                         <tr>
-                                            <td colSpan={7} className="py-4 px-4 text-center text-gray-500">ไม่พบข้อมูลการยืม</td>
+                                            <td colSpan={8} className="py-4 px-4 text-center text-gray-500">ไม่พบข้อมูลการยืม</td>
                                         </tr>
                                     ) : (
                                         currentItems.map((detail) => (
                                             <tr key={detail.loan_id} className="hover:bg-gray-50">
                                                 <td className="py-4 px-4 whitespace-nowrap">{detail.user_firstname}</td>
                                                 <td className="py-4 px-4 whitespace-nowrap">{detail.user_email}</td>
+                                                <td className="py-4 px-4 whitespace-nowrap">{detail.user_phone}</td>
                                                 <td className="py-4 px-4 whitespace-nowrap">{detail.loan_date}</td>
                                                 <td className="py-4 px-4 whitespace-nowrap">{detail.due_date}</td>
                                                 <td className="py-4 px-4 whitespace-nowrap text-center">{detail.item_quantity}</td>

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiMenu, FiX, FiHome, FiBox, FiClipboard, FiRotateCcw, FiPlusCircle, FiList, FiLock, FiFileText } from 'react-icons/fi';
+import { FiMenu, FiX, FiHome, FiBox, FiClipboard, FiRotateCcw, FiPlusCircle, FiList, FiLock, FiFileText, FiCheckCircle } from 'react-icons/fi';
 
 interface SidebarpageProps {
     userId: string;
@@ -48,7 +48,7 @@ export default function Sidebarpage({ userId }: SidebarpageProps) {
         { path: 'Return', label: 'ยืนยันการคืน', icon: FiRotateCcw },
         { path: 'AddBorrow', label: 'ยืมอุปกรณ์', icon: FiPlusCircle },
         { path: 'adminHistory', label: 'ดูประวัติทั้งหมด', icon: FiList },
-        { path: 'ChangePassword', label: 'แก้ไขรหัสผ่าน', icon: FiLock },
+        { path: 'addconfirm', label: 'ยืนยันรับของ', icon: FiCheckCircle },
         { path: 'History', label: 'ออกรายงาน', icon: FiFileText },
     ];
 

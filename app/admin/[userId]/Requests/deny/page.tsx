@@ -118,6 +118,11 @@ export default function LoanDetailPage() {
                                 ปฎิเสธ
                             </Link>
                         </li>
+                        <li>
+                            <Link href={`/admin/${params.userId}/Requests/borrow`} className="inline-block py-2 px-4 text-blue-600 hover:text-blue-800 border-b-2 border-transparent hover:border-blue-600 transition">
+                                กำลังยืม
+                            </Link>
+                        </li>
                     </ul>
                 </nav>
             </div>

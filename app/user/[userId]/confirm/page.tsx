@@ -1,155 +1,184 @@
 'use client';
 
+import React, { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { useEffect, useState } from "react";
-import Link from 'next/link';
-import { Eye, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Eye, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react';
 
 interface LoanDetail {
-    loan_id: string;
-    user_firstname: string;
-    user_email: string;
-    loan_date: string;
-    due_date: string;
-    item_quantity: string;
-    user_id: string;
-    transaction_id: string;
-    loan_status: string;
-    user_phone: string;
+  loan_id: number;
+  user_firstname: string;
+  user_email: string;
+  loan_date: string;
+  due_date: string;
+  item_quantity: number;
+  loan_status: 'approve' | 'pending' | 'rejected' | 'borrowed';
+  transaction_id: number;
+  user_id: number;
 }
 
-const ITEMS_PER_PAGE = 20;
+export default function ConfirmDevice() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const { userId } = useParams<{ userId: string }>();
+  const [confirmreq, setConfirmreq] = useState<LoanDetail[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const router = useRouter();
 
-export default function ConfirmPage() {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    const params = useParams<{ userId: string }>();
-    const router = useRouter();
-    const [loanDetails, setLoanDetails] = useState<LoanDetail[]>([]);
-    const [errorMessage, setErrorMessage] = useState('');
-    const [isLoading, setIsLoading] = useState(true);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
+  const fetchData = async () => {
+    try {
+      const response = await fetch(`${apiUrl}/loan_detail/approve/${userId}`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Cache-Control': 'no-cache',
+          Pragma: 'no-cache',
+          Expires: '0',
+        },
+      });
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch(`${apiUrl}/admin/loan_detail/approve`, {
-                    method: 'GET',
-                    credentials: "include",
-                });
+      if (!response.ok) {
+        throw new Error('ไม่สามารถดึงข้อมูลจาก API ได้');
+      }
 
-                if (!response.ok) {
-                    throw new Error('ไม่สามารถดึงข้อมูลการยืมได้');
-                }
+      const result: LoanDetail[] = await response.json();
+      setConfirmreq(result);
+      setTotalPages(Math.ceil(result.length / itemsPerPage));
+    } catch (error) {
+      console.error('เกิดข้อผิดพลาดในการดึงข้อมูล:', error);
+      setErrorMessage('ไม่สามารถดึงข้อมูลการยืมได้');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-                const result = await response.json();
-                setLoanDetails(result);
-                setTotalPages(Math.ceil(result.length / ITEMS_PER_PAGE));
-            } catch (error) {
-                console.error("เกิดข้อผิดพลาดในการดึงข้อมูล:", error);
-                setErrorMessage('ไม่สามารถดึงข้อมูลการยืมได้');
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchData();
-    }, []);
+  useEffect(() => {
+    if (userId) {
+      fetchData();
+    }
+  }, [userId]);
 
-    const paginate = (pageNumber: number) => {
-        setCurrentPage(pageNumber);
-    };
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
-    const handleViewDetails = (userId: string, transactionId: string) => {
-        router.push(`/user/${userId}/transaction/${transactionId}`);
-    };
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = confirmreq.slice(indexOfFirstItem, indexOfLastItem);
 
-    const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
-    const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
-    const currentItems = loanDetails.slice(indexOfFirstItem, indexOfLastItem);
+  const handleViewDetails = (user_id: string, transaction_id: string) => {
+    router.push(`/admin/${user_id}/Requests/${user_id}/${transaction_id}`);
+  };
 
-    return (
-        <div className="p-6">
-            {isLoading ? (
-                <div className="flex justify-center items-center h-64">
-                    <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
-                </div>
-            ) : (
-                <>
-                    {errorMessage && <p className="text-red-600 mb-4">{errorMessage}</p>}
-                    <div className="bg-white rounded-xl shadow-lg p-6 overflow-hidden">
-                        <div className="overflow-x-auto">
-                            <table className="min-w-full">
-                                <thead className="bg-gray-100">
-                                    <tr>
-                                        <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ชื่อผู้ใช้</th>
-                                        <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">อีเมล</th>
-                                        <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">เบอร์ติดต่อ</th>
-                                        <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">วันที่ยืม</th>
-                                        <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">กำหนดคืน</th>
-                                        <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">จำนวน</th>
-                                        <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">สถานะ</th>
-                                        <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
-                                    {currentItems.length === 0 ? (
-                                        <tr>
-                                            <td colSpan={8} className="py-4 px-4 text-center text-gray-500">ไม่พบข้อมูลการยืม</td>
-                                        </tr>
-                                    ) : (
-                                        currentItems.map((detail) => (
-                                            <tr key={detail.loan_id} className="hover:bg-gray-50">
-                                                <td className="py-4 px-4 whitespace-nowrap">{detail.user_firstname}</td>
-                                                <td className="py-4 px-4 whitespace-nowrap">{detail.user_email}</td>
-                                                <td className="py-4 px-4 whitespace-nowrap">{detail.user_phone}</td>
-                                                <td className="py-4 px-4 whitespace-nowrap">{detail.loan_date}</td>
-                                                <td className="py-4 px-4 whitespace-nowrap">{detail.due_date}</td>
-                                                <td className="py-4 px-4 whitespace-nowrap text-center">{detail.item_quantity}</td>
-                                                <td className="py-4 px-4 whitespace-nowrap text-center">
-                                                    <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                                        detail.loan_status === 'approve' ? 'bg-green-100 text-green-800' :
-                                                        detail.loan_status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                                                        'bg-red-100 text-red-800'
-                                                    }`}>
-                                                        {detail.loan_status}
-                                                    </span>
-                                                </td>
-                                                <td className="py-4 px-4 whitespace-nowrap text-right text-sm font-medium">
-                                                    <button
-                                                        onClick={() => handleViewDetails(detail.user_id, detail.transaction_id)}
-                                                        className="text-blue-600 hover:text-blue-900"
-                                                    >
-                                                        <Eye className="w-5 h-5" />
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-                        <div className="mt-4 flex justify-between items-center">
-                            <button
-                                onClick={() => paginate(currentPage - 1)}
-                                disabled={currentPage === 1}
-                                className="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:bg-gray-200 disabled:text-gray-500"
-                            >
-                                <ChevronLeft className="w-5 h-5" />
-                            </button>
-                            <span className="text-sm text-gray-700">
-                                หน้า {currentPage} จาก {totalPages}
-                            </span>
-                            <button
-                                onClick={() => paginate(currentPage + 1)}
-                                disabled={currentPage === totalPages}
-                                className="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:bg-gray-200 disabled:text-gray-500"
-                            >
-                                <ChevronRight className="w-5 h-5" />
-                            </button>
-                        </div>
-                    </div>
-                </>
-            )}
+  const handleConfirm = async (transaction_id: number) => {
+    try {
+      const response = await fetch(`${apiUrl}/confirm-loan`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ transaction_id }),
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('ไม่สามารถยืนยันการยืมได้');
+      }
+
+      console.log('ยืนยันการยืมสำเร็จ');
+      setConfirmreq(confirmreq.filter(detail => detail.transaction_id !== transaction_id));
+    } catch (error) {
+      console.error('เกิดข้อผิดพลาดในการยืนยัน:', error);
+      setErrorMessage('ไม่สามารถยืนยันการยืมได้');
+    }
+  };
+
+  return (
+    <div className="p-6 bg-gradient-to-b from-blue-50 to-white min-h-screen">
+      <h1 className="text-3xl font-bold mb-6 text-center text-blue-600">ยืนยันการยืมอุปกรณ์</h1>
+      
+      {isLoading ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
         </div>
-    );
+      ) : (
+        <div className="bg-white rounded-xl shadow-lg p-6 overflow-hidden">
+          {errorMessage && <p className="text-red-600 mb-4">{errorMessage}</p>}
+          <div className="overflow-x-auto">
+            <table className="min-w-full">
+              <thead className="bg-gray-100">
+                <tr>
+                  {['ชื่อผู้ใช้', 'อีเมล', 'วันที่ยืม', 'กำหนดคืน', 'จำนวน', 'สถานะ', 'การดำเนินการ'].map((header) => (
+                    <th key={header} className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{header}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {currentItems.length === 0 ? (
+                  <tr><td colSpan={7} className="py-4 px-4 text-center text-gray-500">ไม่พบข้อมูลการยืม</td></tr>
+                ) : (
+                  currentItems.map((detail) => (
+                    <tr key={detail.loan_id} className="hover:bg-gray-50">
+                      <td className="py-4 px-4 whitespace-nowrap">{detail.user_firstname}</td>
+                      <td className="py-4 px-4 whitespace-nowrap">{detail.user_email}</td>
+                      <td className="py-4 px-4 whitespace-nowrap">{detail.loan_date}</td>
+                      <td className="py-4 px-4 whitespace-nowrap">{detail.due_date}</td>
+                      <td className="py-4 px-4 whitespace-nowrap text-center">{detail.item_quantity}</td>
+                      <td className="py-4 px-4 whitespace-nowrap text-center">
+                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          detail.loan_status === 'approve' ? 'bg-green-100 text-green-800' :
+                          detail.loan_status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                          detail.loan_status === 'borrowed' ? 'bg-blue-100 text-blue-800' :
+                          'bg-red-100 text-red-800'
+                        }`}>
+                          {detail.loan_status}
+                        </span>
+                      </td>
+                      <td className="py-4 px-4 whitespace-nowrap">
+                        <div className="flex justify-end space-x-2">
+                          <button 
+                            onClick={() => handleViewDetails(detail.user_id.toString(), detail.transaction_id.toString())} 
+                            className="bg-blue-100 text-blue-600 hover:bg-blue-200 px-3 py-1 rounded-md flex items-center transition duration-300"
+                          >
+                            <Eye className="w-4 h-4 mr-1" />
+                            <span>ดู</span>
+                          </button>
+                          <button
+                            onClick={() => handleConfirm(detail.transaction_id)}
+                            className="bg-green-100 text-green-600 hover:bg-green-200 px-3 py-1 rounded-md flex items-center transition duration-300"
+                          >
+                            <CheckCircle className="w-4 h-4 mr-1" />
+                            <span>ยืนยัน</span>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+          <div className="mt-4 flex justify-between items-center">
+            <button
+              onClick={() => paginate(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:bg-gray-200 disabled:text-gray-500"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <span className="text-sm text-gray-700">
+              หน้า {currentPage} จาก {totalPages}
+            </span>
+            <button
+              onClick={() => paginate(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:bg-gray-200 disabled:text-gray-500"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }

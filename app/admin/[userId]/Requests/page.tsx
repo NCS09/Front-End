@@ -44,7 +44,7 @@ export default function LoanDetailPage() {
                 setLoanDetails(result);
             } catch (error) {
                 console.error("เกิดข้อผิดพลาดในการดึงข้อมูล:", error);
-                setErrorMessage('ไม่สามารถดึงข้อมูลการยืมได้');
+                // setErrorMessage('ไม่สามารถดึงข้อมูลการยืมได้');
             } finally {
                 setIsLoading(false);
             }
@@ -112,7 +112,7 @@ export default function LoanDetailPage() {
                                         <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ชื่อผู้ใช้</th>
                                         <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">อีเมล</th>
                                         <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">วันที่ยืม</th>
-                                        <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">กำหนดคืน</th>
+                                        <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">วันรับของ</th>
                                         <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">จำนวน</th>
                                         <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">สถานะ</th>
                                         <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
@@ -135,7 +135,8 @@ export default function LoanDetailPage() {
                                                     <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
                                                         detail.loan_status === 'approve' ? 'bg-green-100 text-green-800' :
                                                         detail.loan_status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                                                        'bg-red-100 text-red-800'
+                                                        detail.loan_status === 'borrowed' ? 'bg-red-100 text-yellow-800' :
+                                                        'bg-gray-100 text-gray-800'
                                                     }`}>
                                                         {detail.loan_status}
                                                     </span>

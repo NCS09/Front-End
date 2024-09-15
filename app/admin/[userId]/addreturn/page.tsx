@@ -1,31 +1,32 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from 'next/navigation';
-import { Eye } from 'lucide-react';
+import { useRouter, useParams } from 'next/navigation';
+import { Eye, RotateCcw } from 'lucide-react';
 
-interface LoanHistory {
+interface LoanRequest {
     user_id: number;
     transaction_id: number;
     user_firstname: string;
     user_email: string;
+    user_phone: string;
     loan_date: string;
     due_date: string;
-    return_date: string | null;
     item_quantity: number;
-    return_status: 'returned' | 'lost' | 'damaged';
+    loan_status: string;
+    item_ids: string;
 }
 
-export default function DeviceRequests() {
+export default function ReturnDevice() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const { userId } = useParams<{ userId: string }>();
-    const [loanRequests, setLoanRequests] = useState<LoanHistory[]>([]);
+    const [returnDevices, setReturnDevices] = useState<LoanRequest[]>([]);
     const [errorMessage, setErrorMessage] = useState('');
     const router = useRouter();
 
     const fetchData = async () => {
         try {
-            const response = await fetch(`${apiUrl}/user/history/${userId}`, {
+            const response = await fetch(`${apiUrl}/loan_detail/borrowed/${userId}`, {
                 method: 'GET',
                 credentials: "include",
             });
@@ -35,10 +36,10 @@ export default function DeviceRequests() {
             }
 
             const result = await response.json();
-            setLoanRequests(result);
+            setReturnDevices(result);
         } catch (error) {
             console.error("เกิดข้อผิดพลาดในการดึงข้อมูล:", error);
-            setErrorMessage('ไม่สามารถดึงข้อมูลประวัติการยืมได้');
+            setErrorMessage('ไม่สามารถดึงข้อมูลการยืมได้');
         }
     };
     
@@ -46,41 +47,22 @@ export default function DeviceRequests() {
         fetchData();
     }, [userId]);
 
-    const formatDate = (dateString: string | null) => {
-        if (!dateString) return 'ไม่ระบุ';
+    const handleReturn = async (transaction_id: number) => {
+        // Implement return logic here
+        console.log(`Returning items for transaction ${transaction_id}`);
+        // You should call an API endpoint to process the return
+        // After successful return, refresh the data
+        // fetchData();
+    };
+
+    const formatDate = (dateString: string) => {
         const date = new Date(dateString);
-        return date.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
-    };
-
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case 'returned':
-                return 'bg-green-100 text-green-800';
-            case 'lost':
-                return 'bg-red-100 text-red-800';
-            case 'damaged':
-                return 'bg-yellow-100 text-yellow-800';
-            default:
-                return 'bg-gray-100 text-gray-800';
-        }
-    };
-
-    const getStatusText = (status: string) => {
-        switch (status) {
-            case 'returned':
-                return 'คืนแล้ว';
-            case 'lost':
-                return 'สูญหาย';
-            case 'damaged':
-                return 'ชำรุด';
-            default:
-                return status;
-        }
+        return date.toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' });
     };
 
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
-            <h1 className="text-3xl font-bold mb-6 text-center text-blue-600">ประวัติการยืมอุปกรณ์ทั้งหมด</h1>
+            <h1 className="text-3xl font-bold mb-6 text-center text-blue-600">รายการอุปกรณ์ที่รอคืน</h1>
             
             {errorMessage && (
                 <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md">
@@ -94,31 +76,32 @@ export default function DeviceRequests() {
                         <tr>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ชื่อผู้ยืม</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">อีเมล</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">เบอร์โทรศัพท์</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">วันที่ยืม</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">กำหนดคืน</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">วันที่คืน</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">จำนวน</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">สถานะ</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">การดำเนินการ</th>
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                        {loanRequests.map((request) => (
-                            <tr key={request.transaction_id}>
-                                <td className="px-6 py-4 whitespace-nowrap">{request.user_firstname}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{request.user_email}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{formatDate(request.loan_date)}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{formatDate(request.due_date)}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{formatDate(request.return_date)}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{request.item_quantity}</td>
+                        {returnDevices.map((device) => (
+                            <tr key={device.transaction_id}>
+                                <td className="px-6 py-4 whitespace-nowrap">{device.user_firstname}</td>
+                                <td className="px-6 py-4 whitespace-nowrap">{device.user_email}</td>
+                                <td className="px-6 py-4 whitespace-nowrap">{device.user_phone}</td>
+                                <td className="px-6 py-4 whitespace-nowrap">{formatDate(device.loan_date)}</td>
+                                <td className="px-6 py-4 whitespace-nowrap">{formatDate(device.due_date)}</td>
+                                <td className="px-6 py-4 whitespace-nowrap">{device.item_quantity}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(request.return_status)}`}>
-                                        {getStatusText(request.return_status)}
+                                    <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                        {device.loan_status}
                                     </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+
                                     <button
-                                        onClick={() => router.push(`/user/${userId}/return/${request.user_id}/${request.transaction_id}`)}
+                                        onClick={() => router.push(`/admin/${userId}/Requests/${device.user_id}/${device.transaction_id}`)}
                                         className="text-blue-600 hover:text-blue-900"
                                     >
                                         <Eye className="inline-block w-5 h-5 mr-1" />

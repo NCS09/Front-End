@@ -28,7 +28,7 @@ export default function LoanDetailPage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`${apiUrl}/admin/loan_detail/${params.id}/${params.idt}`, {
+                const response = await fetch(`${apiUrl}/user/loan_detail/${params.id}/${params.idt}`, {
                     method: 'GET',
                     credentials: "include",
                 });

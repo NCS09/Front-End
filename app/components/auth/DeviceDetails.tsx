@@ -130,7 +130,7 @@ const DeviceDetails: React.FC = () => {
                     </div>
 
                     {updateMessage && (
-                        <div className={`mb-4 p-4 rounded ${updateMessage.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                        <div className={`mb-4 p-4 rounded ${updateMessage.type == 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                             {updateMessage.message}
                         </div>
                     )}
@@ -157,6 +157,7 @@ const DeviceDetails: React.FC = () => {
                                                     onChange={(e) => setEditingItem({...editingItem, item_availability: e.target.value})}
                                                     className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                 >
+                                                    <option>เลือก</option>
                                                     <option value="ready">Ready</option>
                                                     <option value="not ready">Not Ready</option>
                                                     

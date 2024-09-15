@@ -15,6 +15,7 @@ interface LoanDetail {
     user_id: string;
     transaction_id: string;
     loan_status: string;
+    user_phone: string;
 }
 
 const ITEMS_PER_PAGE = 20;
@@ -111,6 +112,7 @@ export default function LoanDetailPage() {
                                     <tr>
                                         <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ชื่อผู้ใช้</th>
                                         <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">อีเมล</th>
+                                        <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">เบอร์ติดต่อ</th>
                                         <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">วันที่ยืม</th>
                                         <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">วันรับของ</th>
                                         <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">จำนวน</th>
@@ -128,6 +130,7 @@ export default function LoanDetailPage() {
                                             <tr key={detail.loan_id} className="hover:bg-gray-50">
                                                 <td className="py-4 px-4 whitespace-nowrap">{detail.user_firstname}</td>
                                                 <td className="py-4 px-4 whitespace-nowrap">{detail.user_email}</td>
+                                                <td className="py-4 px-4 whitespace-nowrap">{detail.user_phone}</td>
                                                 <td className="py-4 px-4 whitespace-nowrap">{detail.loan_date}</td>
                                                 <td className="py-4 px-4 whitespace-nowrap">{detail.due_date}</td>
                                                 <td className="py-4 px-4 whitespace-nowrap text-center">{detail.item_quantity}</td>

@@ -45,6 +45,7 @@ export default function Sidebarpage({ userId }: SidebarpageProps) {
         { path: '', label: 'หน้าหลัก/ออกรายงาน', icon: FiHome },
         { path: 'Managedevices', label: 'จัดการอุปกรณ์', icon: FiBox },
         { path: 'Requests', label: 'คำร้องขอ', icon: FiClipboard },
+        { path: 'addreturn', label: 'รายการยืมของฉัน', icon: FiClipboard },
         { path: 'Return', label: 'ยืนยันการคืน', icon: FiRotateCcw },
         { path: 'AddBorrow', label: 'ยืมอุปกรณ์', icon: FiPlusCircle },
         { path: 'addconfirm', label: 'ยืนยันรับของ', icon: FiCheckCircle },

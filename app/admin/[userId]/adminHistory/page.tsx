@@ -14,6 +14,7 @@ interface LoanRequest {
     return_date: string | null;
     item_quantity: number;
     return_status: string;
+    user_phone: string;
 }
 
 export default function Historypage() {
@@ -74,6 +75,7 @@ export default function Historypage() {
                         <th className="p-2">รหัสรายการ</th>
                         <th className="p-2">ชื่อ</th>
                         <th className="p-2">อีเมล</th>
+                        <th className="p-2">เบอร์ติดต่อ</th>
                         <th className="p-2">วันที่ยืม</th>
                         <th className="p-2">วันที่ครบกำหนด</th>
                         <th className="p-2">วันที่คืน</th>
@@ -91,6 +93,7 @@ export default function Historypage() {
                                 <td className="p-2 border-b">{request.transaction_id}</td>
                                 <td className="p-2 border-b">{request.user_firstname}</td>
                                 <td className="p-2 border-b">{request.user_email}</td>
+                                <td className="p-2 border-b">{request.user_phone}</td>
                                 <td className="p-2 border-b">{new Date(request.loan_date).toLocaleDateString()}</td>
                                 <td className="p-2 border-b">{new Date(request.due_date).toLocaleDateString()}</td>
                                 <td className="p-2 border-b">{request.return_date ? new Date(request.return_date).toLocaleDateString() : 'ไม่เคยคืน'}</td>

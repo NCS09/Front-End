@@ -47,7 +47,16 @@ export default function Historypage() {
     }, []);
 
     const getReturnStatusDisplay = (status: string) => {
-        return status === 'returned' ? 'คืนแล้ว' : status;
+        switch (status) {
+            case 'returned':
+                return { text: 'คืนแล้ว', color: 'text-green-600 bg-green-100' };
+            case 'lost':
+                return { text: 'สูญหาย', color: 'text-red-600 bg-red-100' };
+            case 'damaged':
+                return { text: 'ชำรุด', color: 'text-yellow-600 bg-yellow-100' };
+            default:
+                return { text: status, color: 'text-gray-600 bg-gray-100' };
+        }
     };
 
     return (
@@ -74,24 +83,29 @@ export default function Historypage() {
                     </tr>
                 </thead>
                 <tbody>
-                    {loanRequests.map((request) => (
-                        <tr key={request.transaction_id}>
-                            <td className="p-2 border-b">{request.user_id}</td>
-                            <td className="p-2 border-b">{request.transaction_id}</td>
-                            <td className="p-2 border-b">{request.user_firstname}</td>
-                            <td className="p-2 border-b">{request.user_email}</td>
-                            <td className="p-2 border-b">{new Date(request.loan_date).toLocaleDateString()}</td>
-                            <td className="p-2 border-b">{new Date(request.due_date).toLocaleDateString()}</td>
-                            <td className="p-2 border-b">{request.return_date ? new Date(request.return_date).toLocaleDateString() : 'ไม่เคยคืน'}</td>
-                            <td className="p-2 border-b">{request.item_quantity}</td>
-                            <td className="p-2 border-b">{getReturnStatusDisplay(request.return_status)}</td>
-                            <td className="p-2 border-b">
-                                <button className="text-blue-500 hover:underline" onClick={() => router.push(`/admin/${userId}/Requests/${request.user_id}/${request.transaction_id}`)}>
-                                    <Eye className="inline" />
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
+                    {loanRequests.map((request) => {
+                        const statusDisplay = getReturnStatusDisplay(request.return_status);
+                        return (
+                            <tr key={request.transaction_id}>
+                                <td className="p-2 border-b">{request.user_id}</td>
+                                <td className="p-2 border-b">{request.transaction_id}</td>
+                                <td className="p-2 border-b">{request.user_firstname}</td>
+                                <td className="p-2 border-b">{request.user_email}</td>
+                                <td className="p-2 border-b">{new Date(request.loan_date).toLocaleDateString()}</td>
+                                <td className="p-2 border-b">{new Date(request.due_date).toLocaleDateString()}</td>
+                                <td className="p-2 border-b">{request.return_date ? new Date(request.return_date).toLocaleDateString() : 'ไม่เคยคืน'}</td>
+                                <td className="p-2 border-b">{request.item_quantity}</td>
+                                <td className={`p-2 border-b ${statusDisplay.color} rounded-full text-center`}>
+                                    {statusDisplay.text}
+                                </td>
+                                <td className="p-2 border-b">
+                                    <button className="text-blue-500 hover:underline" onClick={() => router.push(`/admin/${userId}/Requests/${request.user_id}/${request.transaction_id}`)}>
+                                        <Eye className="inline" />
+                                    </button>
+                                </td>
+                            </tr>
+                        );
+                    })}
                 </tbody>
             </table>
         </div>

@@ -1,5 +1,3 @@
-// pages/BorrowDevicePage.tsx
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -53,8 +51,10 @@ const BorrowDevicePage: React.FC = () => {
     }, []);
 
     const handleDeviceSelect = (device: Device) => {
-        if (!selectedDevices.find(d => d.device_id === device.device_id)) {
-            setSelectedDevices([...selectedDevices, { device_id: device.device_id, quantity: 1 }]);
+        if (device.device_availability > 0 && device.device_approve) {
+            if (!selectedDevices.find(d => d.device_id === device.device_id)) {
+                setSelectedDevices([...selectedDevices, { device_id: device.device_id, quantity: 1 }]);
+            }
         }
     };
 
@@ -148,12 +148,22 @@ const BorrowDevicePage: React.FC = () => {
                         <div
                             key={device.device_id}
                             onClick={() => handleDeviceSelect(device)}
-                            className={`bg-white p-4 rounded-lg shadow cursor-pointer hover:shadow-md transition ${device.device_availability > 0 && device.device_approve ? '' : 'opacity-50'}`}
+                            className={`bg-white p-4 rounded-lg shadow transition ${
+                                device.device_availability > 0 && device.device_approve
+                                    ? 'cursor-pointer hover:shadow-md'
+                                    : 'opacity-50 cursor-not-allowed'
+                            }`}
                         >
                             <h3 className="font-semibold text-lg mb-2">{device.device_name}</h3>
                             <p className="text-sm text-gray-600 mb-2">{device.device_description}</p>
-                            <span className={`px-2 py-1 rounded text-sm ${device.device_availability > 0 && device.device_approve ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                                {device.device_availability > 0 && device.device_approve ? `ยืมได้: ${device.device_availability}` : 'ไม่สามารถยืมได้'}
+                            <span className={`px-2 py-1 rounded text-sm ${
+                                device.device_availability > 0 && device.device_approve
+                                    ? 'bg-green-100 text-green-800'
+                                    : 'bg-red-100 text-red-800'
+                            }`}>
+                                {device.device_availability > 0 && device.device_approve
+                                    ? `ยืมได้: ${device.device_availability}`
+                                    : 'ไม่สามารถยืมได้'}
                             </span>
                         </div>
                     ))}

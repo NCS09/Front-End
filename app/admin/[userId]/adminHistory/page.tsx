@@ -102,7 +102,10 @@ export default function Historypage() {
                                     {statusDisplay.text}
                                 </td>
                                 <td className="p-2 border-b">
-                                    <button className="text-blue-500 hover:underline" onClick={() => router.push(`/admin/${userId}/Requests/${request.user_id}/${request.transaction_id}`)}>
+                                    <button 
+                                        className="text-blue-500 hover:underline" 
+                                        onClick={() => router.push(`/admin/${userId}/adminHistory/${request.user_id}/${request.transaction_id}`)}
+                                    >
                                         <Eye className="inline" />
                                     </button>
                                 </td>

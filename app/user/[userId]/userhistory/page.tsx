@@ -13,25 +13,34 @@ interface LoanHistory {
     due_date: string;
     return_date: string | null;
     item_quantity: number;
-    return_status: 'returned' | 'lost' | 'damaged';
 }
 
 export default function DeviceRequests() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    const { userId } = useParams<{ userId: string }>();
+    const { userId } = useParams();
     const [loanRequests, setLoanRequests] = useState<LoanHistory[]>([]);
     const [errorMessage, setErrorMessage] = useState('');
     const router = useRouter();
 
     const fetchData = async () => {
+        if (!apiUrl) {
+            setErrorMessage('API URL ไม่ได้ถูกตั้งค่า');
+            return;
+        }
+
         try {
             const response = await fetch(`${apiUrl}/user/history/${userId}`, {
                 method: 'GET',
                 credentials: "include",
             });
-    
+
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                if (response.status === 404) {
+                    setErrorMessage('ไม่พบประวัติสำหรับผู้ใช้ที่ระบุ');
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+                return;
             }
 
             const result = await response.json();
@@ -41,9 +50,11 @@ export default function DeviceRequests() {
             setErrorMessage('ไม่สามารถดึงข้อมูลประวัติการยืมได้');
         }
     };
-    
+
     useEffect(() => {
-        fetchData();
+        if (userId) {
+            fetchData();
+        }
     }, [userId]);
 
     const formatDate = (dateString: string | null) => {
@@ -52,36 +63,19 @@ export default function DeviceRequests() {
         return date.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
     };
 
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case 'returned':
-                return 'bg-green-100 text-green-800';
-            case 'lost':
-                return 'bg-red-100 text-red-800';
-            case 'damaged':
-                return 'bg-yellow-100 text-yellow-800';
-            default:
-                return 'bg-gray-100 text-gray-800';
-        }
+    const getStatusColor = (returnDate: string | null) => {
+        if (!returnDate) return 'bg-yellow-100 text-yellow-800';
+        return 'bg-green-100 text-green-800';
     };
 
-    const getStatusText = (status: string) => {
-        switch (status) {
-            case 'returned':
-                return 'คืนแล้ว';
-            case 'lost':
-                return 'สูญหาย';
-            case 'damaged':
-                return 'ชำรุด';
-            default:
-                return status;
-        }
+    const getStatusText = (returnDate: string | null) => {
+        return returnDate ? 'คืนแล้ว' : 'ยังไม่คืน';
     };
 
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
             <h1 className="text-3xl font-bold mb-6 text-center text-blue-600">ประวัติการยืมอุปกรณ์ทั้งหมด</h1>
-            
+
             {errorMessage && (
                 <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md">
                     {errorMessage}
@@ -112,13 +106,13 @@ export default function DeviceRequests() {
                                 <td className="px-6 py-4 whitespace-nowrap">{formatDate(request.return_date)}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">{request.item_quantity}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(request.return_status)}`}>
-                                        {getStatusText(request.return_status)}
+                                    <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(request.return_date)}`}>
+                                        {getStatusText(request.return_date)}
                                     </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <button
-                                        onClick={() => router.push(`/user/${userId}/return/${request.user_id}/${request.transaction_id}`)}
+                                        onClick={() => router.push(`/user/${userId}/userhistory/${userId}/${request.transaction_id}`)}
                                         className="text-blue-600 hover:text-blue-900"
                                     >
                                         <Eye className="inline-block w-5 h-5 mr-1" />

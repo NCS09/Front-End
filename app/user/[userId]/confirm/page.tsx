@@ -67,7 +67,7 @@ export default function ConfirmDevice() {
   const currentItems = confirmreq.slice(indexOfFirstItem, indexOfLastItem);
 
   const handleViewDetails = (user_id: string, transaction_id: string) => {
-    router.push(`/admin/${user_id}/Requests/${user_id}/${transaction_id}`);
+    router.push(`/user/${user_id}/return/${user_id}/${transaction_id}`);
   };
 
   const handleConfirm = async (transaction_id: number) => {

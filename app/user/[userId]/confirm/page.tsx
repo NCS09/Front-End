@@ -95,7 +95,7 @@ export default function ConfirmDevice() {
 
   return (
     <div className="p-6 bg-gradient-to-b from-blue-50 to-white min-h-screen">
-      <h1 className="text-3xl font-bold mb-6 text-center text-blue-600">ยืนยันการยืมอุปกรณ์</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center text-blue-600">ยืนยันรับอุปกรณ์</h1>
       
       {isLoading ? (
         <div className="flex justify-center items-center h-64">

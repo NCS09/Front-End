@@ -11,6 +11,7 @@ interface Device {
     device_name: string;
     device_availability: number;
     device_description: string;
+    device_approve: boolean;
 }
 
 interface SelectedDevice {
@@ -75,7 +76,7 @@ const BorrowDevicePage: React.FC = () => {
             id: userId
         }));
         const itemsString = JSON.stringify(items);
-        return `https://279f-2403-6200-88af-2c94-98d7-a0c4-6f24-e150.ngrok-free.app/loan-data?data=${encodeURIComponent(itemsString)}`;
+        return `https://86d0-2403-6200-88ae-9204-c102-878c-2a52-bf7a.ngrok-free.app/loan-data?data=${encodeURIComponent(itemsString)}`;
     };
 
     const handleGenerateQRCode = () => {
@@ -147,12 +148,12 @@ const BorrowDevicePage: React.FC = () => {
                         <div
                             key={device.device_id}
                             onClick={() => handleDeviceSelect(device)}
-                            className={`bg-white p-4 rounded-lg shadow cursor-pointer hover:shadow-md transition ${device.device_availability > 0 ? '' : 'opacity-50'}`}
+                            className={`bg-white p-4 rounded-lg shadow cursor-pointer hover:shadow-md transition ${device.device_availability > 0 && device.device_approve ? '' : 'opacity-50'}`}
                         >
                             <h3 className="font-semibold text-lg mb-2">{device.device_name}</h3>
                             <p className="text-sm text-gray-600 mb-2">{device.device_description}</p>
-                            <span className={`px-2 py-1 rounded text-sm ${device.device_availability > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                                {device.device_availability > 0 ? `ยืมได้: ${device.device_availability}` : 'ไม่สามารถยืมได้'}
+                            <span className={`px-2 py-1 rounded text-sm ${device.device_availability > 0 && device.device_approve ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                                {device.device_availability > 0 && device.device_approve ? `ยืมได้: ${device.device_availability}` : 'ไม่สามารถยืมได้'}
                             </span>
                         </div>
                     ))}

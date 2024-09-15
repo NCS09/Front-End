@@ -15,11 +15,7 @@ export default function returndevice() {
             const response = await fetch(`${apiUrl}/user/`, {
                 method: 'GET',
                 credentials: "include",
-                headers: {
-                    'Cache-Control': 'no-cache',
-                    'Pragma': 'no-cache',
-                    'Expires': '0',
-                }
+
             });
     
             const result = await response.json();

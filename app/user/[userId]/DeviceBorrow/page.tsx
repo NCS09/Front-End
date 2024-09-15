@@ -79,7 +79,7 @@ export default function DeviceRequests() {
                                 <th className="py-2 px-4 border-b">รหัสคำร้อง</th>
                                 <th className="py-2 px-4 border-b">สถานะ</th>
                                 <th className="py-2 px-4 border-b">วันที่ยืม</th>
-                                <th className="py-2 px-4 border-b">กำหนดคืน</th>
+                                <th className="py-2 px-4 border-b">วันและเวลาที่มารับของ</th>
                                 <th className="py-2 px-4 border-b">จำนวน</th>
                                 <th className=""></th>
                             </tr>

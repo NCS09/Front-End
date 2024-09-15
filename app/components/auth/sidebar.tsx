@@ -47,8 +47,9 @@ export default function Sidebarpage({ userId }: SidebarpageProps) {
         { path: 'Requests', label: 'คำร้องขอ', icon: FiClipboard },
         { path: 'Return', label: 'ยืนยันการคืน', icon: FiRotateCcw },
         { path: 'AddBorrow', label: 'ยืมอุปกรณ์', icon: FiPlusCircle },
-        { path: 'adminHistory', label: 'ดูประวัติทั้งหมด', icon: FiList },
         { path: 'addconfirm', label: 'ยืนยันรับของ', icon: FiCheckCircle },
+        { path: 'adminHistory', label: 'ดูประวัติทั้งหมด', icon: FiList },
+        
         
     ];
 

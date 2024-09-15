@@ -12,7 +12,7 @@ interface LoanDetail {
   loan_date: string;
   due_date: string;
   item_quantity: number;
-  loan_status: 'approve' | 'pending' | 'rejected' | 'borrowed';
+  loan_status: 'approve' | 'pending' | 'borrowed';
   transaction_id: number;
   user_id: number;
 }
@@ -30,7 +30,7 @@ export default function ConfirmDevice() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch(`${apiUrl}/loan_detail/approve/${userId}`, {
+      const response = await fetch(`${apiUrl}/loan_detail/approve`, {
         method: 'GET',
         credentials: 'include',
         headers: {
@@ -95,25 +95,24 @@ export default function ConfirmDevice() {
   };
 
   return (
-    
     <div className="p-6 bg-gradient-to-b from-blue-50 to-white min-h-screen">
-      <div className="mb-6">
-                <nav>
-                    <ul className="flex space-x-4 border-b-2 border-gray-300">
-                        <li>
-                            <Link href={`/admin/${userId}/addconfirm`} className="inline-block py-2 px-4 text-blue-600 hover:text-blue-800 border-b-2 border-transparent hover:border-blue-600 transition">
-                                แอดมิน
-                            </Link>
-                        </li>
-                        <li>
-                            <Link href={`/admin/${userId}/conuser`} className="inline-block py-2 px-4 text-blue-600 hover:text-blue-800 border-b-2 border-transparent hover:border-blue-600 transition">
-                                สมาชิก
-                            </Link>
-                        </li>
+        <div className="mb-6">
+             <nav>
+                <ul className="flex space-x-4 border-b-2 border-gray-300">
+                     <li>
+                        <Link href={`/admin/${userId}/addconfirm`} className="inline-block py-2 px-4 text-blue-600 hover:text-blue-800 border-b-2 border-transparent hover:border-blue-600 transition">
+                            แอดมิน
+                        </Link>
+                    </li>
+                    <li>
+                        <Link href={`/admin/${userId}/conuser`} className="inline-block py-2 px-4 text-blue-600 hover:text-blue-800 border-b-2 border-transparent hover:border-blue-600 transition">
+                            สมาชิก
+                        </Link>
+                    </li>
                     </ul>
                 </nav>
-            </div>
-      <h1 className="text-3xl font-bold mb-6 text-center text-blue-600">ยืนยันการยืมอุปกรณ์</h1>
+        </div>
+      <h1 className="text-3xl font-bold mb-6 text-center text-blue-600">ยืนยันรับของสมาชิก</h1>
       
       {isLoading ? (
         <div className="flex justify-center items-center h-64">

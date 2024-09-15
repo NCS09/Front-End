@@ -11,9 +11,9 @@ interface LoanDetail {
     user_id: string;
     user_email: string;
     loan_date: string;
-    due_date: string;
+    due_date: string | null;
     return_date: string | null;
-    return_status: 'returned' | 'pending' | 'lost' | 'damaged';
+    status: string;
     item_id: string;
 }
 
@@ -75,7 +75,7 @@ export default function AdminLoanDetailPage() {
     };
 
     const getStatusColor = (status: string) => {
-        switch (status) {
+        switch (status.toLowerCase()) {
             case 'returned':
                 return 'bg-green-100 text-green-800';
             case 'pending':
@@ -84,13 +84,17 @@ export default function AdminLoanDetailPage() {
                 return 'bg-red-100 text-red-800';
             case 'damaged':
                 return 'bg-orange-100 text-orange-800';
+            case 'deny':
+                return 'bg-red-100 text-red-800';
+            case 'cancel':
+                return 'bg-amber-100 text-amber-800';
             default:
                 return 'bg-gray-100 text-gray-800';
         }
     };
 
     const getStatusText = (status: string) => {
-        switch (status) {
+        switch (status.toLowerCase()) {
             case 'returned':
                 return 'คืนแล้ว';
             case 'pending':
@@ -99,6 +103,10 @@ export default function AdminLoanDetailPage() {
                 return 'สูญหาย';
             case 'damaged':
                 return 'ชำรุด';
+            case 'deny':
+                return 'ปฏิเสธ';
+            case 'cancel':
+                return 'ยกเลิก';
             default:
                 return 'ไม่ทราบสถานะ';
         }
@@ -153,8 +161,8 @@ export default function AdminLoanDetailPage() {
                                                     <td className="py-4 px-4 whitespace-nowrap">{formatDate(detail.due_date)}</td>
                                                     <td className="py-4 px-4 whitespace-nowrap">{formatDate(detail.return_date)}</td>
                                                     <td className="py-4 px-4 whitespace-nowrap">
-                                                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(detail.return_status)}`}>
-                                                            {getStatusText(detail.return_status)}
+                                                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(detail.status)}`}>
+                                                            {getStatusText(detail.status)}
                                                         </span>
                                                     </td>
                                                 </tr>

@@ -1,42 +1,30 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import { useRouter, useParams } from 'next/navigation';
-import { Eye, RotateCcw } from 'lucide-react';
+import { useRouter,useParams } from 'next/navigation';
+import { Eye, X } from 'lucide-react';
 
-interface LoanRequest {
-    user_id: number;
-    transaction_id: number;
-    user_firstname: string;
-    user_email: string;
-    user_phone: string;
-    loan_date: string;
-    due_date: string;
-    item_quantity: number;
-    loan_status: string;
-    item_ids: string;
-}
-
-export default function ReturnDevice() {
+export default function DeviceRequests() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    const { userId } = useParams<{ userId: string }>();
-    const [returnDevices, setReturnDevices] = useState<LoanRequest[]>([]);
+    const params  = useParams<{userId: string}>();
+    const [loanRequests, setLoanRequests] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
     const router = useRouter();
 
     const fetchData = async () => {
         try {
-            const response = await fetch(`${apiUrl}/loan_detail/borrowed/${userId}`, {
+            const response = await fetch(`${apiUrl}/user/loan_detail`, {
                 method: 'GET',
                 credentials: "include",
+                headers: {
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache',
+                    'Expires': '0',
+                }
             });
     
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-
             const result = await response.json();
-            setReturnDevices(result);
+            setLoanRequests(result);
         } catch (error) {
             console.error("เกิดข้อผิดพลาดในการดึงข้อมูล:", error);
             setErrorMessage('ไม่สามารถดึงข้อมูลการยืมได้');
@@ -45,74 +33,86 @@ export default function ReturnDevice() {
     
     useEffect(() => {
         fetchData();
-    }, [userId]);
+    }, []);
 
-    const handleReturn = async (transaction_id: number) => {
-        // Implement return logic here
-        console.log(`Returning items for transaction ${transaction_id}`);
-        // You should call an API endpoint to process the return
-        // After successful return, refresh the data
-        // fetchData();
+    const handleCancel = async (transaction_id: string) => {
+        try {
+            const response = await fetch(`${apiUrl}/cancel-loan/${transaction_id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'ไม่สามารถยกเลิกการยืมได้');
+            }
+            const result = await response.json();
+            console.log(result.message);
+
+            await fetchData();
+
+        } catch (error) {
+            console.error("เกิดข้อผิดพลาดในการยกเลิก:", error);
+            setErrorMessage('เกิดข้อผิดพลาดในการยกเลิกคำร้องการยืม');
+        }
     };
 
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-        return date.toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' });
+    const handleViewDetails = (user_id: string, transaction_id: string) => {
+        router.push(`/admin/${user_id}/Requests/${user_id}/${transaction_id}`);
     };
 
     return (
-        <div className="p-6 bg-gray-100 min-h-screen">
-            <h1 className="text-3xl font-bold mb-6 text-center text-blue-600">รายการอุปกรณ์ที่รอคืน</h1>
-            
-            {errorMessage && (
-                <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md">
-                    {errorMessage}
-                </div>
-            )}
-
-            <div className="bg-white rounded-lg shadow overflow-hidden">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                        <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ชื่อผู้ยืม</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">อีเมล</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">เบอร์โทรศัพท์</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">วันที่ยืม</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">กำหนดคืน</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">จำนวน</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">สถานะ</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">การดำเนินการ</th>
-                        </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                        {returnDevices.map((device) => (
-                            <tr key={device.transaction_id}>
-                                <td className="px-6 py-4 whitespace-nowrap">{device.user_firstname}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{device.user_email}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{device.user_phone}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{formatDate(device.loan_date)}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{formatDate(device.due_date)}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">{device.item_quantity}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                        {device.loan_status}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-
-                                    <button
-                                        onClick={() => router.push(`/admin/${userId}/Requests/${device.user_id}/${device.transaction_id}`)}
-                                        className="text-blue-600 hover:text-blue-900"
-                                    >
-                                        <Eye className="inline-block w-5 h-5 mr-1" />
-                                        รายละเอียด
-                                    </button>
-                                </td>
+        <div className="container mx-auto p-4">
+            <h1 className="text-2xl font-bold mb-4">คำร้องการยืมของคุณ</h1>
+            {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+            {loanRequests.length > 0 ? (
+                <div className="overflow-x-auto">
+                    <table className="min-w-full bg-white border border-gray-300">
+                        <thead>
+                            <tr className="bg-gray-200">
+                                <th className="py-2 px-4 border-b">ชื่อผู้ใช้</th>
+                                <th className="py-2 px-4 border-b">Email</th>
+                                <th className="py-2 px-4 border-b">รหัสคำร้อง</th>
+                                <th className="py-2 px-4 border-b">สถานะ</th>
+                                <th className="py-2 px-4 border-b">วันที่ยืม</th>
+                                <th className="py-2 px-4 border-b">วันและเวลาที่มารับของ</th>
+                                <th className="py-2 px-4 border-b">จำนวน</th>
+                                <th className=""></th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                            {loanRequests.map((request: any) => (
+                                <tr key={request.transaction_id} className="hover:bg-gray-100">
+                                    <td className="py-2 px-4 border-b text-center">{request.user_firstname}</td>
+                                    <td className="py-2 px-4 border-b text-center">{request.user_email}</td>
+                                    <td className="py-2 px-4 border-b text-center">{request.transaction_id}</td>
+                                    <td className="py-2 px-4 border-b text-center">{request.loan_status}</td>
+                                    <td className="py-2 px-4 border-b text-center">{request.loan_date}</td>
+                                    <td className="py-2 px-4 border-b text-center">{request.due_date}</td>
+                                    <td className="py-2 px-4 border-b text-center">{request.item_quantity}</td>
+                                    <td className="py-3 px-4 flex items-center space-x-2">
+                                        <button 
+                                            onClick={() => handleViewDetails(request.user_id, request.transaction_id)} 
+                                            className="text-blue-500 hover:text-blue-700 border-none">
+                                                <Eye className="w-5 h-5" />
+                                        </button>
+                                        <button 
+                                            onClick={() => handleCancel(request.transaction_id)} 
+                                            className="text-red-500 hover:text-red-700 border-none">
+                                                <X className="w-5 h-5" />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            ) : (
+                <p className="text-gray-500">ไม่มีคำร้องการยืมในขณะนี้</p>
+            )}
         </div>
     );
 }

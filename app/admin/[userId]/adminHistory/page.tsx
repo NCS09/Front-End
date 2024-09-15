@@ -49,12 +49,18 @@ export default function Historypage() {
 
     const getReturnStatusDisplay = (status: string) => {
         switch (status) {
-            case 'returned':
+            case 'คืนแล้ว':
                 return { text: 'คืนแล้ว', color: 'text-green-600 bg-green-100' };
-            case 'lost':
-                return { text: 'สูญหาย', color: 'text-red-600 bg-red-100' };
-            case 'damaged':
-                return { text: 'ชำรุด', color: 'text-yellow-600 bg-yellow-100' };
+            case 'ยังไม่ได้คืน':
+                return { text: 'ยังไม่ได้คืน', color: 'text-red-600 bg-red-100' };
+            case 'ถูกยกเลิก':
+                return { text: 'ถูกยกเลิก', color: 'text-amber-600 bg-amber-100' };
+            case 'ถูกปฏิเสธ':
+                return { text: 'ถูกปฏิเสธ', color: 'text-red-600 bg-red-100' };
+            case 'อยู่ในกระบวนการ':
+                return { text: 'อยู่ในกระบวนการ', color: 'text-blue-600 bg-blue-100' };
+            case 'กำลังยืม':
+                return { text: 'กำลังยืม', color: 'text-yellow-600 bg-yellow-100' };
             default:
                 return { text: status, color: 'text-gray-600 bg-gray-100' };
         }

@@ -9,10 +9,12 @@ interface LoanHistory {
     transaction_id: number;
     user_firstname: string;
     user_email: string;
+    user_phone: string;
     loan_date: string;
     due_date: string;
     return_date: string | null;
     item_quantity: number;
+    return_status: string;
 }
 
 export default function DeviceRequests() {
@@ -63,13 +65,23 @@ export default function DeviceRequests() {
         return date.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
     };
 
-    const getStatusColor = (returnDate: string | null) => {
-        if (!returnDate) return 'bg-yellow-100 text-yellow-800';
-        return 'bg-green-100 text-green-800';
-    };
-
-    const getStatusText = (returnDate: string | null) => {
-        return returnDate ? 'คืนแล้ว' : 'ยังไม่คืน';
+    const getStatusColor = (status: string) => {
+        switch (status) {
+            case 'คืนแล้ว':
+                return 'bg-green-100 text-green-800';
+            case 'ยังไม่ได้คืน':
+                return 'bg-yellow-100 text-yellow-800';
+            case 'กำลังยืม':
+                return 'bg-yellow-100 text-yellow-800';
+            case 'ถูกยกเลิก':
+                return 'bg-amber-100 text-amber-800';
+            case 'ถูกปฏิเสธ':
+                return 'bg-red-100 text-red-800';
+            case 'อยู่ในกระบวนการ':
+                return 'bg-blue-100 text-blue-800';
+            default:
+                return 'bg-gray-100 text-gray-800';
+        }
     };
 
     return (
@@ -88,6 +100,7 @@ export default function DeviceRequests() {
                         <tr>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ชื่อผู้ยืม</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">อีเมล</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">เบอร์โทรศัพท์</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">วันที่ยืม</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">กำหนดคืน</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">วันที่คืน</th>
@@ -101,13 +114,14 @@ export default function DeviceRequests() {
                             <tr key={request.transaction_id}>
                                 <td className="px-6 py-4 whitespace-nowrap">{request.user_firstname}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">{request.user_email}</td>
+                                <td className="px-6 py-4 whitespace-nowrap">{request.user_phone}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">{formatDate(request.loan_date)}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">{formatDate(request.due_date)}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">{formatDate(request.return_date)}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">{request.item_quantity}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(request.return_date)}`}>
-                                        {getStatusText(request.return_date)}
+                                    <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(request.return_status)}`}>
+                                        {request.return_status}
                                     </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">

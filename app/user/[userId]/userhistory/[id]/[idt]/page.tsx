@@ -108,7 +108,7 @@ export default function LoanDetailPage() {
             case 'cancel':
                 return 'ยกเลิก';
             default:
-                return 'ไม่ทราบสถานะ';
+                return status;
         }
     };
 

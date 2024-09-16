@@ -43,15 +43,11 @@ export default function AdminLoanDetailPage() {
                 });
 
                 if (!response.ok) {
-                    if (response.status === 404) {
-                        setErrorMessage('อุปกรณ์กำลังอยู่ในกระบวนการถูกยืม');
-                    } else {
-                        throw new Error('ไม่สามารถดึงข้อมูลการยืมได้');
-                    }
-                } else {
-                    const result = await response.json();
-                    setLoanDetails(result);
+                    throw new Error('ไม่สามารถดึงข้อมูลการยืมได้');
                 }
+                
+                const result = await response.json();
+                setLoanDetails(result);
             } catch (error) {
                 console.error("เกิดข้อผิดพลาดในการดึงข้อมูล:", error);
                 setErrorMessage('ไม่สามารถดึงข้อมูลการยืมได้');
@@ -108,7 +104,7 @@ export default function AdminLoanDetailPage() {
             case 'cancel':
                 return 'ยกเลิก';
             default:
-                return 'ไม่ทราบสถานะ';
+                return status; // แสดงสถานะดิบในกรณีที่ไม่ตรงกับเงื่อนไขใดๆ
         }
     };
 

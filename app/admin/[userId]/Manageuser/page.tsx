@@ -71,7 +71,7 @@ export default function Manageuserpage() {
                 setEditMessage('ปรับปรุงข้อมูลผู้ใช้สำเร็จ');
                 setEmail('');
                 setPassword('');
-                fetchUsers(); // รีเฟรชรายการผู้ใช้
+                fetchUsers(); 
             } else {
                 setEditMessage(data.message || 'เกิดข้อผิดพลาดในการแก้ไขข้อมูลผู้ใช้');
             }

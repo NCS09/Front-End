@@ -2,7 +2,8 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Image as ImageIcon, X } from 'lucide-react';
+import Image from 'next/image';
 
 interface LoanDetail {
     return_id: string;
@@ -15,6 +16,7 @@ interface LoanDetail {
     return_date: string | null;
     status: string;
     item_id: string;
+    device_photo: string | null;
 }
 
 const ITEMS_PER_PAGE = 20;
@@ -27,6 +29,7 @@ export default function AdminLoanDetailPage() {
     const [errorMessage, setErrorMessage] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -73,16 +76,23 @@ export default function AdminLoanDetailPage() {
     const getStatusColor = (status: string) => {
         switch (status.toLowerCase()) {
             case 'returned':
+            case 'คืนแล้ว':
                 return 'bg-green-100 text-green-800';
             case 'pending':
+            case 'รอคืน':
                 return 'bg-yellow-100 text-yellow-800';
             case 'lost':
+            case 'สูญหาย':
                 return 'bg-red-100 text-red-800';
             case 'damaged':
+            case 'ชำรุด':
                 return 'bg-orange-100 text-orange-800';
             case 'deny':
+            case 'ปฏิเสธ':
                 return 'bg-red-100 text-red-800';
             case 'cancel':
+            case 'ยกเลิก':
+            case 'ถูกยกเลิก':
                 return 'bg-amber-100 text-amber-800';
             default:
                 return 'bg-gray-100 text-gray-800';
@@ -104,8 +114,16 @@ export default function AdminLoanDetailPage() {
             case 'cancel':
                 return 'ยกเลิก';
             default:
-                return status; // แสดงสถานะดิบในกรณีที่ไม่ตรงกับเงื่อนไขใดๆ
+                return status;
         }
+    };
+
+    const openImageModal = (imageUrl: string) => {
+        setSelectedImage(imageUrl);
+    };
+
+    const closeImageModal = () => {
+        setSelectedImage(null);
     };
 
     return (
@@ -133,6 +151,7 @@ export default function AdminLoanDetailPage() {
                                 <table className="min-w-full">
                                     <thead className="bg-gray-100">
                                         <tr>
+                                            <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">รูปภาพ</th>
                                             <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ชื่ออุปกรณ์</th>
                                             <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">รหัสอุปกรณ์</th>
                                             <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">อีเมลผู้ใช้</th>
@@ -145,11 +164,23 @@ export default function AdminLoanDetailPage() {
                                     <tbody className="bg-white divide-y divide-gray-200">
                                         {currentItems.length === 0 ? (
                                             <tr>
-                                                <td colSpan={7} className="py-4 px-4 text-center text-gray-500">ไม่พบข้อมูลการยืม</td>
+                                                <td colSpan={8} className="py-4 px-4 text-center text-gray-500">ไม่พบข้อมูลการยืม</td>
                                             </tr>
                                         ) : (
                                             currentItems.map((detail) => (
                                                 <tr key={detail.return_id} className="hover:bg-gray-50">
+                                                    <td className="py-4 px-4 whitespace-nowrap">
+                                                        {detail.device_photo ? (
+                                                            <button 
+                                                                onClick={() => openImageModal(`${detail.device_photo}`)}
+                                                                className="text-blue-500 hover:text-blue-700 focus:outline-none"
+                                                            >
+                                                                <ImageIcon size={24} />
+                                                            </button>
+                                                        ) : (
+                                                            <span>ไม่มีรูป</span>
+                                                        )}
+                                                    </td>
                                                     <td className="py-4 px-4 whitespace-nowrap">{detail.item_name}</td>
                                                     <td className="py-4 px-4 whitespace-nowrap">{detail.item_serial}</td>
                                                     <td className="py-4 px-4 whitespace-nowrap">{detail.user_email}</td>
@@ -191,6 +222,26 @@ export default function AdminLoanDetailPage() {
                         </div>
                     )}
                 </>
+            )}
+
+            {/* Image Modal */}
+            {selectedImage && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-4 rounded-lg max-w-3xl max-h-[90vh] overflow-auto">
+                        <div className="flex justify-end mb-2">
+                            <button onClick={closeImageModal} className="text-gray-500 hover:text-gray-700">
+                                <X size={24} />
+                            </button>
+                        </div>
+                        <Image 
+                            src={selectedImage} 
+                            alt="Device" 
+                            width={800} 
+                            height={600} 
+                            className="object-contain w-full h-auto"
+                        />
+                    </div>
+                </div>
             )}
         </div>
     );

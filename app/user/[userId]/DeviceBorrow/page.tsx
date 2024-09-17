@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from 'next/navigation';
-import { Eye, X } from 'lucide-react';
+import { Eye, X, QrCode } from 'lucide-react';
+import Image from 'next/image';
 
 interface LoanRequest {
     user_id: string;
@@ -22,6 +23,7 @@ export default function DeviceRequests() {
     const [loanRequests, setLoanRequests] = useState<LoanRequest[]>([]);
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
+    const [showQRCode, setShowQRCode] = useState(false);
     const router = useRouter();
 
     const fetchData = async () => {
@@ -74,7 +76,6 @@ export default function DeviceRequests() {
             console.log(result.message);
             setSuccessMessage('ยกเลิกคำร้องการยืมสำเร็จ');
             
-            
             const updatedRequests = loanRequests.filter(request => request.transaction_id !== transaction_id);
             setLoanRequests(updatedRequests);
 
@@ -82,7 +83,6 @@ export default function DeviceRequests() {
             console.error("เกิดข้อผิดพลาดในการยกเลิก:", error);
             setErrorMessage('เกิดข้อผิดพลาดในการยกเลิกคำร้องการยืม');
         } finally {
-            
             setTimeout(() => {
                 setSuccessMessage('');
                 setErrorMessage('');
@@ -94,11 +94,37 @@ export default function DeviceRequests() {
         router.push(`/user/${user_id}/DeviceBorrow/${user_id}/${transaction_id}`);
     };
 
+    const handleShowQRCode = () => {
+        setShowQRCode(!showQRCode);
+    };
+
     return (
-        <div className="container mx-auto p-4">
+        <div className="container mx-auto p-4 relative">
             <h1 className="text-2xl font-bold mb-4">คำร้องการยืมของคุณ</h1>
             {errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>}
             {successMessage && <p className="text-green-500 mb-4">{successMessage}</p>}
+            <button
+                onClick={handleShowQRCode}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 flex items-center"
+            >
+                <QrCode className="mr-2" />
+                {showQRCode ? 'รับการแจ้งเตือน' : 'รับการแจ้งเตือน'}
+            </button>
+            {showQRCode && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-8 rounded-lg shadow-lg text-center">
+                        <h2 className="text-xl font-bold mb-4">สแกน QR Code เพื่อรับการแจ้งเตือน</h2>
+                        <Image src="/borrow.png" alt="QR Code" width={250} height={250} className="mx-auto mb-4" />
+                        <p className="text-sm text-gray-600 mb-4">สแกน QR Code นี้ด้วยแอปพลิเคชันของคุณเพื่อรับการแจ้งเตือนเกี่ยวกับการยืมอุปกรณ์</p>
+                        <button
+                            onClick={handleShowQRCode}
+                            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                        >
+                            ปิด
+                        </button>
+                    </div>
+                </div>
+            )}
             {loanRequests.length > 0 ? (
                 <div className="overflow-x-auto">
                     <table className="min-w-full bg-white border border-gray-300">
@@ -127,13 +153,15 @@ export default function DeviceRequests() {
                                     <td className="py-3 px-4 flex items-center space-x-2">
                                         <button 
                                             onClick={() => handleViewDetails(request.user_id, request.transaction_id)} 
-                                            className="text-blue-500 hover:text-blue-700 border-none">
-                                                <Eye className="w-5 h-5" />
+                                            className="text-blue-500 hover:text-blue-700 border-none"
+                                        >
+                                            <Eye className="w-5 h-5" />
                                         </button>
                                         <button 
                                             onClick={() => handleCancel(request.transaction_id)} 
-                                            className="text-red-500 hover:text-red-700 border-none">
-                                                <X className="w-5 h-5" />
+                                            className="text-red-500 hover:text-red-700 border-none"
+                                        >
+                                            <X className="w-5 h-5" />
                                         </button>
                                     </td>
                                 </tr>

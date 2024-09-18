@@ -16,6 +16,27 @@ interface LoanDetail {
 
 const ITEMS_PER_PAGE = 20;
 
+const statusDisplay = {
+    approve: { text: 'อนุมัติแล้ว', color: 'bg-emerald-100 text-emerald-800' },
+    pending: { text: 'รอดำเนินการ', color: 'bg-amber-100 text-amber-800' },
+    borrowed: { text: 'กำลังยืม', color: 'bg-sky-100 text-sky-800' },
+    deny: { text: 'ปฏิเสธ', color: 'bg-rose-100 text-rose-800' },
+    complete: { text: 'คืนแล้ว', color: 'bg-indigo-100 text-indigo-800' },
+    ready: { text: 'พร้อมใช้งาน', color: 'bg-green-100 text-green-800' },
+    cancel: { text: 'ถูกยกเลิก', color: 'bg-gray-100 text-gray-800' },
+};
+
+const getStatusDisplay = (status: string) => {
+    return statusDisplay[status as keyof typeof statusDisplay] || { text: 'ไม่ทราบสถานะ', color: 'bg-gray-100 text-gray-800' };
+};
+
+const formatDate = (dateString: string | null) => {
+    if (!dateString) return 'ไม่ระบุ';
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return '-';
+    return date.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+};
+
 export default function LoanDetailPage() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const params  = useParams<{id: string , idt: string}>();
@@ -47,7 +68,7 @@ export default function LoanDetailPage() {
             }
         };
         fetchData();
-    }, [params.id, params.idt]);
+    }, [params.id, params.idt, apiUrl]);
 
     const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
     const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
@@ -98,16 +119,17 @@ export default function LoanDetailPage() {
                                                 <td className="py-4 px-4 whitespace-nowrap">{detail.item_name}</td>
                                                 <td className="py-4 px-4 whitespace-nowrap">{detail.item_serial}</td>
                                                 <td className="py-4 px-4 whitespace-nowrap">{detail.user_email}</td>
-                                                <td className="py-4 px-4 whitespace-nowrap">{detail.loan_date}</td>
-                                                <td className="py-4 px-4 whitespace-nowrap">{detail.due_date}</td>
+                                                <td className="py-4 px-4 whitespace-nowrap">{formatDate(detail.loan_date)}</td>
+                                                <td className="py-4 px-4 whitespace-nowrap">{formatDate(detail.due_date)}</td>
                                                 <td className="py-4 px-4 whitespace-nowrap">
-                                                    <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                                        detail.item_availability_status === 'available' ? 'bg-green-100 text-green-800' :
-                                                        detail.item_availability_status === 'borrowed' ? 'bg-yellow-100 text-yellow-800' :
-                                                        'bg-red-100 text-red-800'
-                                                    }`}>
-                                                        {detail.item_availability_status}
-                                                    </span>
+                                                    {(() => {
+                                                        const { text, color } = getStatusDisplay(detail.item_availability_status);
+                                                        return (
+                                                            <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${color}`}>
+                                                                {text}
+                                                            </span>
+                                                        );
+                                                    })()}
                                                 </td>
                                             </tr>
                                         ))

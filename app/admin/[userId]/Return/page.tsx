@@ -31,6 +31,20 @@ interface RequestItem {
 
 const ITEMS_PER_PAGE = 20;
 
+const statusDisplay = {
+    approve: { text: 'อนุมัติแล้ว', color: 'bg-green-100 text-green-800' },
+    pending: { text: 'รอดำเนินการ', color: 'bg-yellow-100 text-yellow-800' },
+    complete: { text: 'เสร็จสิ้น', color: 'bg-blue-100 text-blue-800' },
+    borrowed: { text: 'กำลังยืม', color: 'bg-indigo-100 text-indigo-800' },
+    returned: { text: 'คืนแล้ว', color: 'bg-green-100 text-green-800' },
+    lost: { text: 'สูญหาย', color: 'bg-red-100 text-red-800' },
+    damaged: { text: 'ชำรุด', color: 'bg-orange-100 text-orange-800' },
+};
+
+const getStatusDisplay = (status: string) => {
+    return statusDisplay[status as keyof typeof statusDisplay] || { text: 'ไม่ทราบสถานะ', color: 'bg-gray-100 text-gray-800' };
+};
+
 export default function ImprovedLoanDetailPage() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const params = useParams<{ userId: string }>();
@@ -104,7 +118,7 @@ export default function ImprovedLoanDetailPage() {
         const updatedRequests = [...requests];
         updatedRequests[index].item_availability_status = status;
         setRequests(updatedRequests);
-        setStatusError(''); // ล้างข้อผิดพลาดเมื่อมีการเลือกสถานะ
+        setStatusError('');
     };
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -116,7 +130,6 @@ export default function ImprovedLoanDetailPage() {
     const handleConfirmReturn = async () => {
         if (!selectedLoan) return;
 
-        // ตรวจสอบว่าทุกรายการมีการเลือกสถานะที่ถูกต้อง
         const invalidStatuses = requests.filter(request => 
             !['returned', 'lost', 'damaged'].includes(request.item_availability_status)
         );
@@ -153,10 +166,9 @@ export default function ImprovedLoanDetailPage() {
             const result = await response.json();
             setSuccessMessage(result.message);
             setShowModal(false);
-            fetchData(); // รีเฟรชข้อมูลหลังการคืนสำเร็จ
+            fetchData();
         } catch (error) {
             console.error('เกิดข้อผิดพลาดในการยืนยันการคืน:', error);
-            
         }
     };
 
@@ -200,14 +212,14 @@ export default function ImprovedLoanDetailPage() {
                                             <td className="py-4 px-4 whitespace-nowrap">{detail.due_date}</td>
                                             <td className="py-4 px-4 whitespace-nowrap text-center">{detail.item_quantity}</td>
                                             <td className="py-4 px-4 whitespace-nowrap text-center">
-                                                <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                                    detail.loan_status === 'approve' ? 'bg-green-100 text-green-800' :
-                                                    detail.loan_status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                                                    detail.loan_status === 'complete' ? 'bg-blue-100 text-blue-800' :
-                                                    'bg-gray-100 text-gray-800'
-                                                }`}>
-                                                    {detail.loan_status}
-                                                </span>
+                                                {(() => {
+                                                    const { text, color } = getStatusDisplay(detail.loan_status);
+                                                    return (
+                                                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${color}`}>
+                                                            {text}
+                                                        </span>
+                                                    );
+                                                })()}
                                             </td>
                                             <td className="py-4 px-4 whitespace-nowrap text-right text-sm font-medium">
                                                 <button 
@@ -252,7 +264,7 @@ export default function ImprovedLoanDetailPage() {
                         <p><strong>อีเมล:</strong> {selectedLoan.user_email}</p>
                         <p><strong>วันที่ยืม:</strong> {selectedLoan.loan_date}</p>
                         <p><strong>กำหนดคืน:</strong> {selectedLoan.due_date}</p>
-                        <p><strong>สถานะ:</strong> {selectedLoan.loan_status}</p>
+                        <p><strong>สถานะ:</strong> {getStatusDisplay(selectedLoan.loan_status).text}</p>
 
                         <h3 className="text-xl font-semibold mt-6 mb-2">รายการอุปกรณ์</h3>
                         {statusError && <p className="text-red-500 mb-2">{statusError}</p>}

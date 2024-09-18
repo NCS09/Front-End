@@ -20,6 +20,27 @@ interface LoanDetail {
 
 const ITEMS_PER_PAGE = 20;
 
+
+const statusDisplay = {
+    approve: { text: 'อนุมัติแล้ว', color: 'bg-emerald-100 text-emerald-800' },
+    pending: { text: 'รอดำเนินการ', color: 'bg-amber-100 text-amber-800' },
+    borrowed: { text: 'กำลังยืม', color: 'bg-sky-100 text-sky-800' },
+    deny: { text: 'ปฏิเสธ', color: 'bg-rose-100 text-rose-800' },
+    complete: { text: 'คืนแล้ว', color: 'bg-indigo-100 text-indigo-800' },
+    cancel: { text: 'ถูกยกเลิก', color: 'bg-gray-100 text-gray-800' },
+};
+
+const getStatusDisplay = (status: string) => {
+    return statusDisplay[status as keyof typeof statusDisplay] || { text: 'ไม่ทราบสถานะ', color: 'bg-gray-100 text-gray-800' };
+};
+
+const formatDate = (dateString: string | null) => {
+    if (!dateString) return 'ไม่ระบุ';
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return '-';
+    return date.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+};
+
 export default function LoanDetailPage() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const params  = useParams<{userId: string}>();
@@ -45,13 +66,13 @@ export default function LoanDetailPage() {
                 setLoanDetails(result);
             } catch (error) {
                 console.error("เกิดข้อผิดพลาดในการดึงข้อมูล:", error);
-                // setErrorMessage('ไม่สามารถดึงข้อมูลการยืมได้');
+                setErrorMessage('ไม่สามารถดึงข้อมูลการยืมได้');
             } finally {
                 setIsLoading(false);
             }
         };
         fetchData();
-    }, []);
+    }, [apiUrl]);
 
     const handleViewDetails = (user_id: string, transaction_id: string) => {
         router.push(`/admin/${user_id}/Requests/${user_id}/${transaction_id}`);
@@ -71,12 +92,12 @@ export default function LoanDetailPage() {
                 <nav>
                     <ul className="flex space-x-4 border-b-2 border-gray-300">
                         <li>
-                            <Link href={`/admin/${params.userId}/Requests` } className="inline-block py-2 px-4 text-blue-600 hover:text-blue-800 border-b-2 border-transparent hover:border-blue-600 transition">
+                            <Link href={`/admin/${params.userId}/Requests`} className="inline-block py-2 px-4 text-blue-600 hover:text-blue-800 border-b-2 border-transparent hover:border-blue-600 transition">
                                 ทั้งหมด
                             </Link>
                         </li>
                         <li>
-                            <Link href={`/admin/${params.userId}/Requests/pending` } className="inline-block py-2 px-4 text-blue-600 hover:text-blue-800 border-b-2 border-transparent hover:border-blue-600 transition">
+                            <Link href={`/admin/${params.userId}/Requests/pending`} className="inline-block py-2 px-4 text-blue-600 hover:text-blue-800 border-b-2 border-transparent hover:border-blue-600 transition">
                                 รอยืนยัน
                             </Link>
                         </li>
@@ -104,7 +125,7 @@ export default function LoanDetailPage() {
                 </div>
             ) : (
                 <>
-                    {errorMessage && <p className="text-red-600 mb-4">{errorMessage}</p>}
+                    {/* {errorMessage && <p className="text-red-600 mb-4">{errorMessage}</p>} */}
                     <div className="bg-white rounded-xl shadow-lg p-6 overflow-hidden">
                         <div className="overflow-x-auto">
                             <table className="min-w-full">
@@ -123,7 +144,7 @@ export default function LoanDetailPage() {
                                 <tbody className="bg-white divide-y divide-gray-200">
                                     {currentItems.length === 0 ? (
                                         <tr>
-                                            <td colSpan={7} className="py-4 px-4 text-center text-gray-500">ไม่พบข้อมูลการยืม</td>
+                                            <td colSpan={8} className="py-4 px-4 text-center text-gray-500">ไม่พบข้อมูลการยืม</td>
                                         </tr>
                                     ) : (
                                         currentItems.map((detail) => (
@@ -131,18 +152,18 @@ export default function LoanDetailPage() {
                                                 <td className="py-4 px-4 whitespace-nowrap">{detail.user_firstname}</td>
                                                 <td className="py-4 px-4 whitespace-nowrap">{detail.user_email}</td>
                                                 <td className="py-4 px-4 whitespace-nowrap">{detail.user_phone}</td>
-                                                <td className="py-4 px-4 whitespace-nowrap">{detail.loan_date}</td>
-                                                <td className="py-4 px-4 whitespace-nowrap">{detail.due_date}</td>
+                                                <td className="py-4 px-4 whitespace-nowrap">{formatDate(detail.loan_date)}</td>
+                                                <td className="py-4 px-4 whitespace-nowrap">{formatDate(detail.due_date)}</td>
                                                 <td className="py-4 px-4 whitespace-nowrap text-center">{detail.item_quantity}</td>
                                                 <td className="py-4 px-4 whitespace-nowrap text-center">
-                                                    <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                                        detail.loan_status === 'approve' ? 'bg-green-100 text-green-800' :
-                                                        detail.loan_status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                                                        detail.loan_status === 'borrowed' ? 'bg-red-100 text-yellow-800' :
-                                                        'bg-gray-100 text-gray-800'
-                                                    }`}>
-                                                        {detail.loan_status}
-                                                    </span>
+                                                    {(() => {
+                                                        const { text, color } = getStatusDisplay(detail.loan_status);
+                                                        return (
+                                                            <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${color}`}>
+                                                                {text}
+                                                            </span>
+                                                        );
+                                                    })()}
                                                 </td>
                                                 <td className="py-4 px-4 whitespace-nowrap text-right text-sm font-medium">
                                                     <button 

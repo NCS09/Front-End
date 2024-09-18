@@ -77,7 +77,8 @@ export default function LoanDetailPage() {
         return new Date(dateString).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
     };
 
-    const getStatusColor = (status: string) => {
+    const getStatusColor = (status: string | null | undefined) => {
+        if (!status) return 'bg-gray-100 text-gray-800';
         switch (status.toLowerCase()) {
             case 'returned':
                 return 'bg-green-100 text-green-800';

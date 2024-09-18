@@ -17,6 +17,15 @@ interface LoanHistory {
     return_status: string;
 }
 
+const statusColors = {
+    'คืนแล้ว': 'bg-green-100 text-green-800',
+    'ยังไม่ได้คืน': 'bg-yellow-100 text-yellow-800',
+    'กำลังยืม': 'bg-yellow-100 text-yellow-800',
+    'ถูกยกเลิก': 'bg-amber-100 text-amber-800',
+    'ถูกปฏิเสธ': 'bg-red-100 text-red-800',
+    'อยู่ในกระบวนการ': 'bg-blue-100 text-blue-800'
+};
+
 export default function DeviceRequests() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const { userId } = useParams();
@@ -60,28 +69,13 @@ export default function DeviceRequests() {
     }, [userId]);
 
     const formatDate = (dateString: string | null) => {
-        if (!dateString) return 'ไม่ระบุ';
+        if (!dateString) return '-';
         const date = new Date(dateString);
         return date.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
     };
 
     const getStatusColor = (status: string) => {
-        switch (status) {
-            case 'คืนแล้ว':
-                return 'bg-green-100 text-green-800';
-            case 'ยังไม่ได้คืน':
-                return 'bg-yellow-100 text-yellow-800';
-            case 'กำลังยืม':
-                return 'bg-yellow-100 text-yellow-800';
-            case 'ถูกยกเลิก':
-                return 'bg-amber-100 text-amber-800';
-            case 'ถูกปฏิเสธ':
-                return 'bg-red-100 text-red-800';
-            case 'อยู่ในกระบวนการ':
-                return 'bg-blue-100 text-blue-800';
-            default:
-                return 'bg-gray-100 text-gray-800';
-        }
+        return statusColors[status as keyof typeof statusColors] || 'bg-gray-100 text-gray-800';
     };
 
     return (

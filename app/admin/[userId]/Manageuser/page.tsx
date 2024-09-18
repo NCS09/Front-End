@@ -12,6 +12,18 @@ interface User {
     user_phone: string;
 }
 
+// ฟังก์ชันสำหรับแปลงบทบาทผู้ใช้เป็นภาษาไทย
+const translateUserRole = (role: string): string => {
+    switch (role.toLowerCase()) {
+        case 'admin':
+            return 'ผู้ดูแลระบบ';
+        case 'user':
+            return 'ผู้ใช้ทั่วไป';
+        default:
+            return 'ไม่ระบุ';
+    }
+};
+
 export default function Manageuserpage() {
     const router = useRouter()
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -107,7 +119,7 @@ export default function Manageuserpage() {
                     />
                 </div>
                 <div className="mb-4">
-                    <label htmlFor="password" className="block mb-2">รหัสผ่านใหม่:</label>
+                    <label htmlFor="password" className="block mb-2">รหัสผ่าน:</label>
                     <input
                         type="password"
                         id="password"
@@ -146,7 +158,7 @@ export default function Manageuserpage() {
                                 <td className="px-4 py-2">{user.user_firstname}</td>
                                 <td className="px-4 py-2">{user.user_lastname}</td>
                                 <td className="px-4 py-2">{user.user_email}</td>
-                                <td className="px-4 py-2">{user.user_role}</td>
+                                <td className="px-4 py-2">{translateUserRole(user.user_role)}</td>
                                 <td className="px-4 py-2">{user.user_phone}</td>
                             </tr>
                         ))}

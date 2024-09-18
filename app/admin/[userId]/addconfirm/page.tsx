@@ -12,10 +12,21 @@ interface LoanDetail {
   loan_date: string;
   due_date: string;
   item_quantity: number;
-  loan_status: 'approve' | 'pending' | 'rejected' | 'borrowed';
+  loan_status: 'approve' | 'pending' | 'borrowed';
   transaction_id: number;
   user_id: number;
 }
+
+const statusDisplay: { [key: string]: { text: string; color: string } } = {
+  approve: { text: 'อนุมัติแล้ว', color: 'bg-green-100 text-green-800' },
+  pending: { text: 'รอดำเนินการ', color: 'bg-yellow-100 text-yellow-800' },
+  rejected: { text: 'ปฏิเสธ', color: 'bg-red-100 text-red-800' },
+  borrowed: { text: 'กำลังยืม', color: 'bg-blue-100 text-blue-800' },
+};
+
+const getStatusDisplay = (status: string) => {
+  return statusDisplay[status] || { text: 'ไม่ทราบสถานะ', color: 'bg-gray-100 text-gray-800' };
+};
 
 export default function ConfirmDevice() {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -95,24 +106,23 @@ export default function ConfirmDevice() {
   };
 
   return (
-    
     <div className="p-6 bg-gradient-to-b from-blue-50 to-white min-h-screen">
       <div className="mb-6">
-                <nav>
-                    <ul className="flex space-x-4 border-b-2 border-gray-300">
-                        <li>
-                            <Link href={`/admin/${userId}/addconfirm`} className="inline-block py-2 px-4 text-blue-600 hover:text-blue-800 border-b-2 border-transparent hover:border-blue-600 transition">
-                                แอดมิน
-                            </Link>
-                        </li>
-                        <li>
-                            <Link href={`/admin/${userId}/conuser`} className="inline-block py-2 px-4 text-blue-600 hover:text-blue-800 border-b-2 border-transparent hover:border-blue-600 transition">
-                                สมาชิก
-                            </Link>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
+        <nav>
+          <ul className="flex space-x-4 border-b-2 border-gray-300">
+            <li>
+              <Link href={`/admin/${userId}/addconfirm`} className="inline-block py-2 px-4 text-blue-600 hover:text-blue-800 border-b-2 border-transparent hover:border-blue-600 transition">
+              ผู้ดูแลระบบ
+              </Link>
+            </li>
+            <li>
+              <Link href={`/admin/${userId}/conuser`} className="inline-block py-2 px-4 text-blue-600 hover:text-blue-800 border-b-2 border-transparent hover:border-blue-600 transition">
+                ผู้ใช้ทั่วไป
+              </Link>
+            </li>
+          </ul>
+        </nav>
+      </div>
       <h1 className="text-3xl font-bold mb-6 text-center text-blue-600">ยืนยันการยืมอุปกรณ์</h1>
       
       {isLoading ? (
@@ -143,14 +153,14 @@ export default function ConfirmDevice() {
                       <td className="py-4 px-4 whitespace-nowrap">{detail.due_date}</td>
                       <td className="py-4 px-4 whitespace-nowrap text-center">{detail.item_quantity}</td>
                       <td className="py-4 px-4 whitespace-nowrap text-center">
-                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          detail.loan_status === 'approve' ? 'bg-green-100 text-green-800' :
-                          detail.loan_status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                          detail.loan_status === 'borrowed' ? 'bg-blue-100 text-blue-800' :
-                          'bg-red-100 text-red-800'
-                        }`}>
-                          {detail.loan_status}
-                        </span>
+                        {(() => {
+                          const { text, color } = getStatusDisplay(detail.loan_status);
+                          return (
+                            <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${color}`}>
+                              {text}
+                            </span>
+                          );
+                        })()}
                       </td>
                       <td className="py-4 px-4 whitespace-nowrap">
                         <div className="flex justify-end space-x-2">

@@ -20,6 +20,18 @@ interface LoanDetail {
 
 const ITEMS_PER_PAGE = 20;
 
+const statusDisplay = {
+    approve: { text: 'อนุมัติแล้ว', color: 'bg-emerald-100 text-emerald-800' },
+    pending: { text: 'รอดำเนินการ', color: 'bg-amber-100 text-amber-800' },
+    borrowed: { text: 'กำลังยืม', color: 'bg-sky-100 text-sky-800' },
+    deny: { text: 'ปฏิเสธ', color: 'bg-rose-100 text-rose-800' },
+    complete: { text: 'คืนแล้ว', color: 'bg-indigo-100 text-indigo-800' },
+};
+
+const getStatusDisplay = (status: string) => {
+    return statusDisplay[status as keyof typeof statusDisplay] || { text: 'ไม่ทราบสถานะ', color: 'bg-gray-100 text-gray-800' };
+};
+
 export default function LoanDetailPage() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const params  = useParams<{userId: string}>();
@@ -52,7 +64,7 @@ export default function LoanDetailPage() {
             }
         };
         fetchData();
-    }, []);
+    }, [apiUrl]);
 
     const handleViewDetails = (user_id: string, transaction_id: string) => {
         router.push(`/admin/${user_id}/Requests/${user_id}/${transaction_id}`);
@@ -152,7 +164,7 @@ export default function LoanDetailPage() {
                                 <tbody className="bg-white divide-y divide-gray-200">
                                     {currentItems.length === 0 ? (
                                         <tr>
-                                            <td colSpan={7} className="py-4 px-4 text-center text-gray-500">ไม่พบข้อมูลการยืม</td>
+                                            <td colSpan={8} className="py-4 px-4 text-center text-gray-500">ไม่พบข้อมูลการยืม</td>
                                         </tr>
                                     ) : (
                                         currentItems.map((detail) => (
@@ -164,13 +176,14 @@ export default function LoanDetailPage() {
                                                 <td className="py-4 px-4 whitespace-nowrap">{detail.due_date}</td>
                                                 <td className="py-4 px-4 whitespace-nowrap text-center">{detail.item_quantity}</td>
                                                 <td className="py-4 px-4 whitespace-nowrap text-center">
-                                                    <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                                        detail.loan_status === 'approve' ? 'bg-green-100 text-green-800' :
-                                                        detail.loan_status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                                                        'bg-red-100 text-red-800'
-                                                    }`}>
-                                                        {detail.loan_status}
-                                                    </span>
+                                                    {(() => {
+                                                        const { text, color } = getStatusDisplay(detail.loan_status);
+                                                        return (
+                                                            <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${color}`}>
+                                                                {text}
+                                                            </span>
+                                                        );
+                                                    })()}
                                                 </td>
                                                 <td className="py-4 px-4 whitespace-nowrap text-right text-sm font-medium">
                                                     <button 

@@ -2,10 +2,15 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { CheckCircle, Clock, HelpCircle, ArrowRight } from 'lucide-react';
+import { Inter, Noto_Sans_Thai } from 'next/font/google';
+
+// ประกาศฟอนต์
+const inter = Inter({ subsets: ['latin'] });
+const notoSansThai = Noto_Sans_Thai({ subsets: ['thai'], weight: ['400', '600', '700'] });
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col items-center text-gray-900">
+    <div className={`min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col items-center text-gray-900 ${notoSansThai.className}`}>
       {/* Hero Section */}
       <header className="bg-gradient-to-r from-blue-600 to-blue-400 w-full py-20 text-white">
         <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between">

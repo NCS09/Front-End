@@ -17,6 +17,20 @@ interface LoanRequest {
     transaction_qrcode: string;
 }
 
+const statusDisplay = {
+    approve: { text: 'อนุมัติแล้ว', color: 'bg-emerald-100 text-emerald-800' },
+    pending: { text: 'รอดำเนินการ', color: 'bg-amber-100 text-amber-800' },
+    borrowed: { text: 'กำลังยืม', color: 'bg-sky-100 text-sky-800' },
+    deny: { text: 'ปฏิเสธ', color: 'bg-rose-100 text-rose-800' },
+    complete: { text: 'คืนแล้ว', color: 'bg-indigo-100 text-indigo-800' },
+    ready: { text: 'พร้อมใช้งาน', color: 'bg-green-100 text-green-800' },
+    cancel: { text: 'ถูกยกเลิก', color: 'bg-gray-100 text-gray-800' },
+};
+
+const getStatusDisplay = (status: string) => {
+    return statusDisplay[status as keyof typeof statusDisplay] || { text: 'ไม่ทราบสถานะ', color: 'bg-gray-100 text-gray-800' };
+};
+
 export default function DeviceRequests() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const params = useParams<{userId: string}>();
@@ -146,7 +160,16 @@ export default function DeviceRequests() {
                                     <td className="py-2 px-4 border-b text-center">{request.user_firstname}</td>
                                     <td className="py-2 px-4 border-b text-center">{request.user_email}</td>
                                     <td className="py-2 px-4 border-b text-center">{request.transaction_id}</td>
-                                    <td className="py-2 px-4 border-b text-center">{request.loan_status}</td>
+                                    <td className="py-2 px-4 border-b text-center">
+                                        {(() => {
+                                            const { text, color } = getStatusDisplay(request.loan_status);
+                                            return (
+                                                <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${color}`}>
+                                                    {text}
+                                                </span>
+                                            );
+                                        })()}
+                                    </td>
                                     <td className="py-2 px-4 border-b text-center">{request.loan_date}</td>
                                     <td className="py-2 px-4 border-b text-center">{request.due_date}</td>
                                     <td className="py-2 px-4 border-b text-center">{request.item_quantity}</td>

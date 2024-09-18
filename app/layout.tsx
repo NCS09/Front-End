@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Noto_Sans_Thai } from "next/font/google";
 import "./globals.css";
-import Navbar from "./components/auth/Navbar";
-const inter = Inter({ subsets: ["latin"] });
+
+const notoSansThai = Noto_Sans_Thai({ 
+  subsets: ["thai"],
+  weight: ['400', '500', '700'],
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: "Elec@UP",
@@ -15,8 +19,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="th">
+      <body className={notoSansThai.className}>
         {children}
       </body>
     </html>

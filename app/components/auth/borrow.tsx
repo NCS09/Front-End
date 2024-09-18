@@ -76,7 +76,7 @@ const BorrowDevicePage: React.FC = () => {
             id: userId
         }));
         const itemsString = JSON.stringify(items);
-        return `https://1afe-2403-6200-8958-c93-2ccc-7799-10b1-7367.ngrok-free.app/loan-data?data=${encodeURIComponent(itemsString)}`;
+        return `https://c858-2403-6200-8958-c93-40c5-d2c9-6401-a3c3.ngrok-free.app/loan-data?data=${encodeURIComponent(itemsString)}`;
     };
 
     const handleGenerateQRCode = () => {

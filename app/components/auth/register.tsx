@@ -5,15 +5,19 @@ import { useRouter } from 'next/navigation';
 import SuccessModal from './Success';
 import Navbar from './navbars';
 import { motion } from 'framer-motion';
-import { User, Mail, Lock, UserPlus, Phone } from 'lucide-react';
+import { User, Mail, Lock, UserPlus, Phone, Briefcase, BookOpen, Building, Hash } from 'lucide-react';
 
 export default function Register() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const [id, setId] = useState<string>('');
     const [firstname, setFirstname] = useState<string>('');
     const [lastname, setLastname] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [phone, setPhone] = useState<string>('');
+    const [duty, setDuty] = useState<string>('');
+    const [faculty, setFaculty] = useState<string>('');
+    const [branch, setBranch] = useState<string>('');
     const [message, setMessage] = useState<string>('');
     const [error, setError] = useState<string>('');
     const [isSuccessModalOpen, setSuccessModalOpen] = useState<boolean>(false);
@@ -22,7 +26,14 @@ export default function Register() {
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        const formData = { email, password, firstname, lastname, phone };
+        
+        // Check if all fields are filled
+        if (!id || !firstname || !lastname || !email || !password || !phone || !duty || !faculty || !branch) {
+            setError('กรุณากรอกข้อมูลให้ครบทุกช่อง');
+            return;
+        }
+
+        const formData = { id, email, password, firstname, lastname, phone, duty, faculty, branch };
 
         try {
             const response = await fetch(`${apiUrl}/register`, {
@@ -58,6 +69,23 @@ export default function Register() {
                 >
                     <h1 className="text-3xl font-bold text-center text-blue-600 mb-6">สมัครสมาชิก</h1>
                     <form onSubmit={handleSubmit} className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="id">
+                                รหัส
+                            </label>
+                            <div className="relative">
+                                <Hash className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                                <input
+                                    type="text"
+                                    id="id"
+                                    name="id"
+                                    required
+                                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder="รหัส"
+                                    onChange={(e) => setId(e.target.value)}
+                                />
+                            </div>
+                        </div>
                         <div className="flex space-x-4">
                             <div className="flex-1">
                                 <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="firstname">
@@ -69,6 +97,7 @@ export default function Register() {
                                         type="text"
                                         id="firstname"
                                         name="firstname"
+                                        required
                                         className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                         placeholder="ชื่อ"
                                         onChange={(e) => setFirstname(e.target.value)}
@@ -85,6 +114,7 @@ export default function Register() {
                                         type="text"
                                         id="lastname"
                                         name="lastname"
+                                        required
                                         className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                         placeholder="นามสกุล"
                                         onChange={(e) => setLastname(e.target.value)}
@@ -102,8 +132,9 @@ export default function Register() {
                                     type="email"
                                     id="email"
                                     name="email"
+                                    required
                                     className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    placeholder="your@gmail.com"
+                                    placeholder="your@email.com"
                                     onChange={(e) => setEmail(e.target.value)}
                                 />
                             </div>
@@ -118,6 +149,7 @@ export default function Register() {
                                     type="password"
                                     id="password"
                                     name="password"
+                                    required
                                     className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     placeholder="••••••••"
                                     onChange={(e) => setPassword(e.target.value)}
@@ -125,18 +157,72 @@ export default function Register() {
                             </div>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="Phone">
+                            <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="phone">
                                 เบอร์ติดต่อ
                             </label>
                             <div className="relative">
                                 <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
                                 <input
-                                    type="phone"
+                                    type="tel"
                                     id="phone"
                                     name="phone"
+                                    required
                                     className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     placeholder="xxx-xxx-xxxx"
                                     onChange={(e) => setPhone(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="duty">
+                                ตำแหน่ง
+                            </label>
+                            <div className="relative">
+                                <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                                <select
+                                    id="duty"
+                                    name="duty"
+                                    required
+                                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    onChange={(e) => setDuty(e.target.value)}
+                                >
+                                    <option value="">เลือกตำแหน่ง</option>
+                                    <option value="นิสิต">นิสิต</option>
+                                    <option value="อาจารย์/เจ้าหน้าที่">อาจารย์/เจ้าหน้าที่</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="faculty">
+                                คณะ
+                            </label>
+                            <div className="relative">
+                                <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                                <input
+                                    type="text"
+                                    id="faculty"
+                                    name="faculty"
+                                    required
+                                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder="คณะของคุณ"
+                                    onChange={(e) => setFaculty(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2" htmlFor="branch">
+                                สาขา
+                            </label>
+                            <div className="relative">
+                                <BookOpen className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                                <input
+                                    type="text"
+                                    id="branch"
+                                    name="branch"
+                                    required
+                                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder="สาขาของคุณ"
+                                    onChange={(e) => setBranch(e.target.value)}
                                 />
                             </div>
                         </div>

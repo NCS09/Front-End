@@ -15,6 +15,7 @@ interface Device {
     device_approve: boolean;
     device_limit: number;
     device_serial: string;
+    device_type: string;
 }
 
 const ManagePage: React.FC = () => {
@@ -23,10 +24,11 @@ const ManagePage: React.FC = () => {
     const [showAddPopup, setShowAddPopup] = useState(false);
     const [showEditPopup, setShowEditPopup] = useState(false);
     const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
-    const [data, setDevices] = useState<Device[]>([]);
+    const [devices, setDevices] = useState<Device[]>([]);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deviceToDelete, setDeviceToDelete] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
+    const [selectedType, setSelectedType] = useState<string>('all');
     const router = useRouter();
 
     useEffect(() => {
@@ -86,10 +88,13 @@ const ManagePage: React.FC = () => {
         handleCloseDeleteModal(); // Close the delete modal after confirming
     };
 
-    const filteredDevices = data.filter((device) =>
-        device.device_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        device.device_description.toLowerCase().includes(searchQuery.toLowerCase())
+    const filteredDevices = devices.filter((device) =>
+        (device.device_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        device.device_description.toLowerCase().includes(searchQuery.toLowerCase())) &&
+        (selectedType === 'all' || device.device_type === selectedType)
     );
+
+    const deviceTypes = ['all', ...Array.from(new Set(devices.map(device => device.device_type)))];
 
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
@@ -100,15 +105,28 @@ const ManagePage: React.FC = () => {
                     onClick={handleOpenAddPopup}>
                     เพิ่มอุปกรณ์
                 </button>
-                <div className="relative">
-                    <input 
-                        type="text" 
-                        placeholder="ค้นหาอุปกรณ์..." 
-                        value={searchQuery} 
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-purple-600"
-                    />
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <div className="flex items-center space-x-4">
+                    <select
+                        value={selectedType}
+                        onChange={(e) => setSelectedType(e.target.value)}
+                        className="border rounded-lg p-2 focus:outline-none focus:border-purple-600"
+                    >
+                        {deviceTypes.map((type) => (
+                            <option key={type} value={type}>
+                                {type === 'all' ? 'ทั้งหมด' : type}
+                            </option>
+                        ))}
+                    </select>
+                    <div className="relative">
+                        <input 
+                            type="text" 
+                            placeholder="ค้นหาอุปกรณ์..." 
+                            value={searchQuery} 
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-purple-600"
+                        />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    </div>
                 </div>
             </div>
 
@@ -130,7 +148,8 @@ const ManagePage: React.FC = () => {
                         dlimit={selectedDevice.device_limit}
                         Approve={selectedDevice.device_approve}
                         descriptions={selectedDevice.device_description}
-                        sserial={selectedDevice.device_serial}/>
+                        sserial={selectedDevice.device_serial}
+                        dtype={selectedDevice.device_type}/>
                 </div>
             )}
 
@@ -146,6 +165,7 @@ const ManagePage: React.FC = () => {
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">คำอธิบาย</th>
                                     <th className="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">จำนวนที่ยืมได้</th>
                                     <th className="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">จำนวนอุปกรณ์</th>
+                                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">ประเภท</th>
                                     <th className="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">สถานะอุปกรณ์</th>
                                     <th className="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">การจัดการ</th>
                                 </tr>
@@ -157,6 +177,7 @@ const ManagePage: React.FC = () => {
                                         <td className="px-6 py-4 text-sm text-gray-700">{device.device_description}</td>
                                         <td className="px-6 py-4 text-sm text-gray-700 text-center">{device.device_availability}</td>
                                         <td className="px-6 py-4 text-sm text-gray-700 text-center">{device.device_limit}</td>
+                                        <td className="px-6 py-4 text-sm text-gray-700 text-center">{device.device_type}</td>
                                         <td className="px-6 py-4 text-sm text-gray-700 text-center">
                                             <span className={device.device_approve ? 'text-green-600' : 'text-red-600'}>
                                                 {device.device_approve ? 'พร้อมให้ยืม' : 'ไม่พร้อมให้ยืม'}

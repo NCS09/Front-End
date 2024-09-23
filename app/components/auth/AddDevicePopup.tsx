@@ -11,7 +11,14 @@ const AddDevicePopup: React.FC<AddDevicePopupProps> = ({ onClose, onUpdate }) =>
     const [description, setDescription] = useState('');
     const [limit, setLimit] = useState('');
     const [serial, setSerial] = useState('');
+    const [type, setType] = useState('');
     const [message, setMessage] = useState('');
+
+    const validTypes = [
+        'ครุภัณฑ์ประจำห้องปฏิบัติการ',
+        'วัสดุคงทนถาวรประจำห้องปฏิบัติการ',
+        'วัสดุสิ้นเปลืองประจำห้องปฏิบัติการ'
+    ];
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
@@ -23,7 +30,13 @@ const AddDevicePopup: React.FC<AddDevicePopupProps> = ({ onClose, onUpdate }) =>
             return;
         }
 
-        const formData = { name, description, limit: limitValue, serial };
+        // Validate the type
+        if (!validTypes.includes(type)) {
+            setMessage('ประเภทอุปกรณ์ไม่ถูกต้อง');
+            return;
+        }
+
+        const formData = { name, description, limit: limitValue, serial, type };
 
         try {
             const response = await fetch("http://localhost:8000/devices/add", {
@@ -61,6 +74,7 @@ const AddDevicePopup: React.FC<AddDevicePopupProps> = ({ onClose, onUpdate }) =>
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             className="mt-1 p-2 w-full border border-gray-300 rounded"
+                            required
                         />
                     </div>
                     <div className="mb-4">
@@ -71,6 +85,7 @@ const AddDevicePopup: React.FC<AddDevicePopupProps> = ({ onClose, onUpdate }) =>
                             value={serial}
                             onChange={(e) => setSerial(e.target.value)}
                             className="mt-1 p-2 w-full border border-gray-300 rounded"
+                            required
                         />
                     </div>
                     <div className="mb-4">
@@ -80,6 +95,7 @@ const AddDevicePopup: React.FC<AddDevicePopupProps> = ({ onClose, onUpdate }) =>
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             className="mt-1 p-2 w-full border border-gray-300 rounded"
+                            required
                         />
                     </div>
                     <div className="mb-4">
@@ -95,7 +111,25 @@ const AddDevicePopup: React.FC<AddDevicePopupProps> = ({ onClose, onUpdate }) =>
                                 }
                             }}
                             className="mt-1 p-2 w-full border border-gray-300 rounded"
+                            required
                         />
+                    </div>
+                    <div className="mb-4">
+                        <label className="block text-gray-700">ประเภทอุปกรณ์:</label>
+                        <select
+                            name="type"
+                            value={type}
+                            onChange={(e) => setType(e.target.value)}
+                            className="mt-1 p-2 w-full border border-gray-300 rounded"
+                            required
+                        >
+                            <option value="">เลือกประเภทอุปกรณ์</option>
+                            {validTypes.map((validType) => (
+                                <option key={validType} value={validType}>
+                                    {validType}
+                                </option>
+                            ))}
+                        </select>
                     </div>
                     <div className="flex justify-between mt-4">
                         <button 

@@ -7,6 +7,13 @@ interface DeviceItem {
     item_availability: string;
 }
 
+const statusMap: { [key: string]: string } = {
+    'ready': 'พร้อมใช้งาน',
+    'not ready': 'ไม่พร้อมใช้งาน',
+    'pending': 'รอดำเนินการ',
+    'borrowed': 'ถูกยืม'
+};
+
 const DeviceDetails: React.FC = () => {
     const { id } = useParams();
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -54,7 +61,7 @@ const DeviceDetails: React.FC = () => {
 
     const handleEditDevice = (item: DeviceItem) => {
         if (['pending', 'borrowed'].includes(item.item_availability)) {
-            setUpdateMessage({ type: 'error', message: "Cannot edit items with 'pending' or 'borrowed' status" });
+            setUpdateMessage({ type: 'error', message: "ไม่สามารถแก้ไขรายการที่มีสถานะ 'รอดำเนินการ' หรือ 'ถูกยืม' ได้" });
             return;
         }
         setEditingItem(item);
@@ -88,14 +95,14 @@ const DeviceDetails: React.FC = () => {
                 throw new Error(data.message || 'Failed to update device item');
             }
 
-            setUpdateMessage({ type: 'success', message: 'Device item status updated successfully' });
+            setUpdateMessage({ type: 'success', message: 'อัปเดตสถานะอุปกรณ์สำเร็จ' });
             fetchDeviceItems(); // Refresh the list after update
             setEditingItem(null);
         } catch (error) {
             if (error instanceof Error) {
                 setUpdateMessage({ type: 'error', message: error.message });
             } else {
-                setUpdateMessage({ type: 'error', message: 'Error updating device item status' });
+                setUpdateMessage({ type: 'error', message: 'เกิดข้อผิดพลาดในการอัปเดตสถานะอุปกรณ์' });
             }
             console.error('Error updating device item status:', error);
         }
@@ -104,7 +111,7 @@ const DeviceDetails: React.FC = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-screen bg-gray-100">
-                <div className="loader text-purple-600">Loading...</div>
+                <div className="loader text-purple-600">กำลังโหลด...</div>
             </div>
         );
     }
@@ -139,10 +146,10 @@ const DeviceDetails: React.FC = () => {
                         <table className="w-full min-w-[800px] divide-y divide-gray-200">
                             <thead className="bg-gray-100">
                                 <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">No.</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Serial</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Status</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Action</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">ลำดับ</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">หมายเลขซีเรียล</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">สถานะ</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">การดำเนินการ</th>
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
@@ -157,20 +164,19 @@ const DeviceDetails: React.FC = () => {
                                                     onChange={(e) => setEditingItem({...editingItem, item_availability: e.target.value})}
                                                     className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                 >
-                                                    <option>เลือก</option>
-                                                    <option value="ready">Ready</option>
-                                                    <option value="not ready">Not Ready</option>
-                                                    
+                                                    <option value="">เลือกสถานะ</option>
+                                                    <option value="ready">พร้อมใช้งาน</option>
+                                                    <option value="not ready">ไม่พร้อมใช้งาน</option>
                                                 </select>
                                             ) : (
-                                                item.item_availability
+                                                statusMap[item.item_availability] || item.item_availability
                                             )}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             {editingItem?.item_id == item.item_id ? (
                                                 <>
-                                                    <button onClick={handleSaveEdit} className="text-indigo-600 hover:text-indigo-900 mr-2">Save</button>
-                                                    <button onClick={handleCancelEdit} className="text-red-600 hover:text-red-900">Cancel</button>
+                                                    <button onClick={handleSaveEdit} className="text-indigo-600 hover:text-indigo-900 mr-2">บันทึก</button>
+                                                    <button onClick={handleCancelEdit} className="text-red-600 hover:text-red-900">ยกเลิก</button>
                                                 </>
                                             ) : (
                                                 <button 
@@ -178,7 +184,7 @@ const DeviceDetails: React.FC = () => {
                                                     className={`text-indigo-600 hover:text-indigo-900 ${['pending', 'borrowed'].includes(item.item_availability) ? 'opacity-50 cursor-not-allowed' : ''}`}
                                                     disabled={['pending', 'borrowed'].includes(item.item_availability)}
                                                 >
-                                                    Edit
+                                                    แก้ไข
                                                 </button>
                                             )}
                                         </td>

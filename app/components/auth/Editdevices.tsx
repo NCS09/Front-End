@@ -1,5 +1,6 @@
 import React, { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useFormState } from 'react-dom';
 
 interface EditDeviceProps {
     onClose: () => void;
@@ -10,14 +11,16 @@ interface EditDeviceProps {
     descriptions: string;
     Approve: boolean;
     sserial:string;
+    dtype: string;
 }
 
-const EditDevices: React.FC<EditDeviceProps> = ({ onClose, onUpdate, deviceId, Approve, dname, dlimit, descriptions, sserial }) => {
+const EditDevices: React.FC<EditDeviceProps> = ({ onClose, onUpdate, deviceId, Approve, dname, dlimit, descriptions, sserial, dtype }) => {
     const [approve, setApprove] = useState<boolean>(Approve);
     const [name, setName] = useState<string>(dname);
     const [limit, setLimit] = useState<number>(dlimit);
     const [description, setDescription] = useState<string>(descriptions);
     const [serial, setSerial] = useState<string>(sserial);
+    const [dtypes, setDutys] = useState<string>(dtype);
     const [message, setMessage] = useState<string>('');
 
     const router = useRouter();

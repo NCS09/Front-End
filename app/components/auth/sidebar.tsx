@@ -50,6 +50,7 @@ export default function Sidebarpage({ userId }: SidebarpageProps) {
         { path: 'AddBorrow', label: 'ยืมอุปกรณ์', icon: FiPlusCircle },
         { path: 'addconfirm', label: 'ยืนยันรับของ', icon: FiCheckCircle },
         { path: 'Manageuser', label: 'เพิ่มแอดมิน', icon: FiUserPlus },
+        { path: 'reportpage', label: 'ออกใบยืม-คืน', icon: FiClipboard },
         { path: 'adminHistory', label: 'ดูประวัติทั้งหมด', icon: FiList },
         
         

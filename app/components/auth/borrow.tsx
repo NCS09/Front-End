@@ -20,7 +20,6 @@ interface SelectedDevice {
     quantity: number;
 }
 
-// กำหนดประเภทอุปกรณ์ที่ระบบรองรับ
 const DEVICE_TYPES = [
     'ครุภัณฑ์ประจำห้องปฏิบัติการ',
     'วัสดุคงทนถาวรประจำห้องปฏิบัติการ',
@@ -39,7 +38,7 @@ const BorrowDevicePage: React.FC = () => {
     const [success, setSuccess] = useState<string | null>(null);
     const [qrCodeURL, setQrCodeURL] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [activeTab, setActiveTab] = useState<string>('all');
+    const [activeTab, setActiveTab] = useState<string>('ทั้งหมด');
     const [showDropdown, setShowDropdown] = useState<boolean>(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -115,7 +114,7 @@ const BorrowDevicePage: React.FC = () => {
             id: userId
         }));
         const itemsString = JSON.stringify(items);
-        return `https://8244-2403-6200-8853-761e-54e8-b299-f799-47ac.ngrok-free.app/loan-data?data=${encodeURIComponent(itemsString)}`;
+        return `https://2eea-2403-6200-8853-761e-4840-88db-9989-4a03.ngrok-free.app/loan-data?data=${encodeURIComponent(itemsString)}`;
     };
 
     const handleGenerateQRCode = () => {
@@ -307,7 +306,7 @@ const BorrowDevicePage: React.FC = () => {
                                 onChange={handleTimeChange}
                                 className="w-full p-2 border rounded"
                             >
-                               {timeOptions.map((time) => (
+                                {timeOptions.map((time) => (
                                     <option key={time} value={time}>
                                         {time}
                                     </option>
@@ -325,7 +324,7 @@ const BorrowDevicePage: React.FC = () => {
                 </div>
             )}
 
-            {error && (
+{error && (
                 <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
                     {error}
                 </div>

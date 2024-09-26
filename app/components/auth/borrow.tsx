@@ -1,21 +1,31 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import QRCode from 'react-qr-code';
 import { useParams } from 'next/navigation';
 
 interface Device {
     device_id: number;
     device_name: string;
-    device_availability: number;
     device_description: string;
+    device_availability: number;
+    device_limit: number;
     device_approve: boolean;
+    device_serial: string;
+    device_type: string;
 }
 
 interface SelectedDevice {
     device_id: number;
     quantity: number;
 }
+
+// กำหนดประเภทอุปกรณ์ที่ระบบรองรับ
+const DEVICE_TYPES = [
+    'ครุภัณฑ์ประจำห้องปฏิบัติการ',
+    'วัสดุคงทนถาวรประจำห้องปฏิบัติการ',
+    'วัสดุสิ้นเปลืองประจำห้องปฏิบัติการ'
+];
 
 const BorrowDevicePage: React.FC = () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -29,6 +39,9 @@ const BorrowDevicePage: React.FC = () => {
     const [success, setSuccess] = useState<string | null>(null);
     const [qrCodeURL, setQrCodeURL] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [activeTab, setActiveTab] = useState<string>('all');
+    const [showDropdown, setShowDropdown] = useState<boolean>(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
     const fetchData = async () => {
         setIsLoading(true);
@@ -50,18 +63,44 @@ const BorrowDevicePage: React.FC = () => {
         fetchData();
     }, []);
 
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setShowDropdown(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
     const handleDeviceSelect = (device: Device) => {
         if (device.device_availability > 0 && device.device_approve) {
-            if (!selectedDevices.find(d => d.device_id === device.device_id)) {
+            const existingDevice = selectedDevices.find(d => d.device_id === device.device_id);
+            if (existingDevice) {
+                if (existingDevice.quantity < device.device_availability) {
+                    handleDeviceChange(device.device_id, existingDevice.quantity + 1);
+                } else {
+                    setError(`ไม่สามารถยืมอุปกรณ์ ${device.device_name} เพิ่มได้ เนื่องจากเกินจำนวนที่มีอยู่`);
+                }
+            } else {
                 setSelectedDevices([...selectedDevices, { device_id: device.device_id, quantity: 1 }]);
             }
         }
     };
 
     const handleDeviceChange = (deviceId: number, quantity: number) => {
-        setSelectedDevices(prev =>
-            prev.map(d => d.device_id === deviceId ? { ...d, quantity } : d)
-        );
+        const device = devices.find(d => d.device_id === deviceId);
+        if (device && quantity <= device.device_availability) {
+            setSelectedDevices(prev =>
+                prev.map(d => d.device_id === deviceId ? { ...d, quantity } : d)
+            );
+            setError(null);
+        } else {
+            setError(`จำนวนที่ยืมเกินกว่าจำนวนที่มีอยู่`);
+        }
     };
 
     const handleRemoveDevice = (deviceId: number) => {
@@ -110,16 +149,28 @@ const BorrowDevicePage: React.FC = () => {
         setDueTime(e.target.value);
     };
 
-    // Generate time options
     const timeOptions = [];
     for (let hour = 9; hour <= 16; hour++) {
         timeOptions.push(`${hour.toString().padStart(2, '0')}:00`);
-        if (hour !== 16) { // Don't add :30 for 16:00
+        if (hour !== 16) {
             timeOptions.push(`${hour.toString().padStart(2, '0')}:30`);
         }
     }
 
+    const getDeviceTypes = (devices: Device[]): string[] => {
+        const types = ['ทั้งหมด'];
+        DEVICE_TYPES.forEach(type => {
+            if (devices.some(device => device.device_type === type)) {
+                types.push(type);
+            }
+        });
+        return types;
+    };
+
+    const deviceTypes = getDeviceTypes(devices);
+
     const filteredDevices = devices.filter(device =>
+        (activeTab === 'ทั้งหมด' || device.device_type === activeTab) &&
         device.device_name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -128,14 +179,51 @@ const BorrowDevicePage: React.FC = () => {
             <h1 className="text-3xl font-bold mb-6 text-purple-700">ยืมอุปกรณ์</h1>
 
             <div className="bg-white p-4 rounded-lg shadow mb-6">
-                <h2 className="text-xl font-semibold mb-2">ค้นหาอุปกรณ์</h2>
-                <input
-                    type="text"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="พิมพ์ชื่ออุปกรณ์ที่ต้องการค้นหา..."
-                    className="w-full p-2 border rounded"
-                />
+                <div className="flex mb-4 overflow-x-auto">
+                    {deviceTypes.map(type => (
+                        <button
+                            key={type}
+                            onClick={() => setActiveTab(type)}
+                            className={`mr-2 px-4 py-2 rounded whitespace-nowrap ${
+                                activeTab === type
+                                    ? 'bg-purple-600 text-white'
+                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                            }`}
+                        >
+                            {type}
+                        </button>
+                    ))}
+                </div>
+                <div className="relative" ref={dropdownRef}>
+                    <input
+                        type="text"
+                        value={searchTerm}
+                        onChange={(e) => {
+                            setSearchTerm(e.target.value);
+                            setShowDropdown(true);
+                        }}
+                        onFocus={() => setShowDropdown(true)}
+                        placeholder="พิมพ์ชื่ออุปกรณ์ที่ต้องการค้นหา..."
+                        className="w-full p-2 border rounded"
+                    />
+                    {showDropdown && (
+                        <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-auto">
+                            {filteredDevices.map(device => (
+                                <div
+                                    key={device.device_id}
+                                    className="p-2 hover:bg-gray-100 cursor-pointer"
+                                    onClick={() => {
+                                        setSearchTerm(device.device_name);
+                                        setShowDropdown(false);
+                                        handleDeviceSelect(device);
+                                    }}
+                                >
+                                    {device.device_name}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
 
             {isLoading ? (
@@ -156,6 +244,7 @@ const BorrowDevicePage: React.FC = () => {
                         >
                             <h3 className="font-semibold text-lg mb-2">{device.device_name}</h3>
                             <p className="text-sm text-gray-600 mb-2">{device.device_description}</p>
+                            <p className="text-sm text-gray-500 mb-2">รหัส: {device.device_serial}</p>
                             <span className={`px-2 py-1 rounded text-sm ${
                                 device.device_availability > 0 && device.device_approve
                                     ? 'bg-green-100 text-green-800'
@@ -183,6 +272,7 @@ const BorrowDevicePage: React.FC = () => {
                                         <input
                                             type="number"
                                             min="1"
+                                            max={deviceInfo?.device_availability}
                                             value={device.quantity}
                                             onChange={(e) => handleDeviceChange(device.device_id, Number(e.target.value))}
                                             className="mt-2 p-1 border rounded w-24"
@@ -217,7 +307,7 @@ const BorrowDevicePage: React.FC = () => {
                                 onChange={handleTimeChange}
                                 className="w-full p-2 border rounded"
                             >
-                                {timeOptions.map((time) => (
+                               {timeOptions.map((time) => (
                                     <option key={time} value={time}>
                                         {time}
                                     </option>
@@ -226,25 +316,24 @@ const BorrowDevicePage: React.FC = () => {
                         </div>
                     </div>
 
-                    {error && (
-                        <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-                            <p className="font-bold">ข้อผิดพลาด</p>
-                            <p>{error}</p>
-                        </div>
-                    )}
-                    {success && (
-                        <div className="mt-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
-                            <p className="font-bold">สำเร็จ</p>
-                            <p>{success}</p>
-                        </div>
-                    )}
-
                     <button
                         onClick={handleGenerateQRCode}
                         className="mt-4 w-full bg-purple-500 text-white p-2 rounded hover:bg-purple-600"
                     >
                         สร้าง QR Code
                     </button>
+                </div>
+            )}
+
+            {error && (
+                <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                    {error}
+                </div>
+            )}
+
+            {success && (
+                <div className="mt-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
+                    {success}
                 </div>
             )}
 

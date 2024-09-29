@@ -136,7 +136,7 @@ const UserList: React.FC = () => {
                 const a = document.createElement('a');
                 a.style.display = 'none';
                 a.href = url;
-                a.download = `report-${selectedUser}-${deviceType}-${loanDate}.pdf`;
+                a.download = `ใบยืม-คืน-${deviceType}-ID-${selectedUser}-${loanDate}.pdf`;
                 document.body.appendChild(a);
                 a.click();
                 window.URL.revokeObjectURL(url);

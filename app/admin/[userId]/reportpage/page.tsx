@@ -19,6 +19,7 @@ interface ReportData {
     loan_date: string;
     return_date: string;
     return_status: string;
+    loan_status: string;
 }
 
 const UserList: React.FC = () => {
@@ -284,7 +285,7 @@ const UserList: React.FC = () => {
                 </div>
             )}
 
-            {reportData && (
+{reportData && (
                 <div className="mt-8">
                     <h2 className="text-xl font-bold mb-4">ข้อมูลรายงาน</h2>
                     <table className="min-w-full bg-white border border-gray-300">
@@ -293,7 +294,7 @@ const UserList: React.FC = () => {
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">ชื่ออุปกรณ์</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">หมายเลขซีเรียล</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">วันที่ยืม</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">วันที่คืน</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">วันที่ต้องคืน</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">สถานะ</th>
                             </tr>
                         </thead>
@@ -307,23 +308,30 @@ const UserList: React.FC = () => {
                                         {item.return_date ? new Date(item.return_date).toLocaleDateString('th-TH') : 'ยังไม่คืน'}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-b">
-                                        {(() => {
-                                            switch (item.return_status) {
-                                                case 'returned':
+                                    {(() => {
+                                        switch (item.loan_status) {
+                                            case 'borrowed':
+                                                return 'กำลังยืม';
+                                            case 'overdue':
+                                                return <span className="text-red-600">คืนเกินกำหนด</span>;
+                                            case 'returned':
+                                                if (item.return_status) {
+                                                    switch (item.return_status) {
+                                                        case 'returned': return 'คืนแล้ว';
+                                                        case 'lost': return 'สูญหาย';
+                                                        case 'damaged': return 'ชำรุด';
+                                                        case 'cancel': return 'ถูกยกเลิก';
+                                                        case 'deny': return 'ปฏิเสธ';
+                                                        default: return 'คืนแล้ว';
+                                                    }
+                                                } else {
                                                     return 'คืนแล้ว';
-                                                case 'lost':
-                                                    return 'สูญหาย';
-                                                case 'damaged':
-                                                    return 'ชำรุด';
-                                                case 'cancel':
-                                                    return 'ถูกยกเลิก';
-                                                case 'deny':
-                                                    return 'ปฏิเสธ';
-                                                default:
-                                                    return 'ไม่ระบุ';
-                                            }
-                                        })()}
-                                    </td>
+                                                }
+                                            default:
+                                                return 'ไม่ระบุ';
+                                        }
+                                    })()}
+                                </td>
                                 </tr>
                             ))}
                         </tbody>

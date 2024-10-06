@@ -22,6 +22,7 @@ export default function Dashboardpage() {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [showModal, setShowModal] = useState<boolean>(false);
+    const [selectedReportType, setSelectedReportType] = useState<string>('');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -46,8 +47,13 @@ export default function Dashboardpage() {
     }, []);
 
     const downloadReport = async () => {
+        if (!selectedReportType) {
+            alert('กรุณาเลือกประเภทรายงาน');
+            return;
+        }
+
         try {
-            const response = await fetch(`${apiUrl}/report/download`, {
+            const response = await fetch(`${apiUrl}/report/download/${selectedReportType}`, {
                 method: 'GET',
                 credentials: 'include',
             });
@@ -63,27 +69,49 @@ export default function Dashboardpage() {
             const formattedDate = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1)
                 .toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
 
+            let reportTypeName = '';
+            switch (selectedReportType) {
+                case 'loan-return':
+                    reportTypeName = 'รายงานประวัติการยืม-คืนอุปกรณ์ทั้งหมด';
+                    break;
+                case 'status':
+                    reportTypeName = 'รายงานสถานะอุปกรณ์ทั้งหมด';
+                    break;
+                case 'device-type':
+                    reportTypeName = 'รายงานข้อมูลอุปกรณ์ทั้งหมดในห้องปฏิบัติการ';
+                    break;
+                default:
+                    reportTypeName = 'รายงาน';
+            }
+
+            const fileName = `${reportTypeName}_${formattedDate}.xlsx`;
+
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', `รายงานวันที่ ${formattedDate}.csv`);
+            link.setAttribute('download', fileName);
             document.body.appendChild(link);
             link.click();
 
             link.remove();
+            window.URL.revokeObjectURL(url);
         } catch (error) {
             console.error('Error downloading report:', error);
+            alert('เกิดข้อผิดพลาดในการดาวน์โหลดรายงาน');
         }
     };
 
     const handleDownloadClick = () => {
         setShowModal(true);
     };
+
     const confirmDownload = () => {
         downloadReport();
         setShowModal(false);
     };
+
     const cancelDownload = () => {
-        setShowModal(false); 
+        setShowModal(false);
+        setSelectedReportType('');
     };
 
     if (loading) {
@@ -134,8 +162,17 @@ export default function Dashboardpage() {
                 {showModal && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                         <div className="bg-white p-6 rounded-lg shadow-lg">
-                            <h2 className="text-2xl font-bold mb-4 text-blue-600">ยืนยันการดาวน์โหลด</h2>
-                            <p className="mb-6">คุณต้องการดาวน์โหลดรายงานใช่หรือไม่?</p>
+                            <h2 className="text-2xl font-bold mb-4 text-blue-600">เลือกประเภทรายงาน</h2>
+                            <select
+                                value={selectedReportType}
+                                onChange={(e) => setSelectedReportType(e.target.value)}
+                                className="w-full p-2 mb-4 border border-gray-300 rounded"
+                            >
+                                <option value="">เลือกประเภทรายงาน</option>
+                                <option value="loan-return">รายงานประวัติการยืม-คืนอุปกรณ์ทั้งหมด</option>
+                                <option value="status">รายงานสถานะอุปกรณ์ทั้งหมด</option>
+                                <option value="device-type">รายงานข้อมูลอุปกรณ์ทั้งหมดในห้องปฏิบัติการ</option>
+                            </select>
                             <div className="flex justify-end">
                                 <button
                                     onClick={cancelDownload}
@@ -146,6 +183,7 @@ export default function Dashboardpage() {
                                 <button
                                     onClick={confirmDownload}
                                     className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full"
+                                    disabled={!selectedReportType}
                                 >
                                     ดาวน์โหลด
                                 </button>

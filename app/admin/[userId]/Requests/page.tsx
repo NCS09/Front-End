@@ -28,6 +28,7 @@ const statusDisplay = {
     deny: { text: 'ปฏิเสธ', color: 'bg-rose-100 text-rose-800' },
     complete: { text: 'คืนแล้ว', color: 'bg-indigo-100 text-indigo-800' },
     cancel: { text: 'ถูกยกเลิก', color: 'bg-gray-100 text-gray-800' },
+    overdue: { text: 'คืนเกินกำหนด', color: 'bg-gray-100 text-gray-800' },
 };
 
 const getStatusDisplay = (status: string) => {

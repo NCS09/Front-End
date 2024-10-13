@@ -8,6 +8,7 @@ interface AddDevicePopupProps {
 }
 
 const AddDevicePopup: React.FC<AddDevicePopupProps> = ({ onClose, onUpdate }) => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [limit, setLimit] = useState('');
@@ -42,13 +43,16 @@ const AddDevicePopup: React.FC<AddDevicePopupProps> = ({ onClose, onUpdate }) =>
         const formData = { name, description, limit: limitValue, serial, type, brand, model, location, responsible };
 
         try {
-            const response = await fetch("http://localhost:8000/devices/add", {
+            const token = localStorage.getItem('token');
+
+            const response = await fetch(`${apiUrl}/devices/add`, {
                 method: 'POST',
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify(formData),
-                credentials: "include",
+                
             });
 
             const result = await response.json();

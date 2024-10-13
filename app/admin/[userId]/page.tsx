@@ -27,9 +27,13 @@ export default function Dashboardpage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
+                const token = localStorage.getItem('token');
                 const response = await fetch(`${apiUrl}/dashboard`, {
                     method: 'GET',
-                    credentials: "include",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                    
                 });
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -53,9 +57,12 @@ export default function Dashboardpage() {
         }
 
         try {
+            const token = localStorage.getItem('token')
             const response = await fetch(`${apiUrl}/report/download/${selectedReportType}`, {
                 method: 'GET',
-                credentials: 'include',
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
             });
 
             if (!response.ok) {

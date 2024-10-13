@@ -84,13 +84,14 @@ export default function ConfirmDevice() {
 
   const handleConfirm = async (transaction_id: number) => {
     try {
+      const token = localStorage.getItem('token');
       const response = await fetch(`${apiUrl}/confirm-loan`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify({ transaction_id }),
-        credentials: 'include',
       });
 
       if (!response.ok) {

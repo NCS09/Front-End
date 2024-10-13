@@ -37,12 +37,14 @@ const DeviceDetails: React.FC = () => {
 
     const fetchDeviceItems = async () => {
         try {
+            const token = localStorage.getItem('token');
             const response = await fetch(`${apiUrl}/devices/${id}`, {
                 method: 'GET',
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
-                credentials: "include",
+                
             });
 
             if (!response.ok) {
@@ -77,16 +79,17 @@ const DeviceDetails: React.FC = () => {
         if (!editingItem) return;
 
         try {
+            const token = localStorage.getItem('token');
             const response = await fetch(`${apiUrl}/device_item/update`, {
                 method: 'PUT',
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     item_id: editingItem.item_id,
                     item_availability: editingItem.item_availability
                 }),
-                credentials: "include",
             });
 
             const data = await response.json();

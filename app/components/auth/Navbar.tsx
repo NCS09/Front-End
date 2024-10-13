@@ -17,15 +17,20 @@ export default function Navbar() {
     }, []);
 
     const handleLogout = async () => {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
         try {
-            const response = await fetch("http://localhost:8000/logout", {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${apiUrl}/logout`, {
                 method: 'POST',
-                credentials: 'include',
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
             });
 
             const result = await response.json();
             if (result.type === 'ok') {
                 localStorage.removeItem('authToken');
+                localStorage.removeItem('token');
                 setIsLoggedIn(false);
                 router.refresh(); 
                 router.push('/Login');

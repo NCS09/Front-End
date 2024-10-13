@@ -26,13 +26,15 @@ export default function DeviceRequests() {
 
     const fetchData = async () => {
         try {
+            const token = localStorage.getItem('token')
             const response = await fetch(`${apiUrl}/user/loan_detail`, {
                 method: 'GET',
-                credentials: "include",
+                
                 headers: {
                     'Cache-Control': 'no-cache',
                     'Pragma': 'no-cache',
                     'Expires': '0',
+                    "Authorization": `Bearer ${token}`
                 }
             });
     
@@ -58,12 +60,14 @@ export default function DeviceRequests() {
 
     const handleCancel = async (transaction_id: string) => {
         try {
+            const token = localStorage.getItem('token')
             const response = await fetch(`${apiUrl}/cancel-loan/${transaction_id}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${token}`
                 },
-                credentials: 'include',
+                
             });
 
             if (!response.ok) {

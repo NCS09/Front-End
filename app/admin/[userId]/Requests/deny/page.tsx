@@ -46,9 +46,12 @@ export default function LoanDetailPage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
+                const token = localStorage.getItem('token');
                 const response = await fetch(`${apiUrl}/admin/loan_detail/deny`, {
                     method: 'GET',
-                    credentials: "include",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
                 });
 
                 if (!response.ok) {
@@ -75,13 +78,16 @@ export default function LoanDetailPage() {
         setConfirmingTransactionId(transaction_id);
 
         try {
+            const token = localStorage.getItem('token');
+
             const response = await fetch(`${apiUrl}/admin/loan_detail/update`, {
                 method: 'PUT',
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify({ transaction_id, loan_status: status }),
-                credentials: "include",
+                
             });
 
             if (!response.ok) {

@@ -39,9 +39,12 @@ export default function ReturnDevice() {
 
     const fetchData = async () => {
         try {
+            const token = localStorage.getItem('token')
             const response = await fetch(`${apiUrl}/loan_detail/borrowed/${userId}`, {
                 method: 'GET',
-                credentials: "include",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
             });
     
             if (!response.ok) {

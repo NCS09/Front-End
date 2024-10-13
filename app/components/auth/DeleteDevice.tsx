@@ -11,18 +11,22 @@ interface DeleteDeviceProps {
 }
 
 const DeleteDevice: React.FC<DeleteDeviceProps> = ({ isOpen, onClose, onConfirm, deviceId }) => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const id = deviceId;
     const handleConfirm = async () => {
         if (deviceId) {
             try {
-                const response = await fetch("http://localhost:8000/devices/delete", {
+
+                const token = localStorage.getItem('token');
+                const response = await fetch(`${apiUrl}/devices/delete`, {
                     method: 'DELETE',
                     headers: {
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
                     },
                     body: JSON.stringify({id}),
                         
-                    credentials: "include",
+                    
                 });
 
                 if (!response.ok) {

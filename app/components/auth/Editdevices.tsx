@@ -15,6 +15,7 @@ interface EditDeviceProps {
 }
 
 const EditDevices: React.FC<EditDeviceProps> = ({ onClose, onUpdate, deviceId, Approve, dname, dlimit, descriptions, sserial, dtype }) => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const [approve, setApprove] = useState<boolean>(Approve);
     const [name, setName] = useState<string>(dname);
     const [limit, setLimit] = useState<number>(dlimit);
@@ -38,13 +39,16 @@ const EditDevices: React.FC<EditDeviceProps> = ({ onClose, onUpdate, deviceId, A
         };
 
         try {
-            const response = await fetch("http://localhost:8000/device/update", {
+
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${apiUrl}/device/update`, {
                 method: 'PUT',
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify(formData),
-                credentials: "include",
+                
             });
 
             const result = await response.json();

@@ -37,12 +37,14 @@ const ManagePage: React.FC = () => {
 
     const fetchDevices = async () => {
         try {
+            const token = localStorage.getItem('token')
             const response = await fetch(`${apiUrl}/devices`, {
                 method: 'GET',
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
-                credentials: "include",
+                
             });
             
             if (!response.ok) {

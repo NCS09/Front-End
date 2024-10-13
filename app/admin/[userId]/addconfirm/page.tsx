@@ -41,6 +41,7 @@ export default function ConfirmDevice() {
 
   const fetchData = async () => {
     try {
+      const token = localStorage.getItem('token')
       const response = await fetch(`${apiUrl}/loan_detail/approve/${userId}`, {
         method: 'GET',
         credentials: 'include',
@@ -48,6 +49,7 @@ export default function ConfirmDevice() {
           'Cache-Control': 'no-cache',
           Pragma: 'no-cache',
           Expires: '0',
+          "Authorization": `Bearer ${token}`
         },
       });
 

@@ -41,12 +41,14 @@ export default function Manageuserpage() {
     const fetchUsers = async () => {
         setIsLoading(true);
         try {
+            const token = localStorage.getItem('token');
             const response = await fetch(`${apiUrl}/admin/list-user`, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    'Authorization': `Bearer ${localStorage.getItem('authToken,token')}`,
+                    
                 },
-                credentials: 'include'
+                
             });
 
             if (!response.ok) {
@@ -67,14 +69,15 @@ export default function Manageuserpage() {
         e.preventDefault();
         setEditMessage(null);
         try {
+            const token = localStorage.getItem('token')
             const response = await fetch(`${apiUrl}/admin/edit-user`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    'Authorization': `Bearer ${localStorage.getItem('authToken,token')}`
                 },
                 body: JSON.stringify({ email, password }),
-                credentials: 'include'
+                
             });
 
             const data = await response.json();

@@ -45,12 +45,14 @@ const UserList: React.FC = () => {
 
     const fetchUsers = async () => {
         try {
+            const token = localStorage.getItem('token');
             const response = await fetch(`${apiUrl}/admin/list-user`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${token}`
                 },
-                credentials: 'include',
+                
             });
 
             if (!response.ok) {
@@ -89,17 +91,19 @@ const UserList: React.FC = () => {
         }
 
         try {
+            const token = localStorage.getItem('token');
             const response = await fetch(`${apiUrl}/fetch-report`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     user_id: selectedUser,
                     device_type: deviceType,
                     loan_date: loanDate
                 }),
-                credentials: 'include',
+                
             });
 
             if (!response.ok) {
@@ -126,9 +130,12 @@ const UserList: React.FC = () => {
         }
 
         try {
+            const token = localStorage.getItem('token');
             const response = await fetch(`${apiUrl}/generate-report?user_id=${selectedUser}&device_type=${deviceType}&loan_date=${loanDate}`, {
                 method: 'GET',
-                credentials: 'include',
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
             });
 
             if (response.ok) {

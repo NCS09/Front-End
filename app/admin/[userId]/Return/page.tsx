@@ -68,9 +68,12 @@ export default function ImprovedLoanDetailPage() {
     const fetchData = async () => {
         setIsLoading(true);
         try {
+            const token = localStorage.getItem('token');
             const response = await fetch(`${apiUrl}/admin/loan_detail/borrowed`, {
                 method: 'GET',
-                credentials: "include",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
             });
 
             if (!response.ok) {

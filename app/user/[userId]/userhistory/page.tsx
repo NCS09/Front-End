@@ -40,9 +40,12 @@ export default function DeviceRequests() {
         }
 
         try {
+            const token = localStorage.getItem('token')
             const response = await fetch(`${apiUrl}/user/history/${userId}`, {
                 method: 'GET',
-                credentials: "include",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
             });
 
             if (!response.ok) {

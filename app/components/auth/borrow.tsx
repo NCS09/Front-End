@@ -45,8 +45,11 @@ const BorrowDevicePage: React.FC = () => {
     const fetchData = async () => {
         setIsLoading(true);
         try {
+            const token = localStorage.getItem('token');
             const res = await fetch(`${apiUrl}/devices`, {
-                credentials: "include"
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
             });
             const data = await res.json();
             setDevices(data);

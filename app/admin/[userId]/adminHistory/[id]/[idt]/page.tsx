@@ -40,9 +40,12 @@ export default function AdminLoanDetailPage() {
             }
 
             try {
+                const token = localStorage.getItem('token')
                 const response = await fetch(`${apiUrl}/admin/history/${params.id}/${params.idt}`, {
                     method: 'GET',
-                    credentials: "include",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
                 });
 
                 if (!response.ok) {

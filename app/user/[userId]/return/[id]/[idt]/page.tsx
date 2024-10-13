@@ -43,9 +43,12 @@ export default function LoanDetailPage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
+                const token = localStorage.getItem('token')
                 const response = await fetch(`${apiUrl}/user/loan_detail/${params.id}/${params.idt}`, {
                     method: 'GET',
-                    credentials: "include",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
                 });
 
                 if (!response.ok) {

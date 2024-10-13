@@ -21,24 +21,28 @@ export default function Login() {
         const formData = { email, password };
 
         try {
+
+            // const token = localStorage.getItem('token');
+
             const response = await fetch(`${apiUrl}/login`, {
                 method: 'POST',
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify(formData),
-                credentials: "include", 
+                
             });
-
+            
             const result = await response.json();
-            if (result.type === 'ok') {
+            if (result.type == 'ok') {
                 setMessageType('success');
                 setMessage('เข้าสู่ระบบสำเร็จ!');
                 setUserId(result.user_id);
-
+                const token = result.token;
+                localStorage.setItem('token',token)
                 localStorage.setItem('userId', result.user_id.toString());
 
-                if (result.role === 2) {
+                if (result.role == 2) {
                     localStorage.setItem('authToken', 'Admin');
                     router.push(`/admin/${userId}`);
                 } else {

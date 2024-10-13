@@ -96,9 +96,12 @@ export default function ImprovedLoanDetailPage() {
         setIsLoading(true);
 
         try {
+            const token = localStorage.getItem('token');
             const response = await fetch(`${apiUrl}/admin/loan_detail/${loan.user_id}/${loan.transaction_id}`, {
                 method: 'GET',
-                credentials: "include",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
             });
 
             if (!response.ok) {
@@ -155,9 +158,12 @@ export default function ImprovedLoanDetailPage() {
         }
 
         try {
+            const token = localStorage.getItem('token');
             const response = await fetch(`${apiUrl}/return`, {
                 method: 'POST',
-                credentials: 'include',
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                },
                 body: formData,
             });
 
